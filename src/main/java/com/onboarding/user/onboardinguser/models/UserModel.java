@@ -4,6 +4,9 @@ package com.onboarding.user.onboardinguser.models;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
 import com.onboarding.user.onboardinguser.utils.Response;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -13,7 +16,12 @@ import jakarta.validation.constraints.Size;
 
 
 // classe anêmica
+@Entity
 public class UserModel {
+
+	@Id
+	@GeneratedValue
+	private Long id;
 
 	@NotNull
 	@NotBlank(message = "O campo de email nome não pode ser vazio.") 
@@ -27,6 +35,11 @@ public class UserModel {
 	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14")
 	String document = ""; // CPF - 000.000.000-00 | CNPJ - 00.000.000/0000-00
 	
+	@NotNull
+	@Size(min=2, max=30)
+	@NotBlank(message = "O campo de primeiro nome não pode ser vazio.")
+	String firstName = "";
+
 	@NotNull
 	@NotBlank(message = "O campo de último nome não pode ser vazio.")
 	@Size(min=2, max=30, message="O campo de último de conter no mínimo 2 caracterese no máximo 30 caracteres.")
@@ -46,16 +59,26 @@ public class UserModel {
 	@Pattern(regexp="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^!*\\-\\._&+=])(?=\\S+$).{8,}", message="O campo de senha deve conter pelo menos uma letra maiúscula, uma minúscula, um caracteres especial, no mínimo 8 e no máximo 40 caracteres.")
 	String password = "";
 
-	@NotNull
-	@Size(min=2, max=30)
-	@NotBlank(message = "O campo de primeiro nome não pode ser vazio.")
-	String firstName = "";
-
  	@AssertTrue
-	boolean Optin = false; 			// aceite de termos
+	boolean optin = false; 			// aceite de termos
 
 	@NotBlank(message = "O campo de confirmar senha nome não pode ser vazio.")
 	String confirmPassword = "";
+
+	protected UserModel() {
+	}
+
+	public UserModel(String email, String document, String firsName, String lastName, String nickname, String password, boolean optin) {
+
+		this.email = email;
+		this.document = document;
+		this.firstName = firsName;
+		this.lastName = lastName;
+		this.nickname = nickname;
+		this.password = password;
+		this.optin = optin;
+
+	}
 
 	public void setEmail(String email) {
 		this.email = email;
@@ -121,12 +144,12 @@ public class UserModel {
 		return this.confirmPassword;
 	}
 
-//	public void setOptin(boolean optin) {
-//		this.Optin = optin;
-//	}
+	public void setOptin(boolean optin) {
+		this.optin = optin;
+	}
 	
 	public boolean getOptin() {
-		return this.Optin;
+		return this.optin;
 	}
 
 	public Response valid() {

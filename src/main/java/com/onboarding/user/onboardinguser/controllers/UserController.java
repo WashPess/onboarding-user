@@ -2,6 +2,7 @@ package com.onboarding.user.onboardinguser.controllers; // name space
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,11 +25,11 @@ public class UserController {
 			return Response.result(validUser);
 		}
 
-		// if (bindingResult.hasErrors()) {
-		// 	ObjectError error = bindingResult.getAllErrors().get(0);
-		// 	String errorMessage = error.getDefaultMessage();
-        //     return ResponseEntity.badRequest().body(errorMessage);
-        // }
+		if (bindingResult.hasErrors()) {
+			ObjectError error = bindingResult.getAllErrors().get(0);
+			String message = error.getDefaultMessage();
+            return Response.result(Response.error(400, "USE033", message));
+        }
 	
 		return Response.result(Response.success(201));
 	
