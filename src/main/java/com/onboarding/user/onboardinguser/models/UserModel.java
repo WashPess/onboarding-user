@@ -6,7 +6,9 @@ import com.onboarding.user.onboardinguser.utils.Response;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,12 +17,12 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 
-// classe anêmica
 @Entity
+@Table(name = "users")
 public class UserModel {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
@@ -43,7 +45,6 @@ public class UserModel {
 	@NotNull
 	@NotBlank(message = "O campo de último nome não pode ser vazio.")
 	@Size(min=2, max=30, message="O campo de último de conter no mínimo 2 caracterese no máximo 30 caracteres.")
-	@Pattern(regexp="^[^0-9@()!-*#$%¨&+=]*$", message="O campo de último nome não pode conter números ou símbolos.")
 	String lastName = "";
 
 	String fullName = "";
@@ -62,20 +63,22 @@ public class UserModel {
  	@AssertTrue
 	boolean optin = false; 			// aceite de termos
 
-	@NotBlank(message = "O campo de confirmar senha nome não pode ser vazio.")
+	@NotBlank(message = "O campo de confirmar senha não pode ser vazio.")
 	String confirmPassword = "";
 
 	protected UserModel() {
 	}
 
-	public UserModel(String email, String document, String firsName, String lastName, String nickname, String password, boolean optin) {
+	public UserModel(String email, String document, String firsName, String lastName, String nickname, String password, String confirmPassword, boolean optin) {
 
 		this.email = email;
 		this.document = document;
 		this.firstName = firsName;
 		this.lastName = lastName;
+		this.fullName = String.format("%s %s", this.firstName, this.lastName);
 		this.nickname = nickname;
 		this.password = password;
+		this.confirmPassword = confirmPassword;
 		this.optin = optin;
 
 	}
@@ -354,5 +357,10 @@ public class UserModel {
 		}
 
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("User[id=%d, firstName='%s', lastName='%s']", this.id, this.firstName, this.lastName);
 	}
 }

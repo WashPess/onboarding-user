@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.onboarding.user.onboardinguser.models.UserModel;
+import com.onboarding.user.onboardinguser.services.UserService;
 import com.onboarding.user.onboardinguser.utils.Response;
 
 import jakarta.validation.Valid;
@@ -30,6 +31,10 @@ public class UserController {
 			String message = error.getDefaultMessage();
             return Response.result(Response.error(400, "USE033", message));
         }
+
+		UserService service = new UserService();
+		service.save(user);
+
 	
 		return Response.result(Response.success(201));
 	
