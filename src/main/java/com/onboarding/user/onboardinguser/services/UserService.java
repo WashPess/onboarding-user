@@ -29,8 +29,7 @@ public class UserService {
 
 	@Transactional
 	public Object getById(Long id){
-		Object user = this.repository.findById(id)
-		System.out.println(user);
+		Object user = this.repository.findById(id);
 		return user;
 	}
 
