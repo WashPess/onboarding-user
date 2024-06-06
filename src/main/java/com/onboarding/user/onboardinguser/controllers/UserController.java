@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.onboarding.user.onboardinguser.models.UserModel;
@@ -43,10 +44,7 @@ public class UserController {
 				return Response.result(Response.error(400, "USC000", message));
 			}
 
-			user.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
-			user.setDocument(Document.pad(Document.clear(user.getDocument())));
-			user.passwordHash();
-
+			// delega a regra de salva para a servuce
 			Response resultSaved = this.service.save(user);
 			if(resultSaved != null) {
 				return Response.result(resultSaved);
@@ -61,6 +59,18 @@ public class UserController {
 	@GetMapping("/user/{id}")
     ResponseEntity<Response> show(@PathVariable Long id) {
 		Object user = this.service.getById(id);
+		return Response.result(Response.success(200, user));
+	}
+
+	@GetMapping("/user")
+    ResponseEntity<Response> showByDocument(@RequestParam(required = true) String document) {
+		String doc = Document.pad(Document.clear(document));
+		
+		if(doc.length() == 0) {
+			return Response.result(Response.error(400, "ROU000", "O documento é obrigatório."));
+		}
+
+		UserModel user = this.service.getByDocument(doc);
 		return Response.result(Response.success(200, user));
 	}
 

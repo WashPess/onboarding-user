@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.onboarding.user.onboardinguser.models.UserModel;
 import com.onboarding.user.onboardinguser.repository.UserRepository;
+import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
 
 @Service
@@ -25,13 +26,26 @@ public class UserService {
 	public Response save(UserModel user){
 		try {
 
-			/// o documento do usuário já existe? se existir devolver erro 409
+			/// o documento do usuário já existe? se existir devolver erro 
+			// UserModel userData = this.getByDocument(user.getDocument());
+			// if(userData.getDocument().length() == 14) {
+			// 	return Response.error(409, "USS002", "O documento já existe na base de dados.");
+			// }
+
 
 			// o email do usuário já existe?, se existir, devolver error 409
+			// UserModel userDataWithEmail = this.getByEmail(user.getEmail());
 
-			// o usuário estoa habilitado? de tiver desativado devolver error 423 (recruso travado)
+			// if(userDataWithEmail.getEmail().length() > 8) {
+			// 	return Response.error(409, "USS003", "O email já existe na base de dados.");
+			// }
+
+			// o usuário esta habilitado? Se tiver desativado devolver error 423 (recruso travado)
+
+			user.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
+			user.passwordHash();
+			user.newUuid();
 			
-
 			this.repository.save(user);
 			return null;
 		} catch(Exception e) {
@@ -41,8 +55,13 @@ public class UserService {
 	}
 
 	@Transactional
-	public List<UserModel> getLastName(String name){
-		return this.repository.findByLastName(name);
+	public UserModel getByDocument(String document){
+		return this.repository.getByDocument(Document.pad(Document.clear(document)));
+	}
+
+	@Transactional
+	public UserModel getByEmail(String email){
+		return this.repository.getByEmail(email);
 	}
 
 	@Transactional

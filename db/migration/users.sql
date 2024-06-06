@@ -1,5 +1,8 @@
+CREATE TYPE status AS ENUM ('enabled', 'desabled');
+
 CREATE TABLE users (
-  uuid VARCHAR(64) PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
+  uuid VARCHAR(64) UNIQUE, 
   email VARCHAR (40) UNIQUE,
   document VARCHAR (30) UNIQUE,
   last_name VARCHAR (30),
@@ -7,5 +10,6 @@ CREATE TABLE users (
   password VARCHAR(40),
   full_name VARCHAR (70),
   first_name VARCHAR (30),
-  optin BOOLEAN 
+  optin BOOLEAN,
+  status STATUS
 );

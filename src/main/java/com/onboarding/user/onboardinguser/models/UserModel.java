@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.onboarding.user.onboardinguser.types.Status;
+import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.PasswordHasher;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
 import com.onboarding.user.onboardinguser.utils.Response;
@@ -32,8 +34,11 @@ public class UserModel {
 	Logger log = LoggerFactory.getLogger(UserModel.class);
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-	private UUID uuid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(unique=true)
+	public String uuid;
 
 	@NotNull
 	@NotBlank(message = "O campo de email nome não pode ser vazio.") 
@@ -45,7 +50,7 @@ public class UserModel {
 	@NotNull
 	@NotBlank(message = "O campo de documento nome não pode ser vazio.")
 	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14")
-	@Column(unique=true)
+	@Column(name="document", unique=true)
 	String document = ""; // CPF - 000.000.000-00 | CNPJ - 00.000.000/0000-00
 	
 	@NotNull
@@ -65,7 +70,6 @@ public class UserModel {
 	@NotBlank(message = "O campo de apelido nome não pode ser vazio.")
 	String nickname = "";
 
-	// @Size(min=8, max=40)
 	@NotBlank(message = "O campo de senha nome não pode ser vazio.")
 	@Size(min=8, max=40)
 	@Pattern(regexp="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^!*\\-\\._&+=])(?=\\S+$).{8,}", message="O campo de senha deve conter pelo menos uma letra maiúscula, uma minúscula, um caracteres especial, no mínimo 8 e no máximo 40 caracteres.")
@@ -78,13 +82,15 @@ public class UserModel {
 	@Transient 
 	String confirmPassword = "";
 
+	Status status = Status.ENABLED;
+
 	protected UserModel() {
 	}
 
 	public UserModel(String email, String document, String firsName, String lastName, String nickname, String password, String confirmPassword, boolean optin) {
 
 		this.email = email;
-		this.document = document;
+		this.document = Document.pad(Document.clear(document));
 		this.firstName = firsName;
 		this.lastName = lastName;
 		this.fullName = String.format("%s %s", this.firstName, this.lastName);
@@ -93,6 +99,11 @@ public class UserModel {
 		this.confirmPassword = confirmPassword;
 		this.optin = optin;
 
+	}
+
+	public String newUuid() {
+		this.uuid = UUID.randomUUID().toString();
+		return this.uuid;
 	}
 
 	public String passwordHash(){
@@ -115,11 +126,11 @@ public class UserModel {
 	}
 
 	public void setDocument(String document) {
-		this.document = document;
+		this.document = Document.pad(Document.clear(document));
 	}
 
 	public String getDocument() {
-		return this.document;
+		return Document.mask(Document.clear(this.document));
 	}
 
     public  void setFirstName (String firstName) {  
