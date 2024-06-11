@@ -1,4 +1,5 @@
 package com.onboarding.user.onboardinguser.utils;
+
 import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

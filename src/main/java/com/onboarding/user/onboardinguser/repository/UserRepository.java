@@ -24,4 +24,3 @@ public interface UserRepository extends PagingAndSortingRepository<UserModel, Lo
 	public UserModel getByEmail(@Param("email") String email);
 
 }
-

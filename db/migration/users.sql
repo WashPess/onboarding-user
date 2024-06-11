@@ -1,4 +1,4 @@
-CREATE TYPE status AS ENUM ('enabled', 'desabled');
+CREATE TYPE status AS ENUM ('enabled', 'disabled');
 
 CREATE TABLE users (
   id BIGSERIAL PRIMARY KEY,
@@ -11,5 +11,5 @@ CREATE TABLE users (
   full_name VARCHAR (70),
   first_name VARCHAR (30),
   optin BOOLEAN,
-  status STATUS
+  status VARCHAR(40)
 );

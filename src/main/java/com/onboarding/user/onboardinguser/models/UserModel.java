@@ -5,7 +5,8 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onboarding.user.onboardinguser.types.Status;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.PasswordHasher;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
@@ -24,6 +25,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
 
 
 @Entity
@@ -54,7 +56,7 @@ public class UserModel {
 	String document = ""; // CPF - 000.000.000-00 | CNPJ - 00.000.000/0000-00
 	
 	@NotNull
-	@Size(min=2, max=30)
+	@Size(min=2, max=30, message="O nome deve conter no mínimo 2 e no máximo 30 caracteres.")
 	@NotBlank(message = "O campo de primeiro nome não pode ser vazio.")
 	String firstName = "";
 
@@ -66,28 +68,30 @@ public class UserModel {
 	String fullName = "";
 
 	@NotNull
-	@Size(min=2, max=30)
+	@Size(min=2, max=30, message="O apelido deve conter no mínimo 2 e no máximo 30 caracteres.")
 	@NotBlank(message = "O campo de apelido nome não pode ser vazio.")
 	String nickname = "";
 
 	@NotBlank(message = "O campo de senha nome não pode ser vazio.")
-	@Size(min=8, max=40)
-	@Pattern(regexp="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^!*\\-\\._&+=])(?=\\S+$).{8,}", message="O campo de senha deve conter pelo menos uma letra maiúscula, uma minúscula, um caracteres especial, no mínimo 8 e no máximo 40 caracteres.")
+	@Size(min=8, max=40, message="A senha deve conter no mínimo 8 caracteres e no máximo 40 caracteres.")
+	@Pattern(regexp="(?=.*[\\d])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^!*\\-\\._&+=])(?=\\S+$).{8,}", message="O campo de senha deve conter pelo menos uma letra maiúscula, uma minúscula, um caracteres especial, no mínimo 8 e no máximo 40 caracteres.")
+	@JsonProperty( value = "password", access = JsonProperty.Access.WRITE_ONLY)
 	String password = "";
 
  	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
 	boolean optin = false; 			// aceite de termos
 
 	@NotBlank(message = "O campo de confirmar senha não pode ser vazio.")
+	@JsonProperty( value = "confirmPassword", access = JsonProperty.Access.WRITE_ONLY)
 	@Transient 
 	String confirmPassword = "";
-
+	
 	Status status = Status.ENABLED;
 
 	protected UserModel() {
 	}
 
-	public UserModel(String email, String document, String firsName, String lastName, String nickname, String password, String confirmPassword, boolean optin) {
+	public UserModel(String email, String document, String firsName, String lastName, String nickname, String password, String confirmPassword) {
 
 		this.email = email;
 		this.document = Document.pad(Document.clear(document));
@@ -97,7 +101,8 @@ public class UserModel {
 		this.nickname = nickname;
 		this.password = password;
 		this.confirmPassword = confirmPassword;
-		this.optin = optin;
+		this.optin = false;
+		this.status = Status.ENABLED;
 
 	}
 
@@ -115,6 +120,14 @@ public class UserModel {
 		this.password = hasher.hash(this.password, salt);
 
 		return this.password;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public String getUuid() {
+		return this.uuid;
 	}
 
 	public void setEmail(String email) {
@@ -187,6 +200,14 @@ public class UserModel {
 	
 	public boolean getOptin() {
 		return this.optin;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public Status getStatus() {
+		return this.status;
 	}
 
 	public Response valid() {
@@ -451,6 +472,7 @@ public class UserModel {
 
 	@Override
 	public String toString() {
-		return String.format("User[id=%d, firstName='%s', lastName='%s']", this.id, this.firstName, this.lastName);
+		return String.format("User[id=%d, uuid=%s, email=%s, document=%s, firstName='%s', lastName='%s', fullName=%s, nickname=%s, password=%s, status=%s]", this.id, this.uuid, this.email, this.document, this.firstName, this.lastName, this.fullName, this.nickname, this.password, this.status);
 	}
 }
+

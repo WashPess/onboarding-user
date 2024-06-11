@@ -2,6 +2,7 @@ package com.onboarding.user.onboardinguser.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,10 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.models.UserModel;
 import com.onboarding.user.onboardinguser.repository.UserRepository;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
+import com.onboarding.user.onboardinguser.utils.Str;
+
 
 @Service
 public class UserService {
@@ -26,22 +30,37 @@ public class UserService {
 	public Response save(UserModel user){
 		try {
 
-			/// o documento do usuário já existe? se existir devolver erro 
-			// UserModel userData = this.getByDocument(user.getDocument());
-			// if(userData.getDocument().length() == 14) {
-			// 	return Response.error(409, "USS002", "O documento já existe na base de dados.");
-			// }
+			// busca o usuário com base no documento
+			UserModel userData = this.getByDocument(user.getDocument());
 
+			// caso o usuário esteja desabilitaos, retornar erro 423
+			if(userData != null && userData.getStatus() == Status.DISABLED) {
+				this.log.error("Usuário desabilitado por tempo inderterminado.");
+				return Response.error(423, "USS001", "Usuário desabilitado por tempo inderterminado.");
+			}
 
-			// o email do usuário já existe?, se existir, devolver error 409
-			// UserModel userDataWithEmail = this.getByEmail(user.getEmail());
+			// Caso o documento exista, retornar erro 409
+			if(userData != null && !Str.Empty(userData.getDocument())) {
+				this.log.error("O documento já existe na base de dados");
+				return Response.error(409, "USS002", "O documento já existe na base de dados.");
+			}
 
-			// if(userDataWithEmail.getEmail().length() > 8) {
-			// 	return Response.error(409, "USS003", "O email já existe na base de dados.");
-			// }
+			// Caso o email exista, retornar erro 409
+			UserModel userDataWithEmail = this.getByEmail(user.getEmail());
 
-			// o usuário esta habilitado? Se tiver desativado devolver error 423 (recruso travado)
+			// caso o usuário esteja desabilitaos, retornar erro 423
+			if(userDataWithEmail != null && userDataWithEmail.getStatus() == Status.DISABLED) {
+				this.log.error("Usuário desabilitado por tempo inderterminado.");
+				return Response.error(423, "USS003", "Usuário desabilitado por tempo inderterminado.");
+			}
 
+			// caso o email exista, retornar erro 409
+			if(userDataWithEmail != null && !Str.Empty(userDataWithEmail.getEmail())) {
+				this.log.error("O email já existe na base de dados");
+				return Response.error(409, "USS004", "O email já existe na base de dados.");
+			}
+
+			// Prepara o usuário para salvar
 			user.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
 			user.passwordHash();
 			user.newUuid();
@@ -50,7 +69,7 @@ public class UserService {
 			return null;
 		} catch(Exception e) {
 			this.log.error("Erro na base de dados", e);
-			return Response.error(422, "USS001", "Base de dados indisponivel no momento.");
+			return Response.error(422, "USS005", "Base de dados indisponivel no momento.");
 		}
 	}
 
@@ -65,9 +84,14 @@ public class UserService {
 	}
 
 	@Transactional
-	public Object getById(Long id){
-		Object user = this.repository.findById(id);
-		return user;
+	public UserModel getById(Long id){
+		Optional<UserModel> user = this.repository.findById(id);
+
+		if(user.isEmpty()) {
+			return null;
+		}
+
+		return user.get();
 	}
 
 	@Transactional
@@ -83,8 +107,5 @@ public class UserService {
 
 		return users;
 	}
-
-
-
 
 }
