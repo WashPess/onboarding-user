@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,14 +20,14 @@ import com.onboarding.user.onboardinguser.utils.Str;
 
 
 @Service
+@Transactional
 public class UserService {
 	
 	@Autowired
- 	private UserRepository repository;
+ 	private  UserRepository repository;
 
 	Logger log = LoggerFactory.getLogger(UserService.class);
-	
-	@Transactional
+
 	public Response save(UserModel user){
 		try {
 
@@ -73,17 +74,46 @@ public class UserService {
 		}
 	}
 
-	@Transactional
-	public UserModel getByDocument(String document){
-		return this.repository.getByDocument(Document.pad(Document.clear(document)));
+	@Modifying
+	public Response update(UserModel user){
+		try {
+
+			// // busca o usuário com base no documento
+			// UserModel userData = this.getByUuid(user.getUuid());
+
+			// if(userData == null) {
+			// 	this.log.error("Usuário não encontrado.");
+			// 	return Response.error(404, "USS006", "Usuário não encontrado.");
+			// }
+
+			// // caso o usuário esteja desabilitaos, retornar erro 423
+			// if(userData.getStatus() == Status.DISABLED) {
+			// 	this.log.error("Usuário desabilitado por tempo inderterminado.");
+			// 	return Response.error(423, "USS007", "Usuário desabilitado por tempo inderterminado.");
+			// }
+
+			// // Prepara o usuário para salvar
+			// userData.inject(user);
+			// userData.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
+
+			// System.out.println(userData);
+
+			// this.repository.save(userData);
+			Long id = (long) 17;
+
+			Optional<UserModel> us = this.repository.findById(id);
+			if(us.isPresent()){
+				us.get().setEmail("Email");
+				this.repository.save(us.get());
+			}
+
+			return null;
+		} catch(Exception e) {
+			this.log.error("Erro na base de dados", e);
+			return Response.error(422, "USS008", "Base de dados indisponivel no momento.");
+		}
 	}
 
-	@Transactional
-	public UserModel getByEmail(String email){
-		return this.repository.getByEmail(email);
-	}
-
-	@Transactional
 	public UserModel getById(Long id){
 		Optional<UserModel> user = this.repository.findById(id);
 
@@ -94,7 +124,18 @@ public class UserService {
 		return user.get();
 	}
 
-	@Transactional
+	public UserModel getByUuid(String uuid){
+		return this.repository.getByUuid(uuid);
+	}
+
+	public UserModel getByEmail(String email){
+		return this.repository.getByEmail(email);
+	}
+
+	public UserModel getByDocument(String document){
+		return this.repository.getByDocument(Document.pad(Document.clear(document)));
+	}
+
 	public List<UserModel> getAll(){
 		
 		Iterable<UserModel> usersIter = this.repository.findAll();

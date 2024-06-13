@@ -2,6 +2,7 @@ package com.onboarding.user.onboardinguser.models;
 
 import java.util.UUID;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.PasswordHasher;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
 import com.onboarding.user.onboardinguser.utils.Response;
+import com.onboarding.user.onboardinguser.utils.Str;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +31,7 @@ import jakarta.validation.constraints.Size;
 
 
 @Entity
+@DynamicUpdate
 @Table(name = "users")
 public class UserModel {
 
@@ -120,6 +123,10 @@ public class UserModel {
 		this.password = hasher.hash(this.password, salt);
 
 		return this.password;
+	}
+
+	public Long getId() {
+		return  this.id;
 	}
 
 	public void setUuid(String uuid) {
@@ -250,7 +257,7 @@ public class UserModel {
 		return null;
 	}
 
-	private Response validEmail() {
+	public Response validEmail() {
 
 		if(this.email.length() == 0) {
 			this.log.error("O email não pode ser vazio");
@@ -325,7 +332,7 @@ public class UserModel {
 		return null;
 	}
 
-	private Response validFirstName() {
+	public Response validFirstName() {
 
 		if(this.firstName.length() == 0) {
 			this.log.error("O primeiro não pode ser vazio");
@@ -354,7 +361,7 @@ public class UserModel {
 		return null;
 	}
 
-	private Response validLastName() {
+	public Response validLastName() {
 
 		if(this.lastName.length() == 0) {
 			this.log.error("O último não pode ser vazio");
@@ -382,7 +389,7 @@ public class UserModel {
 		return null;
 	}
 
-	private Response validNickname() {
+	public Response validNickname() {
 
 		if(this.nickname.length() == 0) {
 			this.log.error("O apelido não pode ser vazio.");
@@ -468,6 +475,25 @@ public class UserModel {
 		}
 
 		return null;
+	}
+
+	public UserModel inject(UserModel user) {
+		
+		if(!Str.Empty(user.getUuid())) {
+			this.uuid = user.getUuid();
+		}
+
+		// this.email = "asdf@aabcbbasdf.com";
+
+		if(!Str.Empty(user.getFirstName())) {
+			this.firstName = user.getFirstName();
+		}
+
+		if(!Str.Empty(user.getLastName())) {
+			this.lastName = user.getLastName();
+		}
+
+		return this;
 	}
 
 	@Override

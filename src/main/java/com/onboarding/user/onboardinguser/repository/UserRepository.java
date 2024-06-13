@@ -17,10 +17,13 @@ public interface UserRepository extends PagingAndSortingRepository<UserModel, Lo
 	
 	public UserModel findById(long id);
 
-	@Query("SELECT u FROM UserModel u WHERE u.document = :doc")
-	public UserModel getByDocument(@Param("doc") String document);
+	@Query("SELECT u FROM UserModel u WHERE u.uuid = :uuid")
+	public UserModel getByUuid(@Param("uuid") String uuid);
 
 	@Query("SELECT u FROM UserModel u WHERE u.email = :email")
 	public UserModel getByEmail(@Param("email") String email);
+
+	@Query("SELECT u FROM UserModel u WHERE u.document = :doc")
+	public UserModel getByDocument(@Param("doc") String document);
 
 }

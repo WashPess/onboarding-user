@@ -74,7 +74,7 @@ public class Response {
 		return res;
 	}
 
-	public static ResponseEntity<Response> result(Response res)  {
+	public static ResponseEntity<Response> result(Response res) {
 		if(res == null) {
 			return ResponseEntity.status(204).build();
 		}
