@@ -78,36 +78,13 @@ public class UserService {
 	public Response update(UserModel user){
 		try {
 
-			// // busca o usuário com base no documento
-			// UserModel userData = this.getByUuid(user.getUuid());
-
-			// if(userData == null) {
-			// 	this.log.error("Usuário não encontrado.");
-			// 	return Response.error(404, "USS006", "Usuário não encontrado.");
-			// }
-
-			// // caso o usuário esteja desabilitaos, retornar erro 423
-			// if(userData.getStatus() == Status.DISABLED) {
-			// 	this.log.error("Usuário desabilitado por tempo inderterminado.");
-			// 	return Response.error(423, "USS007", "Usuário desabilitado por tempo inderterminado.");
-			// }
-
-			// // Prepara o usuário para salvar
-			// userData.inject(user);
-			// userData.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
-
-			// System.out.println(userData);
-
-			// this.repository.save(userData);
-			Long id = (long) 17;
-
-			Optional<UserModel> us = this.repository.findById(id);
-			if(us.isPresent()){
-				us.get().setEmail("Email");
-				this.repository.save(us.get());
-			}
-
-			return null;
+			UserModel userData = this.repository.findById(user.getId()).get();
+			userData.setFirstName(user.getFirstName());
+			userData.setLastName(user.getLastName());
+			userData.setEmail(user.getEmail());
+			UserModel userUpdated = this.repository.save(userData);
+			
+			return Response.success(200, userUpdated);
 		} catch(Exception e) {
 			this.log.error("Erro na base de dados", e);
 			return Response.error(422, "USS008", "Base de dados indisponivel no momento.");
