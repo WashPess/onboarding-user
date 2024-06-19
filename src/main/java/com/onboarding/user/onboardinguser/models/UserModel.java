@@ -483,8 +483,6 @@ public class UserModel {
 			this.uuid = user.getUuid();
 		}
 
-		// this.email = "asdf@aabcbbasdf.com";
-
 		if(!Str.Empty(user.getFirstName())) {
 			this.firstName = user.getFirstName();
 		}

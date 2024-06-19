@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,17 +73,23 @@ public class UserService {
 		}
 	}
 
-	@Modifying
+	
 	public Response update(UserModel user){
 		try {
 
-			UserModel userData = this.repository.findById(user.getId()).get();
-			userData.setFirstName(user.getFirstName());
-			userData.setLastName(user.getLastName());
-			userData.setEmail(user.getEmail());
-			UserModel userUpdated = this.repository.save(userData);
+			UserModel userData = this.getByUuid(user.getUuid());
 			
-			return Response.success(200, userUpdated);
+			if(userData == null) {
+				this.log.error("O usuário não foi encontrado");
+				return Response.error(404, "USS00X", "O usuário não foi encontrado.");
+			}
+
+			// userData.setFirstName(user.getFirstName());
+			// userData.setLastName(user.getLastName());
+			// userData.setEmail(user.getEmail());
+			// // this.repository.save(userData);
+			
+			return null;
 		} catch(Exception e) {
 			this.log.error("Erro na base de dados", e);
 			return Response.error(422, "USS008", "Base de dados indisponivel no momento.");

@@ -11,12 +11,12 @@ import com.onboarding.user.onboardinguser.models.UserModel;
 
 
 @Repository
-public interface UserRepository extends PagingAndSortingRepository<UserModel, Long>, CrudRepository<UserModel,Long>  {
+public interface UserRepository extends PagingAndSortingRepository<UserModel, Long>, CrudRepository<UserModel,Long> {
 	
 	public List<UserModel> findAll();
 	
 	public UserModel findById(long id);
-
+	
 	@Query("SELECT u FROM UserModel u WHERE u.uuid = :uuid")
 	public UserModel getByUuid(@Param("uuid") String uuid);
 

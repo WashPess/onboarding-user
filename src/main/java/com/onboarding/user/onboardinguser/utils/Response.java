@@ -48,6 +48,10 @@ public class Response {
 		this.code = code;
 	}
 
+	public String getMessage() {
+		return this.message;
+	}
+
 	public void setMessage(String message) {
 		this.message = message;
 	}
@@ -79,6 +83,11 @@ public class Response {
 			return ResponseEntity.status(204).build();
 		}
 		return ResponseEntity.status(res.getStatus()).body(res);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Erro! Código: % , Mensagem: %s", this.code, this.message);
 	}
 
 }
