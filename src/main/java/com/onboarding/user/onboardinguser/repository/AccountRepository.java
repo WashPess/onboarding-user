@@ -21,6 +21,5 @@ public interface AccountRepository extends PagingAndSortingRepository<AccountMod
 	
 	@Query("SELECT a FROM AccountModel a WHERE a.document = :doc")
 	public AccountModel getByDocument(@Param("doc") String document);
-	
 
 }

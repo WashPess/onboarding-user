@@ -6,6 +6,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +55,52 @@ public class AccountController extends ExceptionHandle {
         }   
     }
 
-	
+	@PutMapping("/account/{uuid}")
+    ResponseEntity<Response> update(@RequestBody AccountModel account, @PathVariable Object uuid) {
+		try{
+
+			// cast de variavel 
+			String uuidStr = String.valueOf(uuid);
+
+			if(Str.Empty(uuidStr)) {
+				this.logger.error("É necessário informar o uuid");
+				return Response.result(Response.error(404, "ACC011", "É necessário informar o uuid."));
+			}
+
+			Response validDocument= account.validDocument();
+			if(validDocument != null) {
+				return Response.result(validDocument);
+			}
+			
+			Response validNickname= account.validNickname();
+			if(validNickname != null) {
+				return Response.result(validNickname);
+			}
+
+			Response validRg= account.validRg();
+			if(validRg != null) {
+				return Response.result(validRg);
+			}
+
+			account.setUuid(uuidStr);
+
+			// delega a regra de salva para a service
+			Response resultSaved = this.service.update(account);
+			if(resultSaved != null) {
+				return Response.result(resultSaved);
+			}
+
+			return Response.result(Response.success(204));
+		} catch(Exception e) {
+			this.logger.error(e.toString());
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				return  Response.result(response);
+			}
+			return Response.result(Response.error(500, "ACC012", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+		}
+	}
+
 
     @GetMapping("/account/find/{id}")
     ResponseEntity<Response> showById(@PathVariable Object id) {
@@ -76,7 +122,7 @@ public class AccountController extends ExceptionHandle {
 			AccountModel account = this.service.getById(uid);
 			if(account == null) {
 				this.logger.error("Erro ao tentar busca uma conta.");
-				return Response.result(Response.error(404, "ACC004", "Usuário não encontrado."));
+				return Response.result(Response.error(404, "ACC004", "O usuário não foi encontrado."));
 			}
 
 			return Response.result(Response.success(200, account));

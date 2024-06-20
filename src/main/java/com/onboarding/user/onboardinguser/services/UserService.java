@@ -73,7 +73,6 @@ public class UserService {
 		}
 	}
 
-	
 	public Response update(UserModel user){
 		try {
 
@@ -84,10 +83,10 @@ public class UserService {
 				return Response.error(404, "USS00X", "O usuário não foi encontrado.");
 			}
 
-			// userData.setFirstName(user.getFirstName());
-			// userData.setLastName(user.getLastName());
-			// userData.setEmail(user.getEmail());
-			// // this.repository.save(userData);
+			userData.setFirstName(user.getFirstName());
+			userData.setLastName(user.getLastName());
+			userData.setEmail(user.getEmail());
+			this.repository.save(userData);
 			
 			return null;
 		} catch(Exception e) {

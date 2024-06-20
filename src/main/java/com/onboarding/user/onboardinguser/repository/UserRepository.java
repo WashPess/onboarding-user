@@ -3,7 +3,6 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +10,7 @@ import com.onboarding.user.onboardinguser.models.UserModel;
 
 
 @Repository
-public interface UserRepository extends PagingAndSortingRepository<UserModel, Long>, CrudRepository<UserModel,Long> {
+public interface UserRepository extends CrudRepository<UserModel,Long> {
 	
 	public List<UserModel> findAll();
 	

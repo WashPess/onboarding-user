@@ -1,8 +1,12 @@
 package com.onboarding.user.onboardinguser.models;
 
-import org.hibernate.annotations.DynamicUpdate;
 import java.util.UUID;
 
+import org.hibernate.annotations.DynamicUpdate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.onboarding.user.onboardinguser.utils.RegexCompile;
 import com.onboarding.user.onboardinguser.utils.Response;
 
 import jakarta.persistence.Column;
@@ -11,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -47,6 +52,9 @@ enum Nationality {
 @DynamicUpdate
 @Table(name = "accounts")
 public class AccountModel {
+
+	@Transient 
+	Logger log = LoggerFactory.getLogger(AccountModel.class);
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -104,6 +112,93 @@ public class AccountModel {
 	public Response valid() {
 		return null;
 	}
+	
+	public Response validDocument() {
+
+		
+		if(this.document.length() == 0) {
+			this.log.error("O documento não pode ser vazio");
+			return Response.error(400, "ACM000", "O documento não pode ser vazio.");
+		}
+		
+		if(this.document.length() < 14) {
+			String message = String.format("O documento deve conter no mínimo que 11 caracteres. %s", this.document);
+			this.log.error(message);
+			return Response.error(400, "ACM001", "O documento deve conter no mínimo 11 caracteres.");
+		}
+
+		if(this.document.length() > 18) {
+			String message = String.format("O documento deve conter no máximo que 18 caracteres. %s", this.document);
+			this.log.error(message);
+			return Response.error(400, "ACM002", "O documento deve conter no máximo que 18 caracteres.");
+		}
+
+		if(RegexCompile.HasCharSpecialForDocument.matcher(this.document).find()) {
+			String message = String.format("O documento não pode conter caracteres especiais. %s", this.document);
+			this.log.error(message);
+			return Response.error(400, "ACM003", "O documento não pode conter caracteres especiais.");
+		}
+
+		if(!RegexCompile.OnlyNumberForDocument.matcher(this.document).find()) {
+			String message = String.format("O documento deve conter somente numeros. %s", this.document);
+			this.log.error(message);
+			return Response.error(400, "ACM004", "O documento deve conter somente numeros.");
+		}
+
+		return null;
+	}
+
+	public Response validNickname() {
+
+		if(this.nickname.length() == 0) {
+			this.log.error("O apelido não pode ser vazio.");
+			return Response.error(400, "ACM005", "O apelido não pode ser vazio.");
+		}
+
+		if(this.nickname.length() < 2) {
+			String message = String.format("O apelido não pode ser menor que 2 caracteres. %s", this.nickname);
+			this.log.error(message);
+			return Response.error(400, "ACM006", "O apelido não pode ser menor que 2 caracteres.");
+		}
+
+		if(this.nickname.length() > 10) {
+			String message = String.format("O apelido não pode ser maior que 10 caracteres. %s", this.nickname);
+			this.log.error(message);
+			return Response.error(400, "ACM007", "O apelido não pode ser maior que 10 caracteres.");
+		}
+		
+		if(!RegexCompile.OnlyLetterForNickName.matcher(this.nickname).find()) {
+			String message = String.format("O apelido não pode conter caracteres especiais. %s", this.nickname);
+			this.log.error(message);
+			return Response.error(400, "ACM008", "O apelido não pode conter caracteres especiais.");
+		}
+
+		return null;
+	}
+
+	public Response validRg() {
+
+		
+		if(this.rg.length() == 0) {
+			this.log.error("O rg não pode ser vazio");
+			return Response.error(400, "ACM009", "O rg não pode ser vazio.");
+		}
+		
+		if(this.rg.length() < 12) {
+			String message = String.format("O rg deve conter no mínimo que 12 caracteres. %s", this.rg);
+			this.log.error(message);
+			return Response.error(400, "ACM010", "O rg deve conter no mínimo 12 caracteres.");
+		}
+
+		if(this.rg.length() > 12) {
+			String message = String.format("O rg deve conter no mínimo que 12 caracteres. %s", this.rg);
+			this.log.error(message);
+			return Response.error(400, "ACM011", "O rg deve conter no mínimo que 12 caracteres.");
+		}
+
+		return null;
+	}
+
 	
 	@Override
 	public String toString() {
