@@ -1,11 +1,16 @@
 package com.onboarding.user.onboardinguser.models;
 
+import java.util.Currency;
 import java.util.UUID;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.onboarding.user.onboardinguser.enums.Gender;
+import com.onboarding.user.onboardinguser.enums.Language;
+import com.onboarding.user.onboardinguser.enums.Marital;
+import com.onboarding.user.onboardinguser.enums.Nationality;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
 import com.onboarding.user.onboardinguser.utils.Response;
 
@@ -24,26 +29,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-enum Gender {
-	MALE, FEMALE, VOID;
-}
-
-enum Marital {
-	MARRIED, SINGLE, WIDOWER, SEPARATE, DIVORCED, VOID;
-}
-
-enum Currency {
-	USD, EUR, BRL, JPY, VOID; 
-}
-
-enum Language {
-	PORTUGUESE, ENGLISH, SPANISH, FRENCH, VOID; 
-}
-
-enum Nationality {
-	BRAZILIAN, AMERICAN, SPANISH, FRENCH, VOID;
-
-}
 	
 @Getter
 @Setter
@@ -63,53 +48,90 @@ public class AccountModel {
 	@Column(unique=true)
 	public String uuid;
 	
-	public String newUuid() {
-		this.uuid = UUID.randomUUID().toString();
-		return this.uuid;
-	}
-	
 	@NotNull
 	@NotBlank(message = "O campo de documento nome não pode ser vazio.")
 	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14")
 	@Column(name="document", unique=true)
-	String document = ""; // CPF - 000.000.000-00 | CNPJ - 00.000.000/0000-00
+	String document = "";                            // CPF - 000.000.000-00 | CNPJ - 00.000.000/0000-00
 	
 	@NotNull
 	@Size(min=2, max=30, message="O apelido deve conter no mínimo 2 e no máximo 30 caracteres.")
 	@NotBlank(message = "O campo de apelido nome não pode ser vazio.")
 	String nickname = ""; 							// apelido
 	
-	// @NotNull
+	@NotNull
 	// @NotBlank(message = "O campo do estado civil não pode ser vazio.")
-	// Marital marital = Marital.SINGLE; 			// estado civil 
+	Marital marital = Marital.SINGLE; 			    // estado civil 
 		
-	// @NotNull
+	@NotNull
 	// @NotBlank(message = "O campo moeda não pode ser vazio.")
 	// Currency currency= Currency.BRL;				// moeda
 	
-	// @NotNull
+	@NotNull
 	// @NotBlank(message = "O campo de linguagem não pode ser vazio.")
-	// Language language = Language.PORTUGUESE;						// Idioma
+	Language language = Language.PORTUGUESE;		// Idioma
 	
 	@NotNull
 	@NotBlank(message = "O campo do rg não pode ser vazio.")
 	@Size(min=1, max=12, message = "O rg precisa ter 12 caracteres.")
 	@Column(name="rg", unique=true)
-	String rg = ""; // RG - 00.000.000-0
+	String rg = ""; // RG - 00.000.000-0 valid 
 	
 
 	// @NotNull
 	// @NotBlank(message = "O campo de nacionalidade não pode ser vazio.")
 	// Nationality nationality = Nationality.BRAZILIAN;
 	
-	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
-	boolean optin = false;           //aceite de termos (mesmo sem ler)
 	
 	// @NotNull
 	// @NotBlank(message = "O campo de gênero não pode ser vazio.")
-	// Gender gender = Gender.MALE;
+	Gender gender = Gender.MALE;
+	
+	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
+	boolean optin = false;           //aceite de termos (mesmo sem ler)
+
+	public String newUuid() {
+		this.uuid = UUID.randomUUID().toString();
+		return this.uuid;
+	}
 	
 	public Response valid() {
+
+		Response validDocument = this.validDocument();
+		if(validDocument != null) {
+			return validDocument;
+		}
+
+		Response validNickname = this.validNickname();
+		if(validNickname != null) {
+			return validNickname;
+		}
+
+		Response validRG = this.validRG();
+		if(validRG != null) {
+			return validRG;
+		}
+
+		Response validMarital = this.validMarital();
+		if(validMarital != null) {
+			return validMarital;
+		}
+
+		Response validGender = this.validGender();
+		if(validGender != null) {
+			return validGender;
+		}
+
+		Response validLanguage = this.validLanguage();
+		if(validLanguage != null) {
+			return validLanguage;
+		}
+
+		// Response validNationality = this.validNationality();
+		// if(validNationality != null) {
+		// 	return validNationality;
+		// }
+
 		return null;
 	}
 	
@@ -176,8 +198,7 @@ public class AccountModel {
 		return null;
 	}
 
-	public Response validRg() {
-
+	public Response validRG() {
 		
 		if(this.rg.length() == 0) {
 			this.log.error("O rg não pode ser vazio");
@@ -199,7 +220,46 @@ public class AccountModel {
 		return null;
 	}
 
-	
+	public Response validMarital() {
+		
+		if(this.marital == Marital.VOID) {
+			this.log.error("O estado civil não pode ser vazio.");
+			return Response.error(400, "ACM012", "O estado civil não pode ser vazio.");
+		}
+
+		return null;
+	}
+
+	public Response validGender() {
+		
+		if(this.gender == Gender.VOID) {
+			this.log.error("O estado civil não pode ser vazio.");
+			return Response.error(400, "ACM012", "O estado civil não pode ser vazio.");
+		}
+
+		return null;
+	}
+
+	public Response validLanguage() {
+		
+		if(this.language == Language.VOID) {
+			this.log.error("O estado civil não pode ser vazio.");
+			return Response.error(400, "ACM012", "O estado civil não pode ser vazio.");
+		}
+
+		return null;
+	}
+
+	// public Response validNationality() {
+		
+	// 	if(this.nationality == Nationality.VOID) {
+	// 		this.log.error("O estado civil não pode ser vazio.");
+	// 		return Response.error(400, "ACM012", "O estado civil não pode ser vazio.");
+	// 	}
+
+	// 	return null;
+	// }
+
 	@Override
 	public String toString() {
 		return String.format("Account[id=%d, uuid=%s, document=%s, nickname=%s, rg=%s]", this.id, this.uuid, this.document, this.nickname, this.rg);

@@ -1,8 +1,12 @@
 package com.onboarding.user.onboardinguser.enums;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+
 public enum Gender {
     
-    MALE("male"), FEMALE("female"), VOID("");
+    @JsonEnumDefaultValue MALE("male"),
+    FEMALE("female"),
+    VOID("");
 
     private String code;
 

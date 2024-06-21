@@ -38,7 +38,7 @@ public class AccountController extends ExceptionHandle {
 
             if(bindingResult.hasErrors()) {
                 String message = bindingResult.getAllErrors().get(0).getDefaultMessage();
-                this.logger.error("Erro de validaçao na criaçâo de conta usnado spring validation.", new Exception(message));
+                this.logger.error("Erro de validaçao na criaçâo de conta usando spring validation.", new Exception(message));
                 return Response.result(Response.error(400, "ACC000", message));
             }
 
@@ -77,7 +77,7 @@ public class AccountController extends ExceptionHandle {
 				return Response.result(validNickname);
 			}
 
-			Response validRg= account.validRg();
+			Response validRg= account.validRG();
 			if(validRg != null) {
 				return Response.result(validRg);
 			}

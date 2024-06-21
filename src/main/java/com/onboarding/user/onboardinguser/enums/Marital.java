@@ -1,8 +1,15 @@
 package com.onboarding.user.onboardinguser.enums;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+
 public enum Marital {
     
-    MARRIED("married"), SINGLE("single"), WIDOWER("widower"), SEPARATE("separate"), DIVORCED("divorced"), VOID("");
+    @JsonEnumDefaultValue SINGLE("single"), 
+    MARRIED("married"), 
+    WIDOWER("widower"), 
+    SEPARATE("separate"), 
+    DIVORCED("divorced"), 
+    VOID("");
 
     private String code;
 

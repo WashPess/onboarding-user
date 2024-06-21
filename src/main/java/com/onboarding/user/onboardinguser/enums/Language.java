@@ -1,7 +1,14 @@
 package com.onboarding.user.onboardinguser.enums;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+
 public enum Language {
-    PORTUGUESE("portuguese"), ENGLISH("english"), SPANISH("spanish"), FRENCH("french"), VOID("");
+    
+    @JsonEnumDefaultValue PORTUGUESE("portuguese"),
+    ENGLISH("english"),
+    SPANISH("spanish"),
+    FRENCH("french"),
+    VOID("");
 
     private String code;
 

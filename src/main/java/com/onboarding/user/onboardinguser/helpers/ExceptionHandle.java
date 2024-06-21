@@ -19,6 +19,11 @@ public class ExceptionHandle {
 	public ResponseEntity<Response>  handleError(HttpServletRequest req, Exception ex) {
 		String cause = String.format("Error: %s | raised : %s", req.getRequestURL(), ex);
 		this.logger.error(cause);
+		Response errorJsonParse = ExceptionHandle.errorJsonParse(ex);
+		if(errorJsonParse != null) {
+			return Response.result(errorJsonParse);
+		}
+
 		return Response.result(Response.error(500, "EXC000", "Servidor indisponível no momento. Volte mais tarde."));
 	}
 
@@ -26,6 +31,15 @@ public class ExceptionHandle {
 		String exStr = e.toString();
 		if(exStr.contains("For input")) {
 			return Response.error(400, "EXC001", "Erro nos parametros de entrada.");
+		}
+		return null;
+	}
+
+
+	public static final Response errorJsonParse(Exception e) {
+		String exStr = e.toString();
+		if(exStr.contains("JSON parse error")) {
+			return Response.error(400, "EXC002", "A estrutura do objeto json não é compatível.");
 		}
 		return null;
 	}
