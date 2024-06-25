@@ -1,6 +1,5 @@
 package com.onboarding.user.onboardinguser.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +19,16 @@ import com.onboarding.user.onboardinguser.utils.Str;
 
 import jakarta.validation.Valid;
 
+
 @RestController
+@SuppressWarnings("squid:S1192") // Desativa a regra java:S1192
 public class AccountController extends ExceptionHandle {
     
-    @Autowired
-	final AccountService service = new AccountService();
+	private final AccountService service;
+
+	AccountController(AccountService service) {
+		this.service = service;
+	}
 
     @PostMapping("/account")
     ResponseEntity<Response> create(@Valid @RequestBody AccountModel account, BindingResult bindingResult) {
@@ -147,7 +151,7 @@ public class AccountController extends ExceptionHandle {
 			String uuidStr = String.valueOf(uuid);
 
 			if(Str.Empty(uuidStr)) {
-				return Response.result(Response.error(404, "ACC005", "É necessário informar o uuid."));
+				return Response.result(Response.error(404, "ACC006", "É necessário informar o uuid."));
 			}
 
 			AccountModel user = this.service.getByUuid(uuidStr);

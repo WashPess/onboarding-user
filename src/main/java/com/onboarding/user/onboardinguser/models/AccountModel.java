@@ -1,6 +1,5 @@
 package com.onboarding.user.onboardinguser.models;
 
-import java.util.Currency;
 import java.util.UUID;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -77,15 +76,13 @@ public class AccountModel {
 	@Column(name="rg", unique=true)
 	String rg = ""; // RG - 00.000.000-0 valid 
 	
-
-	// @NotNull
-	// @NotBlank(message = "O campo de nacionalidade não pode ser vazio.")
-	// Nationality nationality = Nationality.BRAZILIAN;
-	
-	
-	// @NotNull
+	@NotNull
 	// @NotBlank(message = "O campo de gênero não pode ser vazio.")
 	Gender gender = Gender.MALE;
+
+	@NotNull
+	// @NotBlank(message = "O campo do estado civil não pode ser vazio.")
+	Nationality nationality = Nationality.BRAZILIAN;
 	
 	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
 	boolean optin = false;           //aceite de termos (mesmo sem ler)
@@ -127,10 +124,10 @@ public class AccountModel {
 			return validLanguage;
 		}
 
-		// Response validNationality = this.validNationality();
-		// if(validNationality != null) {
-		// 	return validNationality;
-		// }
+		Response validNationality = this.validNationality();
+		if(validNationality != null) {
+			return validNationality;
+		}
 
 		return null;
 	}
@@ -233,8 +230,8 @@ public class AccountModel {
 	public Response validGender() {
 		
 		if(this.gender == Gender.VOID) {
-			this.log.error("O estado civil não pode ser vazio.");
-			return Response.error(400, "ACM012", "O estado civil não pode ser vazio.");
+			this.log.error("O campo de gênero não pode ser vazio.");
+			return Response.error(400, "ACM013", "O campo de gênero não pode ser vazio.");
 		}
 
 		return null;
@@ -243,22 +240,22 @@ public class AccountModel {
 	public Response validLanguage() {
 		
 		if(this.language == Language.VOID) {
-			this.log.error("O estado civil não pode ser vazio.");
-			return Response.error(400, "ACM012", "O estado civil não pode ser vazio.");
+			this.log.error("O campo de Linguagem não pode ser vazio.");
+			return Response.error(400, "ACM014", "O campo de Linguagem não pode ser vazio.");
 		}
 
 		return null;
 	}
 
-	// public Response validNationality() {
+	public Response validNationality() {
 		
-	// 	if(this.nationality == Nationality.VOID) {
-	// 		this.log.error("O estado civil não pode ser vazio.");
-	// 		return Response.error(400, "ACM012", "O estado civil não pode ser vazio.");
-	// 	}
+		if(this.nationality == Nationality.VOID) {
+			this.log.error("A nacionalidade não pode ser vazio.");
+			return Response.error(400, "ACM012", "A nacionalidade não pode ser vazio.");
+		}
 
-	// 	return null;
-	// }
+		return null;
+	}
 
 	@Override
 	public String toString() {

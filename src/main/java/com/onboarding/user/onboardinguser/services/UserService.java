@@ -4,28 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.onboarding.user.onboardinguser.enums.Status;
+import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.UserModel;
 import com.onboarding.user.onboardinguser.repository.UserRepository;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
 import com.onboarding.user.onboardinguser.utils.Str;
 
-
+@SuppressWarnings("squid:S1192")
 @Service
-@Transactional
-public class UserService {
+public class UserService extends ExceptionHandleService {
 	
-	@Autowired
- 	private  UserRepository repository;
+ 	private final UserRepository repository;
 
-	Logger log = LoggerFactory.getLogger(UserService.class);
+	UserService(UserRepository repository){
+		this.repository = repository;
+	}
 
 	public Response save(UserModel user){
 		try {
@@ -35,13 +32,13 @@ public class UserService {
 
 			// caso o usuário esteja desabilitaos, retornar erro 423
 			if(userData != null && userData.getStatus() == Status.DISABLED) {
-				this.log.error("Usuário desabilitado por tempo inderterminado.");
+				this.logger.error("Usuário desabilitado por tempo inderterminado.");
 				return Response.error(423, "USS001", "Usuário desabilitado por tempo inderterminado.");
 			}
 
 			// Caso o documento exista, retornar erro 409
 			if(userData != null && !Str.Empty(userData.getDocument())) {
-				this.log.error("O documento já existe na base de dados");
+				this.logger.error("O documento já existe na base de dados");
 				return Response.error(409, "USS002", "O documento já existe na base de dados.");
 			}
 
@@ -50,13 +47,13 @@ public class UserService {
 
 			// caso o usuário esteja desabilitaos, retornar erro 423
 			if(userDataWithEmail != null && userDataWithEmail.getStatus() == Status.DISABLED) {
-				this.log.error("Usuário desabilitado por tempo inderterminado.");
+				this.logger.error("Usuário desabilitado por tempo inderterminado.");
 				return Response.error(423, "USS003", "Usuário desabilitado por tempo inderterminado.");
 			}
 
 			// caso o email exista, retornar erro 409
 			if(userDataWithEmail != null && !Str.Empty(userDataWithEmail.getEmail())) {
-				this.log.error("O email já existe na base de dados");
+				this.logger.error("O email já existe na base de dados");
 				return Response.error(409, "USS004", "O email já existe na base de dados.");
 			}
 
@@ -68,7 +65,7 @@ public class UserService {
 			this.repository.save(user);
 			return null;
 		} catch(Exception e) {
-			this.log.error("Erro na base de dados", e);
+			this.logger.error("Erro na base de dados", e);
 			return Response.error(422, "USS005", "Base de dados indisponivel no momento.");
 		}
 	}
@@ -79,7 +76,7 @@ public class UserService {
 			UserModel userData = this.getByUuid(user.getUuid());
 			
 			if(userData == null) {
-				this.log.error("O usuário não foi encontrado");
+				this.logger.error("O usuário não foi encontrado");
 				return Response.error(404, "USS00X", "O usuário não foi encontrado.");
 			}
 
@@ -90,7 +87,7 @@ public class UserService {
 			
 			return null;
 		} catch(Exception e) {
-			this.log.error("Erro na base de dados", e);
+			this.logger.error("Erro na base de dados", e);
 			return Response.error(422, "USS008", "Base de dados indisponivel no momento.");
 		}
 	}

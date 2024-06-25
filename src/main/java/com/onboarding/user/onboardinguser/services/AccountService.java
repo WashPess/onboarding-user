@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.AccountModel;
 import com.onboarding.user.onboardinguser.repository.AccountRepository;
 import com.onboarding.user.onboardinguser.utils.Document;
@@ -19,11 +17,13 @@ import com.onboarding.user.onboardinguser.utils.Str;
 
 @Service
 @Transactional
-public class AccountService {
+public class AccountService extends ExceptionHandleService {
 	
-	@Autowired
-	private  AccountRepository repository;
-	Logger log = LoggerFactory.getLogger(AccountService.class);
+	private  final AccountRepository repository;
+
+	AccountService(AccountRepository repository) {
+		this.repository = repository;
+	}
 
 	public Response save(AccountModel account){
 		try {
@@ -32,17 +32,15 @@ public class AccountService {
 			
             AccountModel accountData = this.getByDocument(account.getDocument());
             if(accountData != null && !Str.Empty(accountData.getDocument())) {
-				this.log.error("O documento já existe na base de dados");
+				this.logger.error("O documento já existe na base de dados");
 				return Response.error(409, "ACS000", "O documento já existe na base de dados.");
 			}
 			
 			account.newUuid();
-
-
 			this.repository.save(account);
 			return null;
 		} catch(Exception e) {
-			this.log.error("Erro na base de dados", e);
+			this.logger.error("Erro na base de dados", e);
 			return Response.error(422, "ACS001", "Base de dados indisponivel no momento.");
 		}
     }
@@ -56,7 +54,7 @@ public class AccountService {
 			
 			return Response.success(200, accountUpdate);
 		} catch(Exception e) {
-			this.log.error("Erro na base de dados", e);
+			this.logger.error("Erro na base de dados", e);
 			return Response.error(422, "ACS002", "Base de dados indisponivel no momento.");
 		}
 

@@ -3,7 +3,6 @@ package com.onboarding.user.onboardinguser.controllers; // name space
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,10 +25,14 @@ import jakarta.validation.Valid;
 // silence report 
 
 @RestController // decorator | annotation - controllar o comportamento de classe
+@SuppressWarnings("squid:S1192") // Desativa a regra java:S1192
 public class UserController extends ExceptionHandle {
 
-	@Autowired
-	final UserService service = new UserService();
+	private final UserService service;
+
+	UserController(UserService service) {
+		this.service = service;
+	}
 
 	@PostMapping("/user")
     ResponseEntity<Response> create(@Valid @RequestBody UserModel user, BindingResult bindingResult) {
