@@ -30,7 +30,7 @@ public class UserService extends ExceptionHandleService {
 			// busca o usuário com base no documento
 			UserModel userData = this.getByDocument(user.getDocument());
 
-			// caso o usuário esteja desabilitaos, retornar erro 423
+			// caso o usuário esteja desabilitado, retornar erro 423
 			if(userData != null && userData.getStatus() == Status.DISABLED) {
 				this.logger.error("Usuário desabilitado por tempo inderterminado.");
 				return Response.error(423, "USS001", "Usuário desabilitado por tempo inderterminado.");
@@ -115,16 +115,10 @@ public class UserService extends ExceptionHandleService {
 	}
 
 	public List<UserModel> getAll(){
-		
 		Iterable<UserModel> usersIter = this.repository.findAll();
-		
-		List<UserModel> users = new ArrayList<UserModel>();
-		
-		usersIter.forEach((UserModel user)-> {
-			users.add(user);
-		});
-
+		List<UserModel> users = new ArrayList<>(0);
+		usersIter.forEach(users::add);
 		return users;
 	}
 
-}
+} 

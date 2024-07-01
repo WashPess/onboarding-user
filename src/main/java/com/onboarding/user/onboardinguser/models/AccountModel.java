@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.onboarding.user.onboardinguser.enums.Currency;
 import com.onboarding.user.onboardinguser.enums.Gender;
 import com.onboarding.user.onboardinguser.enums.Language;
 import com.onboarding.user.onboardinguser.enums.Marital;
@@ -59,15 +60,12 @@ public class AccountModel {
 	String nickname = ""; 							// apelido
 	
 	@NotNull
-	// @NotBlank(message = "O campo do estado civil não pode ser vazio.")
 	Marital marital = Marital.SINGLE; 			    // estado civil 
 		
 	@NotNull
-	// @NotBlank(message = "O campo moeda não pode ser vazio.")
-	// Currency currency= Currency.BRL;				// moeda
+	Currency currency= Currency.BRL;				// moeda
 	
 	@NotNull
-	// @NotBlank(message = "O campo de linguagem não pode ser vazio.")
 	Language language = Language.PORTUGUESE;		// Idioma
 	
 	@NotNull
@@ -77,11 +75,9 @@ public class AccountModel {
 	String rg = ""; // RG - 00.000.000-0 valid 
 	
 	@NotNull
-	// @NotBlank(message = "O campo de gênero não pode ser vazio.")
 	Gender gender = Gender.MALE;
 
 	@NotNull
-	// @NotBlank(message = "O campo do estado civil não pode ser vazio.")
 	Nationality nationality = Nationality.BRAZILIAN;
 	
 	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
@@ -129,18 +125,22 @@ public class AccountModel {
 			return validNationality;
 		}
 
+		Response validCurrency = this.validCurrency();
+		if(validCurrency != null) {
+			return validCurrency;
+		}
+
 		return null;
 	}
 	
 	public Response validDocument() {
 
-		
 		if(this.document.length() == 0) {
 			this.log.error("O documento não pode ser vazio");
 			return Response.error(400, "ACM000", "O documento não pode ser vazio.");
 		}
 		
-		if(this.document.length() < 14) {
+		if(this.document.length() < 11) {
 			String message = String.format("O documento deve conter no mínimo que 11 caracteres. %s", this.document);
 			this.log.error(message);
 			return Response.error(400, "ACM001", "O documento deve conter no mínimo 11 caracteres.");
@@ -251,7 +251,17 @@ public class AccountModel {
 		
 		if(this.nationality == Nationality.VOID) {
 			this.log.error("A nacionalidade não pode ser vazio.");
-			return Response.error(400, "ACM012", "A nacionalidade não pode ser vazio.");
+			return Response.error(400, "ACM015", "A nacionalidade não pode ser vazio.");
+		}
+
+		return null;
+	}
+
+	public Response validCurrency() {
+		
+		if(this.currency == Currency.VOID) {
+			this.log.error("O campo moeda não pode ser vazio.");
+			return Response.error(400, "ACM016", "O campo moeda não pode ser vazio.");
 		}
 
 		return null;

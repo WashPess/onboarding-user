@@ -8,5 +8,6 @@ CREATE TABLE accounts (
   language VARCHAR (30),
   marital VARCHAR (30),
   nationality VARCHAR (30),
+  currency VARCHAR (30),
   optin BOOLEAN
 );

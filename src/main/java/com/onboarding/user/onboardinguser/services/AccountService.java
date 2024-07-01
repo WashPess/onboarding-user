@@ -49,7 +49,13 @@ public class AccountService extends ExceptionHandleService {
 	public Response update(AccountModel account){
 		try {
 
-			AccountModel accountData = this.repository.findById(account.getId()).get();
+			Optional<AccountModel> accountOptional = this.repository.findById(account.getId());
+			if(accountOptional.isEmpty()) {
+				this.logger.error("A conta não existe na base de dados");
+				return Response.error(404, "ACS003", "A conta não existe na base de dados.");
+			}
+
+			AccountModel accountData = accountOptional.get();
 			AccountModel accountUpdate = this.repository.save(accountData);
 			
 			return Response.success(200, accountUpdate);
@@ -79,15 +85,9 @@ public class AccountService extends ExceptionHandleService {
 	}
 
 	public List<AccountModel> getAll(){
-		
 		Iterable<AccountModel> accountsIter = this.repository.findAll();
-		
-		List<AccountModel> accounts = new ArrayList<AccountModel>();
-		
-		accountsIter.forEach((AccountModel account)-> {
-			accounts.add(account);
-		});
-
+		List<AccountModel> accounts = new ArrayList<>(0);
+		accountsIter.forEach(accounts::add);
 		return accounts;
 	}
 
