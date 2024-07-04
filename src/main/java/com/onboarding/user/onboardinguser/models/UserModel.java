@@ -3,30 +3,30 @@ package com.onboarding.user.onboardinguser.models;
 import java.util.UUID;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.onboarding.user.onboardinguser.enums.Status;
-import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.PasswordHasher;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
+import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
+import com.onboarding.user.onboardinguser.enums.Status;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onboarding.user.onboardinguser.utils.Str;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
 
 
 

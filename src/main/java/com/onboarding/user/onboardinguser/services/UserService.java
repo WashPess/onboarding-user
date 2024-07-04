@@ -6,12 +6,12 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
-import com.onboarding.user.onboardinguser.models.UserModel;
 import com.onboarding.user.onboardinguser.repository.UserRepository;
+import com.onboarding.user.onboardinguser.models.UserModel;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
+import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.utils.Str;
 
 @SuppressWarnings("squid:S1192")

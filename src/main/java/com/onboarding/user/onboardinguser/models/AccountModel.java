@@ -2,31 +2,30 @@ package com.onboarding.user.onboardinguser.models;
 
 import java.util.UUID;
 
-import org.hibernate.annotations.DynamicUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onboarding.user.onboardinguser.enums.Currency;
-import com.onboarding.user.onboardinguser.enums.Gender;
-import com.onboarding.user.onboardinguser.enums.Language;
-import com.onboarding.user.onboardinguser.enums.Marital;
-import com.onboarding.user.onboardinguser.enums.Nationality;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
+import com.onboarding.user.onboardinguser.enums.Nationality;
+import com.onboarding.user.onboardinguser.enums.Currency;
+import com.onboarding.user.onboardinguser.enums.Language;
 import com.onboarding.user.onboardinguser.utils.Response;
+import com.onboarding.user.onboardinguser.enums.Marital;
+import com.onboarding.user.onboardinguser.enums.Gender;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.Id;
+import lombok.Getter;
 import lombok.Setter;
 
 	
@@ -34,7 +33,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@DynamicUpdate
 @Table(name = "accounts")
 public class AccountModel {
 
