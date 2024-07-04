@@ -1,16 +1,12 @@
 package com.onboarding.user.onboardinguser.models;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Transient;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -20,8 +16,8 @@ import lombok.Setter;
 @Table(name = "enterprises")
 public class EnterpriseModel {
     
-    @Transient 
-	Logger log = LoggerFactory.getLogger(EnterpriseModel.class);
+    // @Transient 
+	// Logger log = LoggerFactory.getLogger(EnterpriseModel.class);
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.annotation.Nullable;
+
+@Nullable
 @JsonInclude(JsonInclude.Include.NON_NULL) 
 public class Response {
 
@@ -69,7 +72,9 @@ public class Response {
 	}
 
 	public static final Response success(int status) {
-		return new Response(status);
+		Response res = new Response(status);
+		res.setData(null);
+		return res;
 	}
 
 	public static final Response success(int status, Object data) {
@@ -79,10 +84,20 @@ public class Response {
 	}
 
 	public static ResponseEntity<Response> result(Response res) {
-		if(res == null) {
-			return ResponseEntity.status(204).build();
+		try {
+			if(res == null) {
+				return ResponseEntity.status(204).body(null);
+			}
+
+			if(res.data == null && res.message.isEmpty()) {
+				return ResponseEntity.status(res.getStatus()).body(null);
+			}
+
+			return ResponseEntity.status(res.getStatus()).body(res);
+		} catch (Exception e) {
+			Response error = new Response(400, "RES000", "Erro ao tentar converter a estrutura de dados");
+			return ResponseEntity.status(400).body(error);
 		}
-		return ResponseEntity.status(res.getStatus()).body(res);
 	}
 
 	@Override

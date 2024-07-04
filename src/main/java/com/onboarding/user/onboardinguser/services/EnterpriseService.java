@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.onboarding.user.onboardinguser.repository.EnterpriseRepository;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.EnterpriseModel;
+import com.onboarding.user.onboardinguser.repository.EnterpriseRepository;
 import com.onboarding.user.onboardinguser.utils.Response;
 
 
@@ -24,21 +24,24 @@ public class EnterpriseService extends ExceptionHandleService  {
 			this.repository.save(enterprise);
 			return null;
 		} catch(Exception e) {
-			this.logger.error("Erro na base de dados", e);
-			return Response.error(422, "EPS000", "Base de dados indisponivel no momento.");
+			this.logger.error("Erro de processamento na base de dados", e);
+			return Response.error(422, "EPS000", "Base de processamento na base de dados.");
 		}
     }
 	
 	public EnterpriseModel getById(Long id){
+		try {
+			Optional<EnterpriseModel> enterprise = this.repository.findById(id);
 
-		Optional<EnterpriseModel> enterprise = this.repository.findById(id);
+			if(enterprise.isEmpty()) {
+				return null;
+			}
 
-
-		if(enterprise.isEmpty()) {
+			return enterprise.get();
+		} catch(Exception e) {
+			this.logger.error("Erro de processamento na base de dados", e);
 			return null;
 		}
-
-		return enterprise.get();
 
 	}
 }

@@ -1,16 +1,16 @@
 package com.onboarding.user.onboardinguser.controllers;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.validation.BindingResult;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.onboarding.user.onboardinguser.services.EnterpriseService;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
 import com.onboarding.user.onboardinguser.models.EnterpriseModel;
+import com.onboarding.user.onboardinguser.services.EnterpriseService;
 import com.onboarding.user.onboardinguser.utils.Response;
 import com.onboarding.user.onboardinguser.utils.Str;
 
@@ -72,11 +72,7 @@ public class EnterpriseController extends ExceptionHandle {
 				return Response.result(Response.error(404, "EPC004", "A empresa não foi encontrada."));
 			}
 
-			System.out.println(enterprise);
-
-			// return Response.result(Response.success(200, enterprise));
-			return ResponseEntity.status(200).body(enterprise);
-			// return Response.result(Response.success(200));
+			return Response.result(Response.success(200, enterprise));
 		} catch(Exception e) {
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
