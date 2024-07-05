@@ -5,6 +5,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,6 +50,39 @@ public class EnterpriseController extends ExceptionHandle {
         }   
     }
 
+	@PutMapping("/enterprise/{id}")
+    ResponseEntity<Response> update(@RequestBody EnterpriseModel enterprise, @PathVariable Object id) {
+		try{
+
+			String idStr = String.valueOf(id);
+			if(Str.Empty(idStr)) {
+				this.logger.error("É necessário informar o id");
+				return Response.result(Response.error(400, "EPCXXX", "É necessário informar o id."));
+			}
+
+			// cast de variavel 
+			Long uid = Long.parseLong(idStr);
+			if(uid == 0) {
+                this.logger.error("É necesário enviar um id válido");
+				return Response.result(Response.error(400, "EPCXXX", "É necessário enviar um id."));
+			}
+			
+			Response resultSaved = this.service.update(enterprise);
+			if(resultSaved != null) {
+				return Response.result(resultSaved);
+			}
+
+			return Response.result(Response.success(204));
+		} catch(Exception e) {
+			this.logger.error(e.toString());
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				return  Response.result(response);
+			}
+			return Response.result(Response.error(500, "USC010", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+		}
+	}
+
 	@GetMapping("/enterprise/{id}")
     Object showById(@PathVariable Object id) {
 		try {
@@ -72,7 +106,11 @@ public class EnterpriseController extends ExceptionHandle {
 				return Response.result(Response.error(404, "EPC004", "A empresa não foi encontrada."));
 			}
 
+			String[] communication = enterprise.getCommunicationChannel();
+			System.out.println(communication[0]);
+
 			return Response.result(Response.success(200, enterprise));
+			// return Response.result(Response.success(200));
 		} catch(Exception e) {
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {

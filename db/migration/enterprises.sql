@@ -4,4 +4,5 @@ CREATE TABLE enterprises (
   company VARCHAR (255),
   timezone VARCHAR (255),
   professional VARCHAR (255),
+  communication_channel _VARCHAR
 );

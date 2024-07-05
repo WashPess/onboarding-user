@@ -3,19 +3,19 @@ package com.onboarding.user.onboardinguser.controllers; // name space
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.validation.BindingResult;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
-import com.onboarding.user.onboardinguser.services.UserService;
 import com.onboarding.user.onboardinguser.models.UserModel;
+import com.onboarding.user.onboardinguser.services.UserService;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
 import com.onboarding.user.onboardinguser.utils.Str;
@@ -120,11 +120,17 @@ public class UserController extends ExceptionHandle {
     ResponseEntity<Response> showById(@PathVariable Object id) {
 		try {
 
-			// cast de variavel 
-			Long uid = Long.parseLong(String.valueOf(id));
+			String idStr = String.valueOf(id);
+			if(Str.Empty(idStr)) {
+				this.logger.error("É necessário informar o id");
+				return Response.result(Response.error(400, "USC012", "É necessário informar o id."));
+			}
 
+			// cast de variavel 
+			Long uid = Long.parseLong(idStr);
 			if(uid == 0) {
-				return Response.result(Response.error(404, "USC002", "É necessário informar o id."));
+                this.logger.error("É necesário enviar um id válido");
+				return Response.result(Response.error(400, "USC013", "É necessário enviar um id."));
 			}
 
 			UserModel user = this.service.getById(uid);

@@ -1,18 +1,18 @@
 package com.onboarding.user.onboardinguser.controllers;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.validation.BindingResult;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
-import com.onboarding.user.onboardinguser.services.AccountService;
 import com.onboarding.user.onboardinguser.models.AccountModel;
+import com.onboarding.user.onboardinguser.services.AccountService;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
 import com.onboarding.user.onboardinguser.utils.Str;
@@ -104,7 +104,6 @@ public class AccountController extends ExceptionHandle {
 			return Response.result(Response.error(500, "ACC012", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
-
 
     @GetMapping("/account/find/{id}")
     ResponseEntity<Response> showById(@PathVariable Object id) {

@@ -5,27 +5,27 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onboarding.user.onboardinguser.utils.RegexCompile;
-import com.onboarding.user.onboardinguser.enums.Nationality;
 import com.onboarding.user.onboardinguser.enums.Currency;
-import com.onboarding.user.onboardinguser.enums.Language;
-import com.onboarding.user.onboardinguser.utils.Response;
-import com.onboarding.user.onboardinguser.enums.Marital;
 import com.onboarding.user.onboardinguser.enums.Gender;
+import com.onboarding.user.onboardinguser.enums.Language;
+import com.onboarding.user.onboardinguser.enums.Marital;
+import com.onboarding.user.onboardinguser.enums.Nationality;
+import com.onboarding.user.onboardinguser.utils.RegexCompile;
+import com.onboarding.user.onboardinguser.utils.Response;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.NoArgsConstructor;
-import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 	
@@ -37,7 +37,7 @@ import lombok.Setter;
 public class AccountModel {
 
 	@Transient 
-	Logger log = LoggerFactory.getLogger(AccountModel.class);
+	Logger logger = LoggerFactory.getLogger(AccountModel.class);
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -134,31 +134,31 @@ public class AccountModel {
 	public Response validDocument() {
 
 		if(this.document.length() == 0) {
-			this.log.error("O documento não pode ser vazio");
+			this.logger.error("O documento não pode ser vazio");
 			return Response.error(400, "ACM000", "O documento não pode ser vazio.");
 		}
 		
 		if(this.document.length() < 11) {
 			String message = String.format("O documento deve conter no mínimo que 11 caracteres. %s", this.document);
-			this.log.error(message);
+			this.logger.error(message);
 			return Response.error(400, "ACM001", "O documento deve conter no mínimo 11 caracteres.");
 		}
 
 		if(this.document.length() > 18) {
 			String message = String.format("O documento deve conter no máximo que 18 caracteres. %s", this.document);
-			this.log.error(message);
+			this.logger.error(message);
 			return Response.error(400, "ACM002", "O documento deve conter no máximo que 18 caracteres.");
 		}
 
 		if(RegexCompile.HasCharSpecialForDocument.matcher(this.document).find()) {
 			String message = String.format("O documento não pode conter caracteres especiais. %s", this.document);
-			this.log.error(message);
+			this.logger.error(message);
 			return Response.error(400, "ACM003", "O documento não pode conter caracteres especiais.");
 		}
 
 		if(!RegexCompile.OnlyNumberForDocument.matcher(this.document).find()) {
 			String message = String.format("O documento deve conter somente numeros. %s", this.document);
-			this.log.error(message);
+			this.logger.error(message);
 			return Response.error(400, "ACM004", "O documento deve conter somente numeros.");
 		}
 
@@ -168,25 +168,25 @@ public class AccountModel {
 	public Response validNickname() {
 
 		if(this.nickname.length() == 0) {
-			this.log.error("O apelido não pode ser vazio.");
+			this.logger.error("O apelido não pode ser vazio.");
 			return Response.error(400, "ACM005", "O apelido não pode ser vazio.");
 		}
 
 		if(this.nickname.length() < 2) {
 			String message = String.format("O apelido não pode ser menor que 2 caracteres. %s", this.nickname);
-			this.log.error(message);
+			this.logger.error(message);
 			return Response.error(400, "ACM006", "O apelido não pode ser menor que 2 caracteres.");
 		}
 
 		if(this.nickname.length() > 10) {
 			String message = String.format("O apelido não pode ser maior que 10 caracteres. %s", this.nickname);
-			this.log.error(message);
+			this.logger.error(message);
 			return Response.error(400, "ACM007", "O apelido não pode ser maior que 10 caracteres.");
 		}
 		
 		if(!RegexCompile.OnlyLetterForNickName.matcher(this.nickname).find()) {
 			String message = String.format("O apelido não pode conter caracteres especiais. %s", this.nickname);
-			this.log.error(message);
+			this.logger.error(message);
 			return Response.error(400, "ACM008", "O apelido não pode conter caracteres especiais.");
 		}
 
@@ -196,19 +196,19 @@ public class AccountModel {
 	public Response validRG() {
 		
 		if(this.rg.length() == 0) {
-			this.log.error("O rg não pode ser vazio");
+			this.logger.error("O rg não pode ser vazio");
 			return Response.error(400, "ACM009", "O rg não pode ser vazio.");
 		}
 		
 		if(this.rg.length() < 12) {
 			String message = String.format("O rg deve conter no mínimo que 12 caracteres. %s", this.rg);
-			this.log.error(message);
+			this.logger.error(message);
 			return Response.error(400, "ACM010", "O rg deve conter no mínimo 12 caracteres.");
 		}
 
 		if(this.rg.length() > 12) {
 			String message = String.format("O rg deve conter no mínimo que 12 caracteres. %s", this.rg);
-			this.log.error(message);
+			this.logger.error(message);
 			return Response.error(400, "ACM011", "O rg deve conter no mínimo que 12 caracteres.");
 		}
 
@@ -218,7 +218,7 @@ public class AccountModel {
 	public Response validMarital() {
 		
 		if(this.marital == Marital.VOID) {
-			this.log.error("O estado civil não pode ser vazio.");
+			this.logger.error("O estado civil não pode ser vazio.");
 			return Response.error(400, "ACM012", "O estado civil não pode ser vazio.");
 		}
 
@@ -228,7 +228,7 @@ public class AccountModel {
 	public Response validGender() {
 		
 		if(this.gender == Gender.VOID) {
-			this.log.error("O campo de gênero não pode ser vazio.");
+			this.logger.error("O campo de gênero não pode ser vazio.");
 			return Response.error(400, "ACM013", "O campo de gênero não pode ser vazio.");
 		}
 
@@ -238,7 +238,7 @@ public class AccountModel {
 	public Response validLanguage() {
 		
 		if(this.language == Language.VOID) {
-			this.log.error("O campo de Linguagem não pode ser vazio.");
+			this.logger.error("O campo de Linguagem não pode ser vazio.");
 			return Response.error(400, "ACM014", "O campo de Linguagem não pode ser vazio.");
 		}
 
@@ -248,7 +248,7 @@ public class AccountModel {
 	public Response validNationality() {
 		
 		if(this.nationality == Nationality.VOID) {
-			this.log.error("A nacionalidade não pode ser vazio.");
+			this.logger.error("A nacionalidade não pode ser vazio.");
 			return Response.error(400, "ACM015", "A nacionalidade não pode ser vazio.");
 		}
 
@@ -258,7 +258,7 @@ public class AccountModel {
 	public Response validCurrency() {
 		
 		if(this.currency == Currency.VOID) {
-			this.log.error("O campo moeda não pode ser vazio.");
+			this.logger.error("O campo moeda não pode ser vazio.");
 			return Response.error(400, "ACM016", "O campo moeda não pode ser vazio.");
 		}
 

@@ -1,5 +1,7 @@
 package com.onboarding.user.onboardinguser.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,6 +13,10 @@ import jakarta.annotation.Nullable;
 @Nullable
 @JsonInclude(JsonInclude.Include.NON_NULL) 
 public class Response {
+
+    @JsonIgnore
+	@Nullable
+	public Logger logger = LoggerFactory.getLogger(Response.class);
 
 	@JsonIgnore
 	boolean ok;
@@ -89,12 +95,13 @@ public class Response {
 				return ResponseEntity.status(204).body(null);
 			}
 
-			if(res.data == null && res.message.isEmpty()) {
+			if(res.data == null && res.message != null && res.message.isEmpty()) {
 				return ResponseEntity.status(res.getStatus()).body(null);
 			}
 
 			return ResponseEntity.status(res.getStatus()).body(res);
 		} catch (Exception e) {
+			res.logger.error("Erro ao tentar responder: ", e);
 			Response error = new Response(400, "RES000", "Erro ao tentar converter a estrutura de dados");
 			return ResponseEntity.status(400).body(error);
 		}

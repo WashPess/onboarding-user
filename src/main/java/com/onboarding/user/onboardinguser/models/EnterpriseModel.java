@@ -1,10 +1,21 @@
 package com.onboarding.user.onboardinguser.models;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,33 +27,34 @@ import lombok.Setter;
 @Table(name = "enterprises")
 public class EnterpriseModel {
     
-    // @Transient 
-	// Logger log = LoggerFactory.getLogger(EnterpriseModel.class);
+    @Transient 
+	Logger logger = LoggerFactory.getLogger(EnterpriseModel.class);
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-    // @NotNull
-	// @NotBlank(message = "O campo site não pode ser vazio.")
-	// @Size(min=2, max=26, message = "O site precisa ter no mínimo 2 e no máximo 26")
+    @NotNull
+	@NotBlank(message = "O campo site não pode ser vazio.")
+	@Size(min=2, max=26, message = "O site precisa ter no mínimo 2 e no máximo 26")
     String site = "";
 
-    // @NotNull
-	// @NotBlank(message = "O nome da empresa não pode ser vazio.")
+    @NotNull
+	@NotBlank(message = "O nome da empresa não pode ser vazio.")
     String company = "";
 
-    // @NotNull
-    // @NotBlank(message = "O campo de região não pode ser vazio.")
+    @NotNull
+    @NotBlank(message = "O campo de região não pode ser vazio.")
     String timezone = "";
 
-    // @NotNull
-	// @NotBlank(message = "O campo profissão não pode ser vazio.")
+    @NotNull
+	@NotBlank(message = "O campo profissão não pode ser vazio.")
     String professional = "";
 
-    // @NotNull
-    // @NotEmpty(message = "O campo canais de comunicação não pode ser vazio.")
-    // String[] communicationChannel = {};
+    @NotNull
+    @NotEmpty(message = "O campo canais de comunicação não pode ser vazio.")
+    // @JsonSerialize(using = DesserializerStringArray.class)
+    String[] communicationChannel = {};
 
     @Override
     public String toString() {
