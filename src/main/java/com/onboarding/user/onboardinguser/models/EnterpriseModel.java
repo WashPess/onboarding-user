@@ -3,8 +3,7 @@ package com.onboarding.user.onboardinguser.models;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +26,7 @@ import lombok.Setter;
 @Table(name = "enterprises")
 public class EnterpriseModel {
     
+    @JsonIgnore
     @Transient 
 	Logger logger = LoggerFactory.getLogger(EnterpriseModel.class);
 	
@@ -53,7 +53,7 @@ public class EnterpriseModel {
 
     @NotNull
     @NotEmpty(message = "O campo canais de comunicação não pode ser vazio.")
-    // @JsonSerialize(using = DesserializerStringArray.class)
+    
     String[] communicationChannel = {};
 
     @Override

@@ -1,5 +1,7 @@
 package com.onboarding.user.onboardinguser.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
@@ -64,4 +66,12 @@ public class EnterpriseService extends ExceptionHandleService  {
 			return null;
 		}
 	}
+
+	public List<EnterpriseModel> getAll(){
+		Iterable<EnterpriseModel> enterprisesIter = this.repository.findAll();
+		List<EnterpriseModel> enterprises = new ArrayList<>(0);
+		enterprisesIter.forEach(enterprises::add);
+		return enterprises;
+	}
+
 }

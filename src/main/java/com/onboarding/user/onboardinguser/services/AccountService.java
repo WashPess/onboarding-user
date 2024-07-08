@@ -19,7 +19,7 @@ import com.onboarding.user.onboardinguser.utils.Str;
 @Transactional
 public class AccountService extends ExceptionHandleService {
 	
-	private  final AccountRepository repository;
+	private final AccountRepository repository;
 
 	AccountService(AccountRepository repository) {
 		this.repository = repository;
@@ -92,17 +92,3 @@ public class AccountService extends ExceptionHandleService {
 	}
 
 }
-
-// dado many simple:  bit (o, 1)
-// dado simple: byte: 8 bits () 
-// char[] complex byte: 9-11 - uma cadeia de bytes | [ 000000000, 0000000000, 000000000 ]
-// String 64(bits) char complex: uma cadeia de chars  [ 0: [000000000, 000000000,  ], 1: [000000000, 000000000] ]
-// vertor: complex byte: cadeia de dados de um tipo defindo; vec<int> [ 1, 2, 3 ], vec<float> [ 1.23, 2.13, 3.12, ] | vec<char> [ a, b, c, 1]
-// array: complex de many data: array<object>[ a, v, c, 1, asd]
-// List:
-// Collection: 
-// Iterable:
-// class: coleçao de dados de muitos tipos -> array: -> [ 1: array<object>, 2: str, 3: float, 4: int, 5> vec<int>, 6: List Colletion, Stream ]
-// Stream: 
-///
-/// classe: é uma coleçao de dados de muitos tipos

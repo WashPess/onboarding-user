@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.utils.Document;
@@ -35,6 +36,7 @@ import jakarta.validation.constraints.Size;
 @Table(name = "users")
 public class UserModel {
 
+	@JsonIgnore
 	@Transient 
 	Logger logger = LoggerFactory.getLogger(UserModel.class);
 

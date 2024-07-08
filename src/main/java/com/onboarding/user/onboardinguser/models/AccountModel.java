@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onboarding.user.onboardinguser.enums.Currency;
 import com.onboarding.user.onboardinguser.enums.Gender;
 import com.onboarding.user.onboardinguser.enums.Language;
@@ -36,6 +37,7 @@ import lombok.Setter;
 @Table(name = "accounts")
 public class AccountModel {
 
+	@JsonIgnore
 	@Transient 
 	Logger logger = LoggerFactory.getLogger(AccountModel.class);
 	

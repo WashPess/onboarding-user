@@ -1,5 +1,7 @@
 package com.onboarding.user.onboardinguser.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,7 +86,7 @@ public class EnterpriseController extends ExceptionHandle {
 	}
 
 	@GetMapping("/enterprise/{id}")
-    Object showById(@PathVariable Object id) {
+    ResponseEntity<Response> showById(@PathVariable Object id) {
 		try {
 
 			String idStr = String.valueOf(id);
@@ -104,13 +106,11 @@ public class EnterpriseController extends ExceptionHandle {
 			if(enterprise == null) {
 				this.logger.error("Erro ao tentar busca a empresa.");
 				return Response.result(Response.error(404, "EPC004", "A empresa não foi encontrada."));
+
 			}
 
-			String[] communication = enterprise.getCommunicationChannel();
-			System.out.println(communication[0]);
-
 			return Response.result(Response.success(200, enterprise));
-			// return Response.result(Response.success(200));
+
 		} catch(Exception e) {
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
@@ -124,4 +124,9 @@ public class EnterpriseController extends ExceptionHandle {
 		}
 	}
 	
+	@GetMapping("/enterprises")
+    ResponseEntity<Response> list() {
+		List<EnterpriseModel> enterprises = this.service.getAll();
+		return Response.result(Response.success(200, enterprises));
+	}
 }
