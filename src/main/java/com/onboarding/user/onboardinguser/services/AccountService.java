@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +16,7 @@ import com.onboarding.user.onboardinguser.utils.Str;
 
 @Service
 @Transactional
+@SuppressWarnings("squid:S1192") // Desativa a regra java:S1192
 public class AccountService extends ExceptionHandleService {
 	
 	private final AccountRepository repository;
@@ -28,10 +28,25 @@ public class AccountService extends ExceptionHandleService {
 	public Response save(AccountModel account){
 		try {
 
+			if(Str.Empty(account.getUserUuid())) {
+				this.logger.error("Erro ao tentar salvar a conta, o uuid do usuário é obrigatório");
+				return Response.error(409, "ACSXXX", "A conta precisa de um usuário vinculado para ser salva.");
+			}
+
+			AccountModel accountDataWithUser = this.getByDocument(account.getUserUuid());
+            if(accountDataWithUser != null && !Str.Empty(accountDataWithUser.getUserUuid())) {
+				this.logger.error("O documento já existe na base de dados");
+				return Response.error(409, "ACS000", "O documento já existe na base de dados.");
+			}
+
+			if(Str.Empty(account.getDocument())) {
+				this.logger.error("Erro ao tentar salvar a conta, o documento do usuário é obrigatório.");
+				return Response.error(409, "ACSXXX", "Erro ao tentar salvar a conta, o documento do usuário é obrigatório.");
+			}
+
 			account.setDocument(Document.pad(Document.clear(account.getDocument())));
-			
-            AccountModel accountData = this.getByDocument(account.getDocument());
-            if(accountData != null && !Str.Empty(accountData.getDocument())) {
+            AccountModel accountDataWithDocument = this.getByDocument(account.getDocument());
+            if(accountDataWithDocument != null && !Str.Empty(accountDataWithDocument.getDocument())) {
 				this.logger.error("O documento já existe na base de dados");
 				return Response.error(409, "ACS000", "O documento já existe na base de dados.");
 			}
@@ -45,7 +60,7 @@ public class AccountService extends ExceptionHandleService {
 		}
     }
 
-	@Modifying
+	
 	public Response update(AccountModel account){
 		try {
 
@@ -84,6 +99,10 @@ public class AccountService extends ExceptionHandleService {
 		return this.repository.getByDocument(Document.pad(Document.clear(document)));
 	}
 
+	public AccountModel getByUserUuid(String uuid){
+		return this.repository.getByUserUuid(uuid);
+	}
+
 	public List<AccountModel> getAll(){
 		Iterable<AccountModel> accountsIter = this.repository.findAll();
 		List<AccountModel> accounts = new ArrayList<>(0);
@@ -91,4 +110,19 @@ public class AccountService extends ExceptionHandleService {
 		return accounts;
 	}
 
+	public boolean delete(Long id){
+		try {
+			Optional<AccountModel> enterprise = this.repository.findById(id);
+			if(enterprise.isEmpty()) {
+				this.logger.error("A conta não existe na base de dados");
+				return false;
+			}
+			
+			this.repository.deleteById(id);
+			return true;
+		} catch(Exception e) {
+			this.logger.error("Erro na base de dados", e);
+			return false;
+		}
+	}
 }

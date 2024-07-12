@@ -24,6 +24,16 @@ public class EnterpriseService extends ExceptionHandleService  {
 
 	public Response save(EnterpriseModel enterprise){
 		try {
+
+			// para criar uma empresa é preciso no mínimo uma conta
+			// se o documento do sócio for uma conta bloqueada, não adicionar 
+			// os sócios que são donos da empresa não precisam ser usuários do sistema	
+
+			// TODO: fazer crud de sócios da empresa
+			// levantar as propriedades da model
+			// fazer o JSON
+			// fazer sql do bnco de dados
+			
 			this.repository.save(enterprise);
 			return null;
 		} catch(Exception e) {
@@ -65,6 +75,7 @@ public class EnterpriseService extends ExceptionHandleService  {
 			this.logger.error("Erro de processamento na base de dados", e);
 			return null;
 		}
+		
 	}
 
 	public List<EnterpriseModel> getAll(){
@@ -74,4 +85,18 @@ public class EnterpriseService extends ExceptionHandleService  {
 		return enterprises;
 	}
 
+	public boolean delete(Long id){
+		try {
+			Optional<EnterpriseModel> enterprise = this.repository.findById(id);
+			if(enterprise.isEmpty()) {
+				this.logger.error("A empresa não existe na base de dados");
+				return false;
+			}
+			this.repository.deleteById(id);
+			return true;
+		} catch(Exception e) {
+			this.logger.error("Erro na base de dados", e);
+			return false;
+		}
+	}
 }

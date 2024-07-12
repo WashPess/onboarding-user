@@ -11,5 +11,7 @@ CREATE TABLE users (
   full_name VARCHAR (70),
   first_name VARCHAR (30),
   optin BOOLEAN,
-  status VARCHAR(40)
+  status VARCHAR(40),
+  created_at TIMESTAMP not null default CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP not null default CURRENT_TIMESTAMP
 );

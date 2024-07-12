@@ -2,6 +2,7 @@ package com.onboarding.user.onboardinguser.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -171,7 +172,7 @@ public class AccountController extends ExceptionHandle {
 	}
 	
 	@GetMapping("/account")
-    ResponseEntity<Response> showByDocument(@RequestParam(required = true) String document) {
+    ResponseEntity<Response>showByDocument(@RequestParam(required = true) String document) {
 		try{
 
 			String doc = Document.pad(Document.clear(document));
@@ -198,6 +199,19 @@ public class AccountController extends ExceptionHandle {
 		}
 	}
 
+	@DeleteMapping("/account/{id}")
+    ResponseEntity<Response> deleteEnterprise(@PathVariable Long id) {
+        try {
+            boolean isDeleted = service.delete(id);
+            if (!isDeleted) {
+                return Response.result(Response.error(404, "ACC011", "Conta não encontrada."));
+            }
+            return Response.result(Response.success(200));
+        } catch (Exception e) {
+            this.logger.error("Erro ao tentar excluir a conta.", e);
+            return Response.result(Response.error(500, "ACC012", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+        }
+    }
 }
 
 

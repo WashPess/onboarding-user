@@ -1,5 +1,6 @@
 package com.onboarding.user.onboardinguser.models;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -25,10 +26,8 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
 
 
 @Entity
@@ -47,51 +46,50 @@ public class UserModel {
 	@Column(unique=true)
 	public String uuid;
 
-	@NotNull
 	@NotBlank(message = "O campo de email nome não pode ser vazio.") 
-	@Size(min=8, max=40, message = "O email precisa ter no mínimo 8 e no máximo 40")
-	@Pattern(regexp="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}", message="O campo email deve conter uma email válido. 'joao@gmail.com'")
+	@Size(min=8, max=40, message = "O email precisa ter no mínimo 8 e no máximo 40 caracteres")
+	@Pattern(regexp="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}", message="O campo email deve conter um email válido. Ex.: 'joao@gmail.com'")
 	@Email(message = "O campo email deve conter um email válido")
+	@Column(name="email", unique=true)
 	String email = "";
 	
-	@NotNull
 	@NotBlank(message = "O campo de documento nome não pode ser vazio.")
 	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14")
 	@Column(name="document", unique=true)
 	String document = ""; // CPF - 000.000.000-00 | CNPJ - 00.000.000/0000-00
 	
-	@NotNull
-	@Size(min=2, max=30, message="O nome deve conter no mínimo 2 e no máximo 30 caracteres.")
 	@NotBlank(message = "O campo de primeiro nome não pode ser vazio.")
+	@Size(min=2, max=30, message="O nome deve conter no mínimo 2 e no máximo 30 caracteres.")
 	String firstName = "";
 
-	@NotNull
 	@NotBlank(message = "O campo de último nome não pode ser vazio.")
-	@Size(min=2, max=30, message="O campo de último de conter no mínimo 2 caracterese no máximo 30 caracteres.")
+	@Size(min=2, max=30, message="O campo de último nome deve conter no mínimo 2 caracteres e no máximo 30 caracteres.")
 	String lastName = "";
 
 	String fullName = "";
 
-	@NotNull
-	@Size(min=2, max=30, message="O apelido deve conter no mínimo 2 e no máximo 30 caracteres.")
 	@NotBlank(message = "O campo de apelido nome não pode ser vazio.")
+	@Size(min=2, max=30, message="O apelido deve conter no mínimo 2 e no máximo 30 caracteres.")
 	String nickname = "";
 
 	@NotBlank(message = "O campo de senha nome não pode ser vazio.")
 	@Size(min=8, max=40, message="A senha deve conter no mínimo 8 caracteres e no máximo 40 caracteres.")
 	@Pattern(regexp="(?=.*[\\d])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^!*\\-\\._&+=])(?=\\S+$).{8,}", message="O campo de senha deve conter pelo menos uma letra maiúscula, uma minúscula, um caracteres especial, no mínimo 8 e no máximo 40 caracteres.")
-	@JsonProperty( value = "password", access = JsonProperty.Access.WRITE_ONLY)
+	@JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
 	String password = "";
+
+	@NotBlank(message = "O campo de confirmar senha não pode ser vazio.")
+	@JsonProperty(value = "confirmPassword", access = JsonProperty.Access.WRITE_ONLY)
+	@Transient
+	String confirmPassword = "";
 
  	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
 	boolean optin = false; 			// aceite de termos
 
-	@NotBlank(message = "O campo de confirmar senha não pode ser vazio.")
-	@JsonProperty( value = "confirmPassword", access = JsonProperty.Access.WRITE_ONLY)
-	@Transient 
-	String confirmPassword = "";
-	
 	Status status = Status.ENABLED;
+
+	Date createdAt = new Date();
+	Date updatedAt = new Date();
 
 	protected UserModel() {
 	}

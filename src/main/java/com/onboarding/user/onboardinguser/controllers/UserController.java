@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
+import com.onboarding.user.onboardinguser.models.AccountModel;
 import com.onboarding.user.onboardinguser.models.UserModel;
+import com.onboarding.user.onboardinguser.services.AccountService;
 import com.onboarding.user.onboardinguser.services.UserService;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
@@ -29,9 +32,11 @@ import jakarta.validation.Valid;
 public class UserController extends ExceptionHandle {
 
 	private final UserService service;
+	private final AccountService serviceAccount;
 
-	UserController(UserService service) {
+	UserController(UserService service, AccountService serviceAccount) {
 		this.service = service;
+		this.serviceAccount = serviceAccount;
 	}
 
 	@PostMapping("/user")
@@ -52,15 +57,25 @@ public class UserController extends ExceptionHandle {
 			}
 
 			// delega a regra de salva para a service
-			Response resultSaved = this.service.save(user);
-			if(resultSaved != null) {
-				this.logger.error("Erro ao tentar salvar usuário.");
-				return Response.result(resultSaved);
+			Response resultUserSaved = this.service.save(user);
+			if(resultUserSaved != null) {
+				this.logger.error("Erro ao tentar salvar usuário.", new Exception(resultUserSaved.toString()));
+				return Response.result(resultUserSaved);
 			}
 
+			AccountModel account = new AccountModel();
+			account.setUserUuid(user.getUuid());
+			account.setDocument(user.getDocument());
+
+			Response resultAccountSaved = this.serviceAccount.save(account);
+			if(resultAccountSaved != null) {
+				this.logger.error("Erro ao tentar salvar a conta.", new Exception(resultAccountSaved.toString()));
+				return Response.result(resultAccountSaved);
+			}
+			
 			return Response.result(Response.success(201));
 		} catch(Exception e) {
-			this.logger.error("Erro ao tentar salvar usuário.");
+			this.logger.error("Erro ao tentar salvar usuário.", e);
 			return Response.result(Response.error(500, "USC001", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
@@ -107,7 +122,7 @@ public class UserController extends ExceptionHandle {
 
 			return Response.result(Response.success(204));
 		} catch(Exception e) {
-			this.logger.error(e.toString());
+			this.logger.error("Error ao tentar fazer o update do usuário", e);
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
 				return  Response.result(response);
@@ -140,7 +155,7 @@ public class UserController extends ExceptionHandle {
 
 			return Response.result(Response.success(200, user));
 		} catch(Exception e) {
-			this.logger.error(e.toString());
+			this.logger.error("Error ao tentar buscar o usuário por id.", e);
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
 				return  Response.result(response);
@@ -168,7 +183,7 @@ public class UserController extends ExceptionHandle {
 			return Response.result(Response.success(200, user));
 
 		} catch(Exception e) {
-			this.logger.error(e.toString());
+			this.logger.error("Error ao tentar buscar usuário por uuid.", e);
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
 				return  Response.result(response);
@@ -195,19 +210,43 @@ public class UserController extends ExceptionHandle {
 
 			return Response.result(Response.success(200, user));
 		} catch(Exception e) {
-			this.logger.error(e.toString());
+			this.logger.error("Error ao buscar usuário por documento.", e);
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
 				return Response.result(response);
 			}
-			return Response.result(Response.error(500, "USC007", "Servidor indisponível no momento."));
+			return Response.result(Response.error(500, "USC017", "Servidor indisponível no momento."));
 		}
 	}
 
 	@GetMapping("/users")
     ResponseEntity<Response> list() {
-		List<UserModel> users = this.service.getAll();
-		return Response.result(Response.success(200, users));
+		try {
+			List<UserModel> users = this.service.getAll();
+			return Response.result(Response.success(200, users));
+		} catch (Exception e) {
+			this.logger.error("Error ao buscar listar usuários.", e);
+			return Response.result(Response.error(500, "USC014", "Servidor indisponível no momento."));
+		}
 	}
 	
-} 
+	@DeleteMapping("/user/{id}")
+	ResponseEntity<Response> deleteUser(@PathVariable Long id) {
+		try {
+			UserModel user = this.service.getById(id);
+			if(user == null) {
+				return Response.result(Response.error(404, "USC015", "Usuário não encontrado."));
+			}
+
+			this.service.delete(id);
+			return Response.result(Response.success(200));
+		} catch(Exception e) {
+			this.logger.error("Error ao tentar deletar usuário por ID.", e);
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				return Response.result(response);
+			}
+			return Response.result(Response.error(500, "USC016", "Servidor indisponível no momento."));
+		}
+	}
+} 	

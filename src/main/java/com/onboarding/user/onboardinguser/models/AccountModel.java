@@ -1,5 +1,6 @@
 package com.onboarding.user.onboardinguser.models;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -47,6 +48,9 @@ public class AccountModel {
 	
 	@Column(unique=true)
 	public String uuid;
+
+	@Column(name="user_uuid", unique=true)
+	public String userUuid;
 	
 	@NotNull
 	@NotBlank(message = "O campo de documento nome não pode ser vazio.")
@@ -79,6 +83,9 @@ public class AccountModel {
 
 	@NotNull
 	Nationality nationality = Nationality.BRAZILIAN;
+
+	Date createdAt = new Date();
+	Date updatedAt = new Date();
 	
 	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
 	boolean optin = false;           //aceite de termos (mesmo sem ler)

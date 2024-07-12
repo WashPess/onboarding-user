@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import com.onboarding.user.onboardinguser.utils.Str;
 
 import jakarta.validation.Valid;
 
+@SuppressWarnings("squid:S1192")
 @RestController
 public class EnterpriseController extends ExceptionHandle {
 
@@ -81,7 +83,7 @@ public class EnterpriseController extends ExceptionHandle {
 			if(response != null) {
 				return  Response.result(response);
 			}
-			return Response.result(Response.error(500, "USC010", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+			return Response.result(Response.error(500, "EPCXXX", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
 
@@ -129,4 +131,18 @@ public class EnterpriseController extends ExceptionHandle {
 		List<EnterpriseModel> enterprises = this.service.getAll();
 		return Response.result(Response.success(200, enterprises));
 	}
+
+	@DeleteMapping("/enterprise/{id}")
+    public ResponseEntity<Response> deleteEnterprise(@PathVariable Long id) {
+        try {
+            boolean isDeleted = service.delete(id);
+            if (!isDeleted) {
+                return Response.result(Response.error(404, "EPC006", "Empresa não encontrada ou não pôde ser excluída."));
+            }
+            return Response.result(Response.success(200));
+        } catch (Exception e) {
+            this.logger.error("Erro ao tentar excluir a empresa.", e);
+            return Response.result(Response.error(500, "EPC007", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+        }
+    }
 }

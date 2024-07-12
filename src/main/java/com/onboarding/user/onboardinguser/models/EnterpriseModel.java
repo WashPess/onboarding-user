@@ -1,10 +1,14 @@
 package com.onboarding.user.onboardinguser.models;
 
+import java.util.Date;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +38,9 @@ public class EnterpriseModel {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+    @Column(unique=true)
+	public String uuid;
+
     @NotNull
 	@NotBlank(message = "O campo site não pode ser vazio.")
 	@Size(min=2, max=26, message = "O site precisa ter no mínimo 2 e no máximo 26")
@@ -55,6 +62,15 @@ public class EnterpriseModel {
     @NotEmpty(message = "O campo canais de comunicação não pode ser vazio.")
     
     String[] communicationChannel = {};
+
+    public String newUuid() {
+		this.uuid = UUID.randomUUID().toString();
+		return this.uuid;
+	}
+    
+
+    Date createdAt = new Date();
+	Date updatedAt = new Date();
 
     @Override
     public String toString() {

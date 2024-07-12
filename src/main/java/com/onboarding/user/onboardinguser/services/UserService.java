@@ -5,17 +5,20 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
-import com.onboarding.user.onboardinguser.repository.UserRepository;
 import com.onboarding.user.onboardinguser.models.UserModel;
+import com.onboarding.user.onboardinguser.repository.UserRepository;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
-import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.utils.Str;
 
-@SuppressWarnings("squid:S1192")
+
 @Service
+@Transactional
+@SuppressWarnings("squid:S1192")
 public class UserService extends ExceptionHandleService {
 	
  	private final UserRepository repository;
@@ -77,7 +80,7 @@ public class UserService extends ExceptionHandleService {
 			
 			if(userData == null) {
 				this.logger.error("O usuário não foi encontrado");
-				return Response.error(404, "USS00X", "O usuário não foi encontrado.");
+				return Response.error(404, "USS006", "O usuário não foi encontrado.");
 			}
 
 			userData.setFirstName(user.getFirstName());
@@ -88,7 +91,22 @@ public class UserService extends ExceptionHandleService {
 			return null;
 		} catch(Exception e) {
 			this.logger.error("Erro na base de dados", e);
-			return Response.error(422, "USS008", "Base de dados indisponivel no momento.");
+			return Response.error(422, "USS007", "Base de dados indisponivel no momento.");
+		}
+	}
+	
+	public boolean delete(Long id) {
+		try {
+			Optional<UserModel> user = this.repository.findById(id);
+			if(user.isPresent()) {
+				this.repository.deleteById(id);
+				return true; // Usuário deletado
+			} else {
+				return false; // Usuário não encontrado
+			}
+		} catch(Exception e) {
+			this.logger.error("Erro ao deletar usuário: ", e);
+			return false; // Erro durante para deletar usuário
 		}
 	}
 
