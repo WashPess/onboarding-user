@@ -1,7 +1,8 @@
 CREATE TABLE partners (
     id SERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    document VARCHAR(30) NOT NULL UNIQUE,
-    first_name VARCHAR(30) NOT NULL UNIQUE,
-    last_name VARCHAR(30) NOT NULL UNIQUE,
+    uuid VARCHAR(64) UNIQUE,
+    email VARCHAR(60) NOT NULL UNIQUE,
+    document VARCHAR(14) NOT NULL UNIQUE,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL
 )

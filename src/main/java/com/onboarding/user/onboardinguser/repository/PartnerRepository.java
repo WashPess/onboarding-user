@@ -13,20 +13,20 @@ import com.onboarding.user.onboardinguser.models.PartnerModel;
 import jakarta.annotation.Nullable;
 
 @Repository
-public interface PartnerRepository extends PagingAndSortingRepository<PartnerModel, Long>, CrudRepository<PartnerModel,Long> {
+public interface PartnerRepository extends PagingAndSortingRepository<PartnerModel, Long>, CrudRepository<PartnerModel, Long> {
 	
 	@SuppressWarnings("null")
 	public List<PartnerModel> findAll();
 	
-	@Nullable	
+	@Nullable
 	public PartnerModel findById(long id);
 
 	@Nullable
-	@Query("SELECT a FROM PartnerModel a WHERE a.uuid = :uuid")
+	@Query("SELECT p FROM PartnerModel p WHERE p.uuid = :uuid")
 	public PartnerModel getByUuid(@Param("uuid") String uuid);
 	
 	@Nullable
-	@Query("SELECT a FROM PartnerModel a WHERE a.document = :doc")
+	@Query("SELECT p FROM PartnerModel p WHERE p.document = :doc")
 	public PartnerModel getByDocument(@Param("doc") String document);
     
 }
