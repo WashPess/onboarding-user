@@ -4,5 +4,10 @@ CREATE TABLE partners (
     email VARCHAR(60) NOT NULL UNIQUE,
     document VARCHAR(14) NOT NULL UNIQUE,
     first_name VARCHAR(30) NOT NULL,
-    last_name VARCHAR(30) NOT NULL
+    last_name VARCHAR(30) NOT NULL,
+    full_name VARCHAR(60) NOT NULL,
+    address TEXT NOT NULL,
+    phone VARCHAR(15) NOT NULL UNIQUE,
+    marital VARCHAR(40) NOT NULL,
+    enabled BOOLEAN NOT NULL DEFAULT TRUE
 )

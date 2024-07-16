@@ -1,24 +1,23 @@
 package com.onboarding.user.onboardinguser.controllers;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
-import com.onboarding.user.onboardinguser.models.PartnerModel;
 import com.onboarding.user.onboardinguser.services.PartnerService;
+import com.onboarding.user.onboardinguser.models.PartnerModel;
 import com.onboarding.user.onboardinguser.utils.Response;
 import com.onboarding.user.onboardinguser.utils.Str;
 
-import jakarta.validation.Valid;
-
 @RestController
+@SuppressWarnings("squid:S1192") // Desativa a regra java:S1192
 public class PartnerController extends ExceptionHandle {
     
 	public final PartnerService service;
@@ -28,15 +27,32 @@ public class PartnerController extends ExceptionHandle {
 	}
 
 	@PostMapping("/partner")
-	ResponseEntity<Response> create(@Valid @RequestBody PartnerModel partner, BindingResult bindingResult) {
-		
-		Response resultSaved = this.service.save(partner);
-		if(resultSaved != null) {
-			this.logger.error("Erro ao tentar salvar a conta.", new Exception(resultSaved.toString()));
-			return Response.result(resultSaved);
+	ResponseEntity<Response> create(@RequestBody PartnerModel partner, BindingResult bindingResult) {
+		try {
+
+			Response validPartner = partner.valid();
+            if(validPartner != null) {
+                this.logger.error("Erro de validação na criaçao de conta.", new Exception(validPartner.toString()));
+                return Response.result(validPartner);
+            }
+ 
+            if(bindingResult.hasErrors()) {
+                String message = bindingResult.getAllErrors().get(0).getDefaultMessage();
+                this.logger.error("Erro de validaçao na criaçâo de conta usando spring validation.", new Exception(message));
+                return Response.result(Response.error(400, "ACC000", message));
+            }
+
+			Response resultSaved = this.service.save(partner);
+			if(resultSaved != null) {
+				this.logger.error("Erro ao tentar salvar o sócio.", new Exception(resultSaved.toString()));
+				return Response.result(resultSaved);
+			}
+
+			return Response.result(Response.success(201));
+		} catch(Exception e) {
+			this.logger.error("Erro ao tentar salvar o sócio.", e);
+			return Response.result(Response.error(500, "PAC00X", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
-		
-		return null;
 	}
 
 	@PutMapping("/partner/{uuid}")
@@ -64,18 +80,21 @@ public class PartnerController extends ExceptionHandle {
 			partner.setUuid(uuidStr);
 
 			Response resultSaved = this.service.update(partner);
-			if(resultSaved != null) {
+			if(resultSaved.isError()) {
 				return Response.result(resultSaved);
 			}
 
 			return Response.result(Response.success(204));
 		} catch(Exception e) {
-			this.logger.error(e.toString());
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
+				String message = response.toString();
+				this.logger.error("Erro ao tentar atualizar o sócio. {}", message, e);
 				return  Response.result(response);
 			}
-			return Response.result(Response.error(500, "ACC012", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+
+			this.logger.error("Erro ao tentar atualizar o sócio da conta por uuid. ", e);
+			return Response.result(Response.error(500, "PTM012", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
 
@@ -86,20 +105,20 @@ public class PartnerController extends ExceptionHandle {
 			String idStr = String.valueOf(id);
 			if(Str.Empty(idStr)) {
 				this.logger.error("É necessário informar o id");
-				return Response.result(Response.error(404, "PTM013", "É necessário informar o id."));
+				return Response.result(Response.error(400, "PTM013", "É necessário informar o id."));
 			}
 
 			// cast de variavel 
 			Long uid = Long.parseLong(idStr);
 			if(uid == 0) {
                 this.logger.error("É necesário envia um id válido");
-				return Response.result(Response.error(404, "PTM014", "É necessário enviar um id."));
+				return Response.result(Response.error(400, "PTM014", "É necessário enviar um id."));
 			}
 
 			PartnerModel partner = this.service.getById(uid);
 			if(partner == null) {
-				this.logger.error("Erro ao tentar busca uma conta.");
-				return Response.result(Response.error(404, "PTM015", "O usuário não foi encontrado."));
+				this.logger.error("Erro ao tentar busca um sócio.");
+				return Response.result(Response.error(404, "PTM015", "O sócio não foi encontrado."));
 			}
 
 			return Response.result(Response.success(200, partner));
@@ -107,11 +126,11 @@ public class PartnerController extends ExceptionHandle {
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
 				String message = response.toString();
-				this.logger.error("Erro ao tentar busca uma conta. {}", message, e);
+				this.logger.error("Erro ao tentar buscar um sócio. {}", message, e);
 				return  Response.result(response);
 			}
             
-            this.logger.error("Erro na busca da conta por id. ", e);
+            this.logger.error("Erro ao tentar buscar um sócio por id. ", e);
 			return Response.result(Response.error(500, "PTM016", "Servidor indisponível no momento."));
 		}
 	}
@@ -139,26 +158,40 @@ public class PartnerController extends ExceptionHandle {
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
 				String message = response.toString();
-				this.logger.error("Erro ao tentar busca uma conta. {}", message, e);
+				this.logger.error("Erro ao tentar buscar um sócio. {}", message, e);
 				return  Response.result(response);
 			}
 			
-			this.logger.error("Erro na busca da conta por uuid. ", e);
+			this.logger.error("Erro ao tentar buscar um sócio por uuid. ", e);
 			return Response.result(Response.error(500, "PTM019", "Servidor indisponível no momento."));
 		}
 	}
 
 	@DeleteMapping("/partner/{id}")
-    ResponseEntity<Response> deleteEnterprise(@PathVariable Long id) {
+    ResponseEntity<Response> delete(@PathVariable Object id) {
         try {
-            boolean isDeleted = service.delete(id);
+
+			String idStr = String.valueOf(id);
+			if(Str.Empty(idStr)) {
+				this.logger.error("É necessário informar o id");
+				return Response.result(Response.error(400, "PTM020", "É necessário informar o id."));
+			}
+
+			Long uid = Long.parseLong(idStr);
+			if(uid == 0) {
+                this.logger.error("É necessário envia um id válido");
+				return Response.result(Response.error(400, "PTM021", "É necessário enviar um id."));
+			}
+
+            boolean isDeleted = service.delete(uid);
             if (!isDeleted) {
-                return Response.result(Response.error(404, "PTM020", "Conta não encontrada."));
+                return Response.result(Response.error(404, "PTM022", "Sócio já está desativado."));
             }
-            return Response.result(Response.success(200));
+			
+            return Response.result(Response.success(204));
         } catch (Exception e) {
             this.logger.error("Erro ao tentar excluir a conta.", e);
-            return Response.result(Response.error(500, "PTM021", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+            return Response.result(Response.error(500, "PTM023", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
         }
     }
 }

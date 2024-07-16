@@ -5,15 +5,16 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.onboarding.user.onboardinguser.repository.PartnerRepository;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
-import com.onboarding.user.onboardinguser.repository.PartnerRepository;
 import com.onboarding.user.onboardinguser.utils.Response;
 
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
+@SuppressWarnings("squid:S1192") // Desativa a regra java:S1192
 public class PartnerService extends ExceptionHandleService {
 	
 	private final PartnerRepository repository;
@@ -24,12 +25,15 @@ public class PartnerService extends ExceptionHandleService {
 
 	public Response save(PartnerModel partner){
 		try {
+
 			partner.newUuid();
+			partner.setFullName(partner.getFirstName() + " " + partner.getLastName());
+
 			this.repository.save(partner);
 			return null;
 		} catch(Exception e) {
 			this.logger.error("Erro na base de dados.", e);
-			return Response.error(422, "PTM001", "Base de dados indisponivel no momento.");
+			return Response.error(422, "PTS001", "Base de dados indisponivel no momento.");
 		}
     }
 
@@ -43,10 +47,11 @@ public class PartnerService extends ExceptionHandleService {
 				return Response.error(404, "PTS002", "O sócio não existe na base de dados.");
 			}
 
-			partnerData.setDocument(partner.getDocument());
 			partnerData.setFirstName(partner.getFirstName());
+			partnerData.setDocument(partner.getDocument());
 			partnerData.setLastName(partner.getLastName());
 			partnerData.setEmail(partner.getEmail());
+			partnerData.setPhone(partner.getPhone());
 
 			PartnerModel partnerUpdate = this.repository.save(partnerData);
 			
@@ -55,28 +60,38 @@ public class PartnerService extends ExceptionHandleService {
 			this.logger.error("Erro na base de dados.", e);
 			return Response.error(422, "PTS003", "Base de dados indisponivel no momento.");
 		}
-
 	}
 
 	public PartnerModel getById(Long id){
-		Optional<PartnerModel> partner = this.repository.findById(id);
+		try {
+			Optional<PartnerModel> partner = this.repository.findById(id);
 
-		if(partner.isEmpty()) {
+			if(partner.isEmpty()) {
+				return null;
+			}
+
+			return partner.get();
+
+		} catch(Exception e) {
+			this.logger.error("Erro na base de dados.", e);
 			return null;
 		}
-
-		return partner.get();
 	}
 
 	public PartnerModel getByUuid(String uuid){
-		return this.repository.getByUuid(uuid);
+		try {
+			return this.repository.getByUuid(uuid);
+		} catch(Exception e) {
+			this.logger.error("Erro na base de dados.", e);
+			return null;
+		}
 	}
 
 	public boolean delete(Long id){
 		try {
 			Optional<PartnerModel> enterprise = this.repository.findById(id);
 			if(enterprise.isEmpty()) {
-				this.logger.error("A conta não existe na base de dados");
+				this.logger.error("O Sócio não existe na base de dados");
 				return false;
 			}
 			

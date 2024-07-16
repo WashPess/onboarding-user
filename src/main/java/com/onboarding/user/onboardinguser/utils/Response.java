@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.annotation.Nullable;
 
@@ -20,6 +20,12 @@ public class Response {
 
 	@JsonIgnore
 	boolean ok;
+
+	@JsonIgnore
+	boolean redirect;
+
+	@JsonIgnore
+	boolean error;
 
 	@JsonProperty("status")
 	@JsonIgnore
@@ -73,6 +79,14 @@ public class Response {
 		return (this.status >= 200 && this.status <= 299);
 	}
 
+	public boolean isRedirect() {
+		return (this.status >= 300 && this.status <= 399);
+	}
+
+	public boolean isError() {
+		return (this.status >= 400 && this.status <= 599);
+	}
+
 	public static final Response error(int status, String code, String message) {
 		return new Response(status, code, message);
 	}
@@ -101,7 +115,9 @@ public class Response {
 
 			return ResponseEntity.status(res.getStatus()).body(res);
 		} catch (Exception e) {
-			res.logger.error("Erro ao tentar responder: ", e);
+			if (res != null) {
+				res.logger.error("Erro ao tentar responder: ", e);
+			}
 			Response error = new Response(400, "RES000", "Erro ao tentar converter a estrutura de dados");
 			return ResponseEntity.status(400).body(error);
 		}

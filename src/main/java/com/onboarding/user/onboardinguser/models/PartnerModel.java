@@ -1,32 +1,37 @@
 package com.onboarding.user.onboardinguser.models;
 
+import java.util.Date;
 import java.util.UUID;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
+import com.onboarding.user.onboardinguser.enums.Marital;
 import com.onboarding.user.onboardinguser.utils.Response;
+import com.onboarding.user.onboardinguser.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.Id;
+import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
+@SuppressWarnings("squid:S1192") // Desativa a regra java:S1192
 @Table(name = "partners")
 public class PartnerModel {
     
@@ -59,18 +64,80 @@ public class PartnerModel {
     @Size(min=2, max=30, message="O sobrenome deve conter no mínimo 2 e no máximo 30 caracteres.")
     String lastName = "";
 
+	String fullName = "";
+
+	@NotBlank(message = "O endereço do Sócio não pode ser vazio.")
+    @Size(min=2, max=60, message="O endereço do Sócio deve conter no mínimo 2 e no máximo 60 caracteres.")
+    String address = "";
+
+	@NotBlank(message = "O telefone do Sócio não pode ser vazio.")
+	@Size(min=8, max=20, message="O telefone do Sócio deve conter no mínimo 8 e no máximo 20 caracteres.")
+	@Pattern(regexp = "^[0-9]+$", message = "O telefone do Sócio deve conter somente números.")
+	String phone = "";
+
+	@NotNull
+	Marital marital = Marital.SINGLE;
+
+	Status status = Status.ENABLED;
+
+	Date createdAt = new Date();
+	Date updatedAt = new Date();
+	
+
 
     public PartnerModel(String email, String document, String firstName, String lastName) {
         this.email = email;
         this.document = document;
         this.firstName = firstName;
         this.lastName = lastName;
+		this.fullName = String.format("%s %s", this.firstName, this.lastName);
     }
 
     public String newUuid() {
         this.uuid = UUID.randomUUID().toString();
         return this.uuid;
     }
+
+	public Response valid() {
+
+		Response validEmail = this.validEmail();
+		if(validEmail != null) {
+			return validEmail;
+		}
+
+		Response validDocument = this.validDocument();
+		if(validDocument != null) {
+			return validDocument;
+		}
+
+		Response validFirstName = this.validFirstName();
+		if(validFirstName != null) {
+			return validFirstName;
+		}
+
+		Response validLastName = this.validLastName();
+		if(validLastName != null) {
+			return validLastName;
+		}
+
+		Response validAddress = this.validAddress();
+		if(validAddress != null) {
+			return validAddress;
+		}
+
+		Response validPhone = this.validPhone();
+		if(validPhone != null) {
+			return validPhone;
+		}		
+
+		Response validMarital = this.validMarital();
+		if(validMarital != null) {
+			return validMarital;
+		}
+
+		return null;
+	}
+	
 
     public Response validDocument() {
 
@@ -109,14 +176,14 @@ public class PartnerModel {
     public Response validEmail() {
 
 		if(this.email.length() == 0) {
-			this.logger.error("O email não pode ser vazio");
-			return Response.error(400, "PTM005", "O email não pode ser vazio");
+			this.logger.error("O email não pode ser vazio.");
+			return Response.error(400, "PTM005", "O email não pode ser vazio.");
 		}
 
 		if(this.email.length() < 8) {
 			String message = String.format("O email deve conter no mínimo 8 caracteres. %s", this.email);
 			this.logger.error(message);
-			return Response.error(400, "PTM006", "O email deve conter no mínimo 8 caracteres");
+			return Response.error(400, "PTM006", "O email deve conter no mínimo 8 caracteres.");
 		}
 
 		if(this.email.length() > 40) {
@@ -197,15 +264,74 @@ public class PartnerModel {
 		if(!RegexCompile.OnlyLetter.matcher(this.lastName).find()) {
 			String message = String.format("O último nome deve conter somente letras. %s", this.lastName);
 			this.logger.error(message);
-			return Response.error(400, "USE018", "O último nome deve conter somente letras.");
+			return Response.error(400, "PTM018", "O último nome deve conter somente letras.");
 		}
 
 		return null;
 	}
 
+	public Response validAddress() {
 
-    @Override
+		if(this.address.length() == 0) {
+			this.logger.error("O endereço não pode ser vazio");
+			return Response.error(400, "PTM019", "O email não pode ser vazio");
+		}
+
+		if(this.address.length() < 8) {
+			String message = String.format("O endereço deve conter no mínimo 2 caracteres. %s", this.email);
+			this.logger.error(message);
+			return Response.error(400, "PTM020", "O endereço deve conter no mínimo 8 caracteres");
+		}
+
+		if(this.address.length() > 60) {
+			String message = String.format("O endereço deve conter no máximo 60 caracteres. %s", this.email);
+			this.logger.error(message);
+			return Response.error(400, "PTM020", "O endereço deve conter no máximo 60 caracteres.");
+		}
+
+		return null;
+	}
+
+	public Response validPhone() {
+
+		if(this.phone.length() == 0) {
+			this.logger.error("O telefone não pode ser vazio");
+			return Response.error(400, "PTM021", "O telefone não pode ser vazio.");
+		}
+
+		if(this.phone.length() < 8) {
+			String message = String.format("O telefone deve conter no mínimo 8 caracteres. %s", this.phone);
+			this.logger.error(message);
+			return Response.error(400, "PTM022", "O telefone deve conter no mínimo 8 caracteres.");
+		}
+
+		if(this.phone.length() > 20) {
+			String message = String.format("O telefone deve conter no máximo 20 caracteres. %s", this.phone);
+			this.logger.error(message);
+			return Response.error(400, "PTM023", "O telefone deve conter no máximo 20 caracteres.");
+		}
+
+		if(!RegexCompile.OnlyNumberForPhone.matcher(this.phone).find()) {
+			String message = String.format("O telefone deve conter somente números. %s", this.phone);
+			this.logger.error(message);
+			return Response.error(400, "PTM024", "O telefone deve conter somente números.");
+		}
+
+		return null;
+	}
+
+	public Response validMarital() {
+		
+		if(this.marital == Marital.VOID) {
+			this.logger.error("O estado civil do Sócio não pode ser vazio.");
+			return Response.error(400, "PTM021", "O estado civil do Sócio não pode ser vazio.");
+		}
+
+		return null;
+	}
+
+	@Override
     public String toString() {
-        return String.format("PartnerModel[id=%d, email='%s', document='%s', firstName='%s', lastName='%s']", id, email, document, firstName, lastName);
+        return String.format("PartnerModel[id=%d, email='%s', document='%s', firstName='%s', lastName='%s', fullName=%s, address=%s, phone=%s]", id, email, document, firstName, lastName, fullName, address, phone);
     }
 }
