@@ -5,9 +5,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.onboarding.user.onboardinguser.repository.PartnerRepository;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
+import com.onboarding.user.onboardinguser.repository.PartnerRepository;
 import com.onboarding.user.onboardinguser.utils.Response;
 
 import jakarta.transaction.Transactional;
@@ -32,7 +32,14 @@ public class PartnerService extends ExceptionHandleService {
 			this.repository.save(partner);
 			return null;
 		} catch(Exception e) {
-			this.logger.error("Erro na base de dados.", e);
+
+			Response resp = ExceptionHandleService.duplicateValue(e);
+			if(resp != null) {
+				this.logger.error("Erro de dados duplicados no sócio", e);
+				return Response.error(409, "PTS000", "Erro de valores duplicados do sócio na base da dados."); 
+			}
+
+			this.logger.error("Erro na base de dados ao tentar salvar o sócio.", e);
 			return Response.error(422, "PTS001", "Base de dados indisponivel no momento.");
 		}
     }

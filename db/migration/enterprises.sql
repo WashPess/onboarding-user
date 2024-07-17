@@ -1,11 +1,13 @@
 CREATE TABLE enterprises (
   id BIGSERIAL PRIMARY KEY,
   uuid VARCHAR(64) UNIQUE,
-  site VARCHAR (255),
-  company VARCHAR (255),
+  address TEXT NOT NULL,
   timezone VARCHAR (255),
-  professional VARCHAR (255),
+  company VARCHAR (255) NOT NULL,
   communication_channel _VARCHAR,
-  created_at TIMESTAMP not null default CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP not null default CURRENT_TIMESTAMP
+  cnpj VARCHAR (14) NOT NULL UNIQUE,
+  corporate_reason VARCHAR (255) NOT NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'enabled',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 );

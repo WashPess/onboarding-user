@@ -1,18 +1,18 @@
 package com.onboarding.user.onboardinguser.controllers;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.validation.BindingResult;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
-import com.onboarding.user.onboardinguser.services.PartnerService;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
+import com.onboarding.user.onboardinguser.services.PartnerService;
 import com.onboarding.user.onboardinguser.utils.Response;
 import com.onboarding.user.onboardinguser.utils.Str;
 
@@ -39,19 +39,19 @@ public class PartnerController extends ExceptionHandle {
             if(bindingResult.hasErrors()) {
                 String message = bindingResult.getAllErrors().get(0).getDefaultMessage();
                 this.logger.error("Erro de validaçao na criaçâo de conta usando spring validation.", new Exception(message));
-                return Response.result(Response.error(400, "ACC000", message));
+                return Response.result(Response.error(400, "PAT000", message));
             }
 
 			Response resultSaved = this.service.save(partner);
 			if(resultSaved != null) {
-				this.logger.error("Erro ao tentar salvar o sócio.", new Exception(resultSaved.toString()));
+				this.logger.error("Erro ao tentar salvar o sócio na base de dados.", new Exception(resultSaved.toString()));
 				return Response.result(resultSaved);
 			}
 
 			return Response.result(Response.success(201));
 		} catch(Exception e) {
 			this.logger.error("Erro ao tentar salvar o sócio.", e);
-			return Response.result(Response.error(500, "PAC00X", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+			return Response.result(Response.error(500, "PAC001", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
 

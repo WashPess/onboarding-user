@@ -24,4 +24,13 @@ public class ExceptionHandleService {
 		return Response.result(Response.error(500, "EXS000", "Servidor indisponível no momento. Volte mais tarde."));
 	}
 
+	public static final Response duplicateValue(Exception e) {
+		String exStr = e.toString();
+		if(exStr.contains("duplicate key value")) {
+			return Response.error(409, "EXC003", "Erro de valor duplicado na base da dados.");
+		}
+		return null;
+	}
+
+
 }

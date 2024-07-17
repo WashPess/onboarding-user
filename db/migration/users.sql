@@ -1,17 +1,15 @@
-CREATE TYPE status AS ENUM ('enabled', 'disabled');
-
 CREATE TABLE users (
   id BIGSERIAL PRIMARY KEY,
   uuid VARCHAR(64) UNIQUE, 
-  email VARCHAR (40) UNIQUE,
-  document VARCHAR (30) UNIQUE,
-  last_name VARCHAR (30),
-  nickname VARCHAR(30),
-  password VARCHAR(40),
-  full_name VARCHAR (70),
-  first_name VARCHAR (30),
   optin BOOLEAN,
-  status VARCHAR(40),
-  created_at TIMESTAMP not null default CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP not null default CURRENT_TIMESTAMP
+  nickname VARCHAR(30),
+  full_name VARCHAR (70),
+  document VARCHAR (30) UNIQUE,
+  password VARCHAR(40) NOT NULL,
+  last_name VARCHAR (30) NOT NULL,
+  first_name VARCHAR (30) NOT NULL,
+  email VARCHAR (40) UNIQUE NOT NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'enabled',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

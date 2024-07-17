@@ -3,28 +3,28 @@ package com.onboarding.user.onboardinguser.models;
 import java.util.Date;
 import java.util.UUID;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.onboarding.user.onboardinguser.utils.RegexCompile;
-import com.onboarding.user.onboardinguser.enums.Marital;
-import com.onboarding.user.onboardinguser.utils.Response;
-import com.onboarding.user.onboardinguser.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.onboarding.user.onboardinguser.enums.Marital;
+import com.onboarding.user.onboardinguser.enums.Status;
+import com.onboarding.user.onboardinguser.utils.RegexCompile;
+import com.onboarding.user.onboardinguser.utils.Response;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
-import lombok.NoArgsConstructor;
-import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -43,47 +43,61 @@ public class PartnerModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, columnDefinition = "varchar(64)")
     public String uuid;
 
+	@NotNull(message = "O email do Sócio não pode ser vazio.")
     @NotBlank(message = "O email do Sócio não pode ser vazio.")
-    @Size(min=5, max=50, message="O email do Sócio deve conter no mínimo 5 e no máximo 50 caracteres.")
-    String email = "";
+    @Size(min=5, max=60, message="O email do Sócio deve conter no mínimo 5 e no máximo 60 caracteres.")
+	@Column(name="email", unique=true, nullable = false, columnDefinition = "varchar(60)")
+	String email = "";
     
-    @NotNull
+    @NotNull(message = "O documento do Sócio não pode ser vazio.")
 	@NotBlank(message = "O documento do Sócio não pode ser vazio.")
 	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14")
-	@Column(name="document", unique=true)
+	@Column(name="document", unique=true, nullable = false, columnDefinition = "varchar(14)")
 	String document = "";
 
+	@NotNull(message = "O primeiro nome do Sócio não pode ser vazio.")
     @NotBlank(message = "O nome do Sócio não pode ser vazio.")
 	@Size(min=2, max=30, message="O nome do Sócio deve conter no mínimo 2 e no máximo 30 caracteres.")
+	@Column(name="first_name", nullable = false, columnDefinition = "varchar(30)")
 	String firstName = "";
 
+	@NotNull(message = "O sobrenome do Sócio não pode ser vazio.")
     @NotBlank(message = "O sobrenome do Sócio não pode ser vazio.")
     @Size(min=2, max=30, message="O sobrenome deve conter no mínimo 2 e no máximo 30 caracteres.")
+	@Column(name="last_name", nullable = false, columnDefinition = "varchar(30)")
     String lastName = "";
 
 	String fullName = "";
 
+	@NotNull(message = "O endereço do Sócio não pode ser vazio.")
 	@NotBlank(message = "O endereço do Sócio não pode ser vazio.")
     @Size(min=2, max=60, message="O endereço do Sócio deve conter no mínimo 2 e no máximo 60 caracteres.")
+	@Column(name="address", nullable = false, columnDefinition = "text")
     String address = "";
 
+	@NotNull(message = "O telefone do Sócio não pode ser vazio.")
 	@NotBlank(message = "O telefone do Sócio não pode ser vazio.")
 	@Size(min=8, max=20, message="O telefone do Sócio deve conter no mínimo 8 e no máximo 20 caracteres.")
-	@Pattern(regexp = "^[0-9]+$", message = "O telefone do Sócio deve conter somente números.")
+	@Pattern(regexp = "^\\d+$", message = "O telefone do Sócio deve conter somente números.")
+	@Column(name="phone", nullable = false, columnDefinition = "varchar(20)")
 	String phone = "";
 
 	@NotNull
+	@Column(columnDefinition = "varchar(40) default 'single'")	
 	Marital marital = Marital.SINGLE;
 
+	@Column(columnDefinition = "varchar(40) default 'enabled'", nullable = false)
+	@NotNull(message = "O status do Sócio não pode ser vazio.")
 	Status status = Status.ENABLED;
 
+	@Column(name="created_at", nullable = false, columnDefinition = "timestamp default current_timestamp")
 	Date createdAt = new Date();
-	Date updatedAt = new Date();
-	
 
+	@Column(name="updated_at", nullable = false, columnDefinition = "timestamp default current_timestamp on update current_timestamp")
+	Date updatedAt = new Date();
 
     public PartnerModel(String email, String document, String firstName, String lastName) {
         this.email = email;
@@ -138,7 +152,6 @@ public class PartnerModel {
 		return null;
 	}
 	
-
     public Response validDocument() {
 
 		if(this.document.length() == 0) {
@@ -334,4 +347,5 @@ public class PartnerModel {
     public String toString() {
         return String.format("PartnerModel[id=%d, email='%s', document='%s', firstName='%s', lastName='%s', fullName=%s, address=%s, phone=%s]", id, email, document, firstName, lastName, fullName, address, phone);
     }
+
 }
