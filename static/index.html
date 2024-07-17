@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Registration</title>
+</head>
+<body>
+    <form id="registrationForm" action="/api/users/register" method="post"></form>
+    <h1>User Registration</h1>
+    <!-- Adicione um ID ao formulário para facilitar a seleção -->
+    <form id="registrationForm">
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="document">Document:</label>
+        <input type="text" id="document" name="document" required><br><br>
+
+        <label for="firstname">First Name:</label>
+        <input type="text" id="firstname" name="firstname" required><br><br>
+
+        <label for="lastname">Last Name:</label>
+        <input type="text" id="lastname" name="lastname" required><br><br>
+
+        <label for="nickname">Nickname:</label>
+        <input type="text" id="nickname" name="nickname" required><br><br>        
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="password_confirmation">Password Confirmation:</label>
+        <input type="password" id="password_confirmation" name="password_confirmation" required><br><br>
+
+        <label for="terms">I agree to the terms and conditions</label>
+        <input type="checkbox" id="terms" name="terms" required><br><br>
+        
+        
+        <input type="submit" value="Register">
+    </form>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevenir o envio padrão do formulário
+
+            // Coletar os dados do formulário
+            const formData = new FormData(event.target);
+            const userData = Object.fromEntries(formData.entries());
+
+            // Enviar os dados para o servidor
+            fetch('/api/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // Aqui você pode lidar com a resposta do servidor, como redirecionar o usuário
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // Aqui você pode lidar com erros, como mostrar uma mensagem para o usuário
+            });
+        });
+    </script>
+</body>
+</html>

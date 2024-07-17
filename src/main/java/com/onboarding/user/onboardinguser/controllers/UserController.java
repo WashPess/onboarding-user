@@ -27,8 +27,8 @@ import jakarta.validation.Valid;
 
 // silence report 
 
-@RestController // decorator | annotation - controllar o comportamento de classe
-@SuppressWarnings("squid:S1192") // Desativa a regra java:S1192
+@RestController //controllar o comportamento de classe
+@SuppressWarnings("squid:S1192")
 public class UserController extends ExceptionHandle {
 
 	private final UserService service;
