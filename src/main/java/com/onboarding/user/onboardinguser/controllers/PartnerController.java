@@ -163,7 +163,7 @@ public class PartnerController extends ExceptionHandle {
 			}
 			
 			this.logger.error("Erro ao tentar buscar um sócio por uuid. ", e);
-			return Response.result(Response.error(500, "PTM019", "Servidor indisponível no momento."));
+			return Response.result(Response.error(500, "PTC019", "Servidor indisponível no momento."));
 		}
 	}
 

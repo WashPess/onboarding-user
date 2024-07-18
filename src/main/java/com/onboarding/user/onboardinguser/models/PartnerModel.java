@@ -41,69 +41,71 @@ public class PartnerModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id", columnDefinition = "SERIAL PRIMARY KEY")
 	private Long id;
 
-    @Column(unique = true, columnDefinition = "varchar(64)")
+    @Column(unique = true, columnDefinition = "VARCHAR(64)")
     public String uuid;
 
 	@NotNull(message = "O email do Sócio não pode ser vazio.")
     @NotBlank(message = "O email do Sócio não pode ser vazio.")
     @Size(min=5, max=60, message="O email do Sócio deve conter no mínimo 5 e no máximo 60 caracteres.")
-	@Column(name="email", unique=true, nullable = false, columnDefinition = "varchar(60)")
+	@Column(name="email", unique=true, nullable = false, columnDefinition = "VARCHAR(60)")
 	String email = "";
     
     @NotNull(message = "O documento do Sócio não pode ser vazio.")
 	@NotBlank(message = "O documento do Sócio não pode ser vazio.")
 	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14")
-	@Column(name="document", unique=true, nullable = false, columnDefinition = "varchar(14)")
+	@Column(name="document", unique=true, nullable = false, columnDefinition = "VARCHAR(14)")
 	String document = "";
 
 	@NotNull(message = "O primeiro nome do Sócio não pode ser vazio.")
     @NotBlank(message = "O nome do Sócio não pode ser vazio.")
 	@Size(min=2, max=30, message="O nome do Sócio deve conter no mínimo 2 e no máximo 30 caracteres.")
-	@Column(name="first_name", nullable = false, columnDefinition = "varchar(30)")
+	@Column(name="first_name", nullable = false, columnDefinition = "VARCHAR(30)")
 	String firstName = "";
 
 	@NotNull(message = "O sobrenome do Sócio não pode ser vazio.")
     @NotBlank(message = "O sobrenome do Sócio não pode ser vazio.")
     @Size(min=2, max=30, message="O sobrenome deve conter no mínimo 2 e no máximo 30 caracteres.")
-	@Column(name="last_name", nullable = false, columnDefinition = "varchar(30)")
+	@Column(name="last_name", nullable = false, columnDefinition = "VARCHAR(30)")
     String lastName = "";
 
+	@Column(name="full_name", columnDefinition = "VARCHAR(60)")
 	String fullName = "";
 
 	@NotNull(message = "O endereço do Sócio não pode ser vazio.")
 	@NotBlank(message = "O endereço do Sócio não pode ser vazio.")
-    @Size(min=2, max=60, message="O endereço do Sócio deve conter no mínimo 2 e no máximo 60 caracteres.")
-	@Column(name="address", nullable = false, columnDefinition = "text")
+    @Size(min=2, max=150, message="O endereço do Sócio deve conter no mínimo 2 e no máximo 150 caracteres.")
+	@Column(name="address", nullable = false, columnDefinition = "TEXT")
     String address = "";
 
 	@NotNull(message = "O telefone do Sócio não pode ser vazio.")
 	@NotBlank(message = "O telefone do Sócio não pode ser vazio.")
-	@Size(min=8, max=20, message="O telefone do Sócio deve conter no mínimo 8 e no máximo 20 caracteres.")
+	@Size(min=8, max=15, message="O telefone do Sócio deve conter no mínimo 8 e no máximo 15 caracteres.")
 	@Pattern(regexp = "^\\d+$", message = "O telefone do Sócio deve conter somente números.")
-	@Column(name="phone", nullable = false, columnDefinition = "varchar(20)")
+	@Column(name="phone", nullable = false, columnDefinition = "VARCHAR(15)")
 	String phone = "";
 
 	@NotNull
-	@Column(columnDefinition = "varchar(40) default 'single'")	
+	@Column(columnDefinition = "VARCHAR(40) DEFAULT 'single'")
 	Marital marital = Marital.SINGLE;
 
-	@Column(columnDefinition = "varchar(40) default 'enabled'", nullable = false)
 	@NotNull(message = "O status do Sócio não pode ser vazio.")
+	@Column(columnDefinition = "VARCHAR(40) DEFAULT 'enabled'", nullable = false)
 	Status status = Status.ENABLED;
 
-	@Column(name="created_at", nullable = false, columnDefinition = "timestamp default current_timestamp")
+	@Column(name="created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	Date createdAt = new Date();
 
-	@Column(name="updated_at", nullable = false, columnDefinition = "timestamp default current_timestamp on update current_timestamp")
+	@Column(name="updated_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
 	Date updatedAt = new Date();
 
     public PartnerModel(String email, String document, String firstName, String lastName) {
         this.email = email;
         this.document = document;
-        this.firstName = firstName;
         this.lastName = lastName;
+        this.firstName = firstName;
 		this.fullName = String.format("%s %s", this.firstName, this.lastName);
     }
 
@@ -287,7 +289,7 @@ public class PartnerModel {
 
 		if(this.address.length() == 0) {
 			this.logger.error("O endereço não pode ser vazio");
-			return Response.error(400, "PTM019", "O email não pode ser vazio");
+			return Response.error(400, "PTM019", "O endereço não pode ser vazio");
 		}
 
 		if(this.address.length() < 8) {

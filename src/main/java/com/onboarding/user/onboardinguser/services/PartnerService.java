@@ -111,6 +111,3 @@ public class PartnerService extends ExceptionHandleService {
 	}
 
 }
-
-
-// CODIGO COUNBOY - 

@@ -17,8 +17,15 @@ public class ExceptionHandle {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Response>  handleError(HttpServletRequest req, Exception ex) {
+		
 		String cause = String.format("Error: %s | raised : %s", req.getRequestURL(), ex);
 		this.logger.error(cause);
+
+		Response errorEnumMarital = ExceptionHandle.errorEnumMarital(ex);
+		if(errorEnumMarital != null) {
+			return Response.result(errorEnumMarital);
+		}
+
 		Response errorJsonParse = ExceptionHandle.errorJsonParse(ex);
 		if(errorJsonParse != null) {
 			return Response.result(errorJsonParse);
@@ -40,6 +47,14 @@ public class ExceptionHandle {
 		String exStr = e.toString();
 		if(exStr.contains("JSON parse error")) {
 			return Response.error(400, "EXC002", "A estrutura do objeto json não é compatível.");
+		}
+		return null;
+	}
+
+	public static final Response errorEnumMarital(Exception e) {
+		String exStr = e.toString();
+		if(exStr.contains("JSON parse error") && exStr.contains("enums.Marital")) {
+			return Response.error(400, "EXC003", "O valor do campo marital está incompatível com o enum característico.");
 		}
 		return null;
 	}

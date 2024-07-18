@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 public enum Marital {
     
     @JsonEnumDefaultValue SINGLE("single"), 
-    MARRIED("married"), 
+    MARRIED("married"),
     WIDOWER("widower"), 
     SEPARATE("separate"), 
     DIVORCED("divorced"), 
