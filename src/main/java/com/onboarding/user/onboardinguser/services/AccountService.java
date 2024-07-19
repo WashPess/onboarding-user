@@ -34,14 +34,9 @@ public class AccountService extends ExceptionHandleService {
 			}
 
 			AccountModel accountDataWithUser = this.getByDocument(account.getUserUuid());
-            if(accountDataWithUser != null && !Str.Empty(accountDataWithUser.getUserUuid())) {
-				this.logger.error("O documento já existe na base de dados");
-				return Response.error(409, "ACS000", "O documento já existe na base de dados.");
-			}
-
-			if(Str.Empty(account.getDocument())) {
-				this.logger.error("Erro ao tentar salvar a conta, o documento do usuário é obrigatório.");
-				return Response.error(409, "ACSXXX", "Erro ao tentar salvar a conta, o documento do usuário é obrigatório.");
+            if(accountDataWithUser == null) {
+				this.logger.error("A conta para este usuário não existe na base de dados.");
+				return Response.error(404, "ACS000", "A conta para este usuário não existe na base de dados.");
 			}
 
 			account.setDocument(Document.pad(Document.clear(account.getDocument())));
@@ -51,8 +46,20 @@ public class AccountService extends ExceptionHandleService {
 				return Response.error(409, "ACS000", "O documento já existe na base de dados.");
 			}
 			
-			account.newUuid();
-			this.repository.save(account);
+			accountDataWithUser.setDocument(account.getDocument());
+			accountDataWithUser.setNickname(account.getNickname());
+			accountDataWithUser.setRg(account.getRg());
+			accountDataWithUser.setMarital(account.getMarital());
+			accountDataWithUser.setCurrency(account.getCurrency());
+			accountDataWithUser.setLanguage(account.getLanguage());
+			accountDataWithUser.setGender(account.getGender());
+			accountDataWithUser.setNationality(account.getNationality());
+			accountDataWithUser.setOptin(account.getOptin());
+			accountDataWithUser.setCreatedAt(account.getCreatedAt());
+			accountDataWithUser.setUpdatedAt(account.getUpdatedAt());
+
+			this.repository.save(accountDataWithUser);
+
 			return null;
 		} catch(Exception e) {
 			this.logger.error("Erro na base de dados", e);

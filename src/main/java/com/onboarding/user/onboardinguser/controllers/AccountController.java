@@ -37,19 +37,19 @@ public class AccountController extends ExceptionHandle {
 
             Response validAccount = account.valid();
             if(validAccount != null) {
-                this.logger.error("Erro de validação na criaçao de conta.", new Exception(validAccount.toString()));
+                this.logger.error("Erro de validação na criaçao de conta.", validAccount.toString());
                 return Response.result(validAccount);
             }
 
             if(bindingResult.hasErrors()) {
                 String message = bindingResult.getAllErrors().get(0).getDefaultMessage();
-                this.logger.error("Erro de validaçao na criaçâo de conta usando spring validation.", new Exception(message));
+                this.logger.error("Erro de validaçao na criaçâo de conta usando spring validation.", message);
                 return Response.result(Response.error(400, "ACC000", message));
             }
 
             Response resultSaved = this.service.save(account);
 			if(resultSaved != null) {
-				this.logger.error("Erro ao tentar salvar a conta.", new Exception(resultSaved.toString()));
+				this.logger.error("Erro ao tentar salvar a conta.", resultSaved.toString());
 				return Response.result(resultSaved);
             }
 

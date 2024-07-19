@@ -59,7 +59,7 @@ public class UserController extends ExceptionHandle {
 			// delega a regra de salva para a service
 			Response resultUserSaved = this.service.save(user);
 			if(resultUserSaved != null) {
-				this.logger.error("Erro ao tentar salvar usuário.", new Exception(resultUserSaved.toString()));
+				this.logger.error("Erro ao tentar salvar usuário.", resultUserSaved.toString());
 				return Response.result(resultUserSaved);
 			}
 

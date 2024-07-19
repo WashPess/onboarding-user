@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onboarding.user.onboardinguser.enums.Currency;
 import com.onboarding.user.onboardinguser.enums.Gender;
 import com.onboarding.user.onboardinguser.enums.Language;
@@ -44,56 +45,73 @@ public class AccountModel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id", columnDefinition = "BIGSERIAL PRIMARY KEY")
+	@JsonProperty(value = "id", access = JsonProperty.Access.WRITE_ONLY)
 	private Long id;
 	
-	@Column(unique=true)
+	@Column(name="uuid", unique = true, columnDefinition = "VARCHAR(64)")
 	public String uuid;
 
-	@Column(name="user_uuid", unique=true)
+    @Column(name="user_uuid", unique = true, columnDefinition = "VARCHAR(64)")
 	public String userUuid;
 	
-	@NotNull
+	@NotNull(message = "O campo de documento nome não pode ser vazio.")
 	@NotBlank(message = "O campo de documento nome não pode ser vazio.")
 	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14")
-	@Column(name="document", unique=true)
-	String document = "";                            // CPF - 000.000.000-00 | CNPJ - 00.000.000/0000-00
+	@Column(name= "document", unique=true, nullable = false, columnDefinition = "VARCHAR(14)")
+	String document = "";  // CPF - XXX00000000000 | CNPJ - 00000000000000
 	
-	@NotNull
-	@Size(min=2, max=30, message="O apelido deve conter no mínimo 2 e no máximo 30 caracteres.")
+	@NotNull(message = "O campo de apelido nome não pode ser vazio.")
 	@NotBlank(message = "O campo de apelido nome não pode ser vazio.")
-	String nickname = ""; 							// apelido
+	@Size(min=2, max=30, message="O apelido deve conter no mínimo 2 e no máximo 30 caracteres.")
+	@Column(name="nickname", unique = true, nullable = false, columnDefinition = "VARCHAR(30)")
+	String nickname = ""; // apelido
 	
-	@NotNull
-	Marital marital = Marital.SINGLE; 			    // estado civil 
+	@NotNull(message = "O campo estado civil não pode ser vazio.")
+	@Column(name="marital", columnDefinition = "VARCHAR(30)")
+	Marital marital = Marital.SINGLE; // estado civil 
 		
-	@NotNull
+	@NotNull(message = "O campo moeda não pode ser vazio.")
+	@Column(name="currency", columnDefinition = "VARCHAR(30)")
 	Currency currency= Currency.BRL;				// moeda
 	
-	@NotNull
+	@NotNull(message = "O campo de idioma não pode ser vazio.")
+	@Column(name="language", columnDefinition = "VARCHAR(30)")
 	Language language = Language.PORTUGUESE;		// Idioma
 	
-	@NotNull
+	@NotNull(message = "O campo do rg não pode ser vazio.")
 	@NotBlank(message = "O campo do rg não pode ser vazio.")
 	@Size(min=1, max=12, message = "O rg precisa ter 12 caracteres.")
-	@Column(name="rg", unique=true)
+	@Column(name="rg", columnDefinition = "VARCHAR(30)")
 	String rg = ""; // RG - 00.000.000-0 valid 
 	
-	@NotNull
+	@NotNull(message = "O campo de gênero não pode ser vazio.")
+	@Column(name="gender", columnDefinition = "VARCHAR(30)")
 	Gender gender = Gender.MALE;
 
-	@NotNull
+	@NotNull(message = "O campo de nacionalidade não pode ser vazio.")
+	@Column(name="nationality", columnDefinition = "VARCHAR(30)")
 	Nationality nationality = Nationality.BRAZILIAN;
 
+	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
+	@Column(name="optin", columnDefinition = "BOOLEAN DEFAULT FALSE")
+	boolean optin = false;  //aceite de termos (mesmo sem ler)
+
+	@Column(name="created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	Date createdAt = new Date();
+
+	@Column(name="updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
 	Date updatedAt = new Date();
 	
-	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
-	boolean optin = false;           //aceite de termos (mesmo sem ler)
 
 	public String newUuid() {
 		this.uuid = UUID.randomUUID().toString();
 		return this.uuid;
 	}
+
+	public boolean getOptin() {
+        return this.optin;
+    }
 	
 	public Response valid() {
 

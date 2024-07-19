@@ -3,11 +3,11 @@ CREATE TABLE enterprises (
   uuid VARCHAR(64) UNIQUE,
   address TEXT NOT NULL,
   timezone VARCHAR (255),
-  company VARCHAR (255) NOT NULL,
   communication_channel _VARCHAR,
+  company VARCHAR (255) NOT NULL,
   cnpj VARCHAR (14) NOT NULL UNIQUE,
+  status VARCHAR(40) DEFAULT 'enabled',
   corporate_reason VARCHAR (255) NOT NULL,
-  status VARCHAR(40) NOT NULL DEFAULT 'enabled',
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

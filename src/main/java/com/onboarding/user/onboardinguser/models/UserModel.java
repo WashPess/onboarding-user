@@ -41,54 +41,66 @@ public class UserModel {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id", columnDefinition = "BIGSERIAL PRIMARY KEY")
+	@JsonProperty(value = "id", access = JsonProperty.Access.WRITE_ONLY)
 	private Long id;
 
-	@Column(unique=true)
+	@Column(name="uuid", unique = true, columnDefinition = "VARCHAR(64)")
 	public String uuid;
 
 	@NotBlank(message = "O campo de email nome não pode ser vazio.") 
 	@Size(min=8, max=40, message = "O email precisa ter no mínimo 8 e no máximo 40 caracteres")
 	@Pattern(regexp="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}", message="O campo email deve conter um email válido. Ex.: 'joao@gmail.com'")
 	@Email(message = "O campo email deve conter um email válido")
-	@Column(name="email", unique=true)
+	@Column(name="email", unique=true, nullable = false, columnDefinition = "VARCHAR(60)")
 	String email = "";
 	
 	@NotBlank(message = "O campo de documento nome não pode ser vazio.")
-	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14")
-	@Column(name="document", unique=true)
-	String document = ""; // CPF - 000.000.000-00 | CNPJ - 00.000.000/0000-00
+	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14 caracteres")
+	@Column(name="document", unique=true, nullable = false, columnDefinition = "VARCHAR(14)")
+	String document = ""; // CPF - XXX00000000000 | CNPJ - 00000000000000
 	
 	@NotBlank(message = "O campo de primeiro nome não pode ser vazio.")
 	@Size(min=2, max=30, message="O nome deve conter no mínimo 2 e no máximo 30 caracteres.")
+	@Column(name="first_name", nullable = false, columnDefinition = "VARCHAR(30)")
 	String firstName = "";
 
 	@NotBlank(message = "O campo de último nome não pode ser vazio.")
 	@Size(min=2, max=30, message="O campo de último nome deve conter no mínimo 2 caracteres e no máximo 30 caracteres.")
+	@Column(name="last_name", nullable = false, columnDefinition = "VARCHAR(30)")
 	String lastName = "";
 
+	@Column(name="full_name", columnDefinition = "VARCHAR(70)")
 	String fullName = "";
 
 	@NotBlank(message = "O campo de apelido nome não pode ser vazio.")
 	@Size(min=2, max=30, message="O apelido deve conter no mínimo 2 e no máximo 30 caracteres.")
+	@Column(name="nickname", nullable = false, unique=true, columnDefinition = "VARCHAR(30)")
 	String nickname = "";
 
 	@NotBlank(message = "O campo de senha nome não pode ser vazio.")
 	@Size(min=8, max=40, message="A senha deve conter no mínimo 8 caracteres e no máximo 40 caracteres.")
 	@Pattern(regexp="(?=.*[\\d])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^!*\\-\\._&+=])(?=\\S+$).{8,}", message="O campo de senha deve conter pelo menos uma letra maiúscula, uma minúscula, um caracteres especial, no mínimo 8 e no máximo 40 caracteres.")
 	@JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
+	@Column(name="password", nullable = false, columnDefinition = "VARCHAR(40)")
 	String password = "";
 
+	@Transient
 	@NotBlank(message = "O campo de confirmar senha não pode ser vazio.")
 	@JsonProperty(value = "confirmPassword", access = JsonProperty.Access.WRITE_ONLY)
-	@Transient
 	String confirmPassword = "";
 
  	@AssertTrue(message= "O campo de aceite deve ser marcado como verdadeiro.")
-	boolean optin = false; 			// aceite de termos
+	@Column(name="optin", columnDefinition = "BOOLEAN DEAFAULT FALSE")
+	boolean optin = false; // aceite de termos
 
+	@Column(name="status", nullable=false, columnDefinition = "VARCHAR(40) DEFAULT 'enabled'")
 	Status status = Status.ENABLED;
 
+	@Column(name="created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	Date createdAt = new Date();
+
+	@Column(name="updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
 	Date updatedAt = new Date();
 
 	protected UserModel() {

@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.onboarding.user.onboardinguser.enums.Status;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,44 +38,63 @@ public class EnterpriseModel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id", columnDefinition = "BIGSERIAL PRIMARY KEY")
+	@JsonProperty(value = "id", access = JsonProperty.Access.WRITE_ONLY)
 	private Long id;
 
-    @Column(unique=true)
+    @Column(name="uuid", unique = true, columnDefinition = "VARCHAR(64)")
 	public String uuid;
 
-    @NotNull
-	@NotBlank(message = "O campo site não pode ser vazio.")
-	@Size(min=2, max=26, message = "O site precisa ter no mínimo 2 e no máximo 26")
-    String site = "";
-
-    @NotNull
-	@NotBlank(message = "O nome da empresa não pode ser vazio.")
-    String company = "";
-
-    @NotNull
+    @NotNull(message = "O campo de região não pode ser vazio.")
     @NotBlank(message = "O campo de região não pode ser vazio.")
+    @Column(name="timezone", nullable = false, columnDefinition = "VARCHAR(255)")
     String timezone = "";
 
-    @NotNull
-	@NotBlank(message = "O campo profissão não pode ser vazio.")
-    String professional = "";
+    @NotNull(message = "O endereço da empresa não pode ser vazio.")
+	@NotBlank(message = "O endereço da empresa não pode ser vazio.")
+    @Size(min=2, max=150, message="O endereço da empresa deve conter no mínimo 2 e no máximo 150 caracteres.")
+	@Column(name="address", nullable = false, columnDefinition = "TEXT")
+    String address = "";
 
-    @NotNull
-    @NotEmpty(message = "O campo canais de comunicação não pode ser vazio.")
+    @NotNull(message = "O endecampo cnpj da empresa não pode ser vazio.")
+    @NotBlank(message = "O campo do cnpj não pode ser vazio.")
+	@Size(min=14, max=18, message = "O cnpj precisa ter no mínimo 11 e no máximo 14 caracteres.")
+	@Column(name="cnpj", unique=true, nullable = false, columnDefinition = "VARCHAR(14)")
+	String cnpj = ""; // CNPJ - 00000000000000
     
+    @NotNull(message = "O campo razão social da empresa não pode ser vazio.")
+    @NotBlank(message = "O campo de razão social da empresa não pode ser vazio.")
+    @Size(min=1, max=255, message = "A razão social ter no mínimo 1 e no máximo 255 caracteres.")
+    @Column(name="corporateReason", nullable = false, columnDefinition = "VARCHAR(255)")
+    String corporateReason = "";
+
+    @NotNull(message = "O campo nome fantasia da empresa não pode ser vazio.")
+    @NotBlank(message = "O campo nome fantasia da empresa não pode ser vazio.")
+    @Size(min=1, max=255, message = "O nome fantasia precisa ter no mínimo 1 e no máximo 255 caracteres.")
+    @Column(name="company", nullable = false, columnDefinition = "VARCHAR(255)")
+    String company = "";
+
+    @NotNull(message = "O campo canais de comunicação não pode ser vazio.")
+    @NotEmpty(message = "O campo canais de comunicação não pode ser vazio.")
+    @Column(name="communication_channel", nullable = false, columnDefinition = "_VARCHAR")   
     String[] communicationChannel = {};
+
+    @Column(name="status", nullable=false, columnDefinition = "VARCHAR(40) DEFAULT 'enabled'")
+	Status status = Status.ENABLED;
+    
+    @Column(name="created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    Date createdAt = new Date();
+
+    @Column(name="updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    Date updatedAt = new Date();
 
     public String newUuid() {
 		this.uuid = UUID.randomUUID().toString();
 		return this.uuid;
 	}
-    
-
-    Date createdAt = new Date();
-	Date updatedAt = new Date();
 
     @Override
     public String toString() {
-        return String.format("Enterprise[id=%d, site=%s, company=%s, timezone=%s, professional=%s]", this.id, this.site, this.company, this.timezone, this.professional);
+        return String.format("Enterprise[id=%d, company=%s, timezone=%s, address=%s, cnpj=%s, corporateReason=%s]", this.id, this.company, this.timezone, this.address, this.cnpj, this.corporateReason);
     }
 }

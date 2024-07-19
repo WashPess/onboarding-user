@@ -31,4 +31,8 @@ public interface UserRepository extends CrudRepository<UserModel,Long> {
 	@Query("SELECT u FROM UserModel u WHERE u.document = :doc")
 	public UserModel getByDocument(@Param("doc") String document);
 
+	@Nullable
+	@Query("SELECT u FROM UserModel u WHERE u.nickname = :nick")
+	public UserModel getByNickname(@Param("nick") String nickname);
+
 }

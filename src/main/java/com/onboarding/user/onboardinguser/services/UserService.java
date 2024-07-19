@@ -41,7 +41,7 @@ public class UserService extends ExceptionHandleService {
 
 			// Caso o documento exista, retornar erro 409
 			if(userData != null && !Str.Empty(userData.getDocument())) {
-				this.logger.error("O documento já existe na base de dados");
+				this.logger.error("O documento já existe na base de dados.");
 				return Response.error(409, "USS002", "O documento já existe na base de dados.");
 			}
 
@@ -58,6 +58,21 @@ public class UserService extends ExceptionHandleService {
 			if(userDataWithEmail != null && !Str.Empty(userDataWithEmail.getEmail())) {
 				this.logger.error("O email já existe na base de dados");
 				return Response.error(409, "USS004", "O email já existe na base de dados.");
+			}
+
+			UserModel userDataWithNickname = this.getByNickname(user.getNickname());
+
+			// caso o usuário esteja desabilitaos, retornar erro 423
+			if(userDataWithNickname != null && userDataWithNickname.getStatus() == Status.DISABLED) {
+				this.logger.error("Usuário desabilitado por tempo inderterminado.");
+				return Response.error(423, "USS008", "Usuário desabilitado por tempo inderterminado.");
+			}
+
+
+			// caso o usuário esteja desabilitaos, retornar erro 423
+			if(userDataWithNickname != null && !Str.Empty(userDataWithNickname.getNickname())) {
+				this.logger.error("O apelido já existe na base de dados.");
+				return Response.error(423, "USS009", "O apelido já existe na base de dados.");
 			}
 
 			// Prepara o usuário para salvar
@@ -127,6 +142,11 @@ public class UserService extends ExceptionHandleService {
 	public UserModel getByEmail(String email){
 		return this.repository.getByEmail(email);
 	}
+
+	public UserModel getByNickname(String nickname){
+		return this.repository.getByNickname(nickname);
+	}
+
 
 	public UserModel getByDocument(String document){
 		return this.repository.getByDocument(Document.pad(Document.clear(document)));

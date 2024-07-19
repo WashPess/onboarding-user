@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onboarding.user.onboardinguser.enums.Marital;
 import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
@@ -41,10 +42,11 @@ public class PartnerModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="id", columnDefinition = "SERIAL PRIMARY KEY")
+	@Column(name="id", columnDefinition = "BIGSERIAL PRIMARY KEY")
+	@JsonProperty(value = "id", access = JsonProperty.Access.WRITE_ONLY)
 	private Long id;
 
-    @Column(unique = true, columnDefinition = "VARCHAR(64)")
+    @Column(name="uuid", unique = true, columnDefinition = "VARCHAR(64)")
     public String uuid;
 
 	@NotNull(message = "O email do Sócio não pode ser vazio.")
@@ -71,7 +73,7 @@ public class PartnerModel {
 	@Column(name="last_name", nullable = false, columnDefinition = "VARCHAR(30)")
     String lastName = "";
 
-	@Column(name="full_name", columnDefinition = "VARCHAR(60)")
+	@Column(name="full_name", columnDefinition = "VARCHAR(70)")
 	String fullName = "";
 
 	@NotNull(message = "O endereço do Sócio não pode ser vazio.")
@@ -92,7 +94,7 @@ public class PartnerModel {
 	Marital marital = Marital.SINGLE;
 
 	@NotNull(message = "O status do Sócio não pode ser vazio.")
-	@Column(columnDefinition = "VARCHAR(40) DEFAULT 'enabled'", nullable = false)
+	@Column(name="status", columnDefinition = "VARCHAR(40) DEFAULT 'enabled'", nullable = false)
 	Status status = Status.ENABLED;
 
 	@Column(name="created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
