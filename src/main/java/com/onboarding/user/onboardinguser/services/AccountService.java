@@ -30,20 +30,38 @@ public class AccountService extends ExceptionHandleService {
 
 			if(Str.Empty(account.getUserUuid())) {
 				this.logger.error("Erro ao tentar salvar a conta, o uuid do usuário é obrigatório");
-				return Response.error(409, "ACSXXX", "A conta precisa de um usuário vinculado para ser salva.");
+				return Response.error(409, "ACS000", "A conta precisa de um usuário vinculado para ser salva.");
 			}
 
-			AccountModel accountDataWithUser = this.getByDocument(account.getUserUuid());
+			this.repository.save(account);
+			return null;
+		} catch(Exception e) {
+			this.logger.error("Erro na base de dados", e);
+			return Response.error(422, "ACS001", "Base de dados indisponivel no momento.");
+		}
+    }
+
+	
+	public Response update(AccountModel account){
+		try {
+
+			
+			if(Str.Empty(account.getUserUuid())) {
+				this.logger.error("Erro ao tentar salvar a conta, o uuid do usuário é obrigatório");
+				return Response.error(409, "ACS002", "A conta precisa de um usuário vinculado para ser salva.");
+			}
+
+			AccountModel accountDataWithUser = this.getByUuid(account.getUserUuid());
             if(accountDataWithUser == null) {
 				this.logger.error("A conta para este usuário não existe na base de dados.");
-				return Response.error(404, "ACS000", "A conta para este usuário não existe na base de dados.");
+				return Response.error(404, "ACS003", "A conta para este usuário não existe na base de dados.");
 			}
 
 			account.setDocument(Document.pad(Document.clear(account.getDocument())));
             AccountModel accountDataWithDocument = this.getByDocument(account.getDocument());
             if(accountDataWithDocument != null && !Str.Empty(accountDataWithDocument.getDocument())) {
 				this.logger.error("O documento já existe na base de dados");
-				return Response.error(409, "ACS000", "O documento já existe na base de dados.");
+				return Response.error(409, "ACS004", "O documento já existe na base de dados.");
 			}
 			
 			accountDataWithUser.setDocument(account.getDocument());
@@ -59,31 +77,10 @@ public class AccountService extends ExceptionHandleService {
 			accountDataWithUser.setUpdatedAt(account.getUpdatedAt());
 
 			this.repository.save(accountDataWithUser);
-
-			return null;
+			return Response.success(200, accountDataWithUser);
 		} catch(Exception e) {
 			this.logger.error("Erro na base de dados", e);
-			return Response.error(422, "ACS001", "Base de dados indisponivel no momento.");
-		}
-    }
-
-	
-	public Response update(AccountModel account){
-		try {
-
-			Optional<AccountModel> accountOptional = this.repository.findById(account.getId());
-			if(accountOptional.isEmpty()) {
-				this.logger.error("A conta não existe na base de dados");
-				return Response.error(404, "ACS003", "A conta não existe na base de dados.");
-			}
-
-			AccountModel accountData = accountOptional.get();
-			AccountModel accountUpdate = this.repository.save(accountData);
-			
-			return Response.success(200, accountUpdate);
-		} catch(Exception e) {
-			this.logger.error("Erro na base de dados", e);
-			return Response.error(422, "ACS002", "Base de dados indisponivel no momento.");
+			return Response.error(422, "ACS006", "Base de dados indisponivel no momento.");
 		}
 
 	}
