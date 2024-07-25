@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -65,8 +66,8 @@ public class UserController extends ExceptionHandle {
 			}
 
 			AccountModel account = new AccountModel();
+			account.newUuid();
 			account.setUserUuid(user.getUuid());
-			account.setDocument(user.getDocument());
 
 			Response resultAccountSaved = this.serviceAccount.save(account);
 			if(resultAccountSaved != null) {
@@ -231,23 +232,57 @@ public class UserController extends ExceptionHandle {
 		}
 	}
 	
-	@DeleteMapping("/user/{id}")
-	ResponseEntity<Response> deleteUser(@PathVariable Long id) {
+	@DeleteMapping("/user/{uuid}")
+	ResponseEntity<Response> delete(@PathVariable Object uuid) {
 		try {
-			UserModel user = this.service.getById(id);
-			if(user == null) {
-				return Response.result(Response.error(404, "USC016", "Usuário não encontrado."));
+
+			// cast de variavel 
+			String uuidStr = String.valueOf(uuid);
+
+			if(Str.Empty(uuidStr)) {
+				return Response.result(Response.error(404, "USC014", "É necessário informar o uuid."));
 			}
 
-			this.service.delete(id);
-			return Response.result(Response.success(200));
+			Response result = this.service.deleteByUuid(uuidStr);
+			if(result != null) {
+				return Response.result(result);
+			}
+
+			return Response.result(Response.success(204));
 		} catch(Exception e) {
-			this.logger.error("Error ao tentar deletar usuário por ID.", e);
+			this.logger.error("Error ao tentar deletar o usuário por uuid.", e);
 			Response response = ExceptionHandle.errorInput(e);
 			if(response != null) {
 				return Response.result(response);
 			}
-			return Response.result(Response.error(500, "USC017", "Servidor indisponível no momento."));
+			return Response.result(Response.error(500, "USC016", "Servidor indisponível no momento."));
+		}
+	}
+
+	@PatchMapping("/user/{uuid}")
+	ResponseEntity<Response> restore(@PathVariable Object uuid) {
+		try {
+
+			// cast de variavel 
+			String uuidStr = String.valueOf(uuid);
+
+			if(Str.Empty(uuidStr)) {
+				return Response.result(Response.error(404, "USC017", "É necessário informar o uuid."));
+			}
+
+			Response result = this.service.restoreByUuid(uuidStr);
+			if(result != null) {
+				return Response.result(result);
+			}
+
+			return Response.result(Response.success(204));
+		} catch(Exception e) {
+			this.logger.error("Error ao tentar restaurar o usuário por uuid.", e);
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				return Response.result(response);
+			}
+			return Response.result(Response.error(500, "USC018", "Servidor indisponível no momento."));
 		}
 	}
 } 	

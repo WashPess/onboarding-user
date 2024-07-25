@@ -119,6 +119,7 @@ public class UserModel {
 		this.optin = false;
 		this.status = Status.ENABLED;
 
+
 	}
 
 	public String newUuid() {
@@ -228,6 +229,24 @@ public class UserModel {
 	public Status getStatus() {
 		return this.status;
 	}
+
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getCreatedAt() {
+		return this.createdAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public Date getUpdatedAt() {
+		return this.updatedAt;
+	}
+
 
 	public Response valid() {
 

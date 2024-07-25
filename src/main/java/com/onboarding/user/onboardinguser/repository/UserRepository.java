@@ -35,4 +35,8 @@ public interface UserRepository extends CrudRepository<UserModel,Long> {
 	@Query("SELECT u FROM UserModel u WHERE u.nickname = :nick")
 	public UserModel getByNickname(@Param("nick") String nickname);
 
+	@Nullable
+	@Query("SELECT u FROM UserModel u WHERE u.status = 'enabled'")
+	public List<UserModel> getAllEnableds();
+
 }

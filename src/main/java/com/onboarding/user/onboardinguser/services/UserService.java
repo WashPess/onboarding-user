@@ -1,6 +1,6 @@
 package com.onboarding.user.onboardinguser.services;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,6 +124,44 @@ public class UserService extends ExceptionHandleService {
 			return false; // Erro durante para deletar usuário
 		}
 	}
+	
+	public Response deleteByUuid(String uuid) {
+		try {
+			
+			UserModel user = this.getByUuid(uuid);
+			if(user == null) {
+				return Response.error(404, "USS010", "Usuário não encontrado.");
+			}
+
+			user.setStatus(Status.DISABLED);
+			Date updatedAt = new Date();
+			user.setUpdatedAt(updatedAt);
+			this.repository.save(user);
+			return null;
+		} catch(Exception e) {
+			this.logger.error("Erro ao deletar usuário: ", e);
+			return Response.error(422, "USS011", "Servidor indisponível no momento.");
+		}
+	}
+
+	public Response restoreByUuid(String uuid) {
+		try {
+			
+			UserModel user = this.getByUuid(uuid);
+			if(user == null) {
+				return Response.error(404, "USS012", "Usuário não encontrado.");
+			}
+
+			user.setStatus(Status.ENABLED);
+			Date updatedAt = new Date();
+			user.setUpdatedAt(updatedAt);
+			this.repository.save(user);
+			return null;
+		} catch(Exception e) {
+			this.logger.error("Erro ao deletar usuário: ", e);
+			return Response.error(422, "USS013", "Servidor indisponível no momento.");
+		}
+	}
 
 	public UserModel getById(Long id){
 		Optional<UserModel> user = this.repository.findById(id);
@@ -147,16 +185,12 @@ public class UserService extends ExceptionHandleService {
 		return this.repository.getByNickname(nickname);
 	}
 
-
 	public UserModel getByDocument(String document){
 		return this.repository.getByDocument(Document.pad(Document.clear(document)));
 	}
 
 	public List<UserModel> getAll(){
-		Iterable<UserModel> usersIter = this.repository.findAll();
-		List<UserModel> users = new ArrayList<>(0);
-		usersIter.forEach(users::add);
-		return users;
+		return this.repository.getAllEnableds();
 	}
 
 } 

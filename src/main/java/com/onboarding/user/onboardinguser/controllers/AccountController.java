@@ -8,13 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
 import com.onboarding.user.onboardinguser.models.AccountModel;
 import com.onboarding.user.onboardinguser.services.AccountService;
-import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
 import com.onboarding.user.onboardinguser.utils.Str;
 
@@ -74,16 +72,6 @@ public class AccountController extends ExceptionHandle {
 			if(Str.Empty(uuidStr)) {
 				this.logger.error("É necessário informar o uuid");
 				return Response.result(Response.error(404, "ACC011", "É necessário informar o uuid."));
-			}
-
-			Response validDocument= account.validDocument();
-			if(validDocument != null) {
-				return Response.result(validDocument);
-			}
-			
-			Response validNickname= account.validNickname();
-			if(validNickname != null) {
-				return Response.result(validNickname);
 			}
 
 			Response validRg= account.validRG();
@@ -172,34 +160,6 @@ public class AccountController extends ExceptionHandle {
 				return  Response.result(response);
 			}
 			return Response.result(Response.error(500, "ACC007", "Servidor indisponível no momento."));
-		}
-	}
-	
-	@GetMapping("/account")
-    ResponseEntity<Response>showByDocument(@RequestParam(required = true) String document) {
-		try{
-
-			String doc = Document.pad(Document.clear(document));
-			if(Str.Empty(doc)) {
-				return Response.result(Response.error(400, "ACC008", "O envio do documento é obrigatório."));
-			}
-			
-			AccountModel account = this.service.getByDocument(doc);
-
-			if(account == null) {
-				return Response.result(Response.error(404, "ACC009", "Usuário não encontrado."));
-			}
-
-			account.setDocument(Document.mask(account.getDocument()));
-
-			return Response.result(Response.success(200, account));
-		} catch(Exception e) {
-			this.logger.error(e.toString());
-			Response response = ExceptionHandle.errorInput(e);
-			if(response != null) {
-				return Response.result(response);
-			}
-			return Response.result(Response.error(500, "ACC010", "Servidor indisponível no momento."));
 		}
 	}
 

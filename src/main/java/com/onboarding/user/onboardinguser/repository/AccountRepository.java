@@ -24,10 +24,6 @@ public interface AccountRepository extends PagingAndSortingRepository<AccountMod
 	@Nullable
 	@Query("SELECT a FROM AccountModel a WHERE a.uuid = :uuid")
 	public AccountModel getByUuid(@Param("uuid") String uuid);
-	
-	@Nullable
-	@Query("SELECT a FROM AccountModel a WHERE a.document = :doc")
-	public AccountModel getByDocument(@Param("doc") String document);
 
 	@Nullable
 	@Query("SELECT a FROM AccountModel a WHERE a.userUuid = :uuid")

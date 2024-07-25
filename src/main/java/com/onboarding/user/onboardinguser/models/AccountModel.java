@@ -13,7 +13,6 @@ import com.onboarding.user.onboardinguser.enums.Gender;
 import com.onboarding.user.onboardinguser.enums.Language;
 import com.onboarding.user.onboardinguser.enums.Marital;
 import com.onboarding.user.onboardinguser.enums.Nationality;
-import com.onboarding.user.onboardinguser.utils.RegexCompile;
 import com.onboarding.user.onboardinguser.utils.Response;
 
 import jakarta.persistence.Column;
@@ -54,18 +53,6 @@ public class AccountModel {
 
     @Column(name="user_uuid", unique = true, columnDefinition = "VARCHAR(64)")
 	public String userUuid;
-	
-	@NotNull(message = "O campo de documento nome não pode ser vazio.")
-	@NotBlank(message = "O campo de documento nome não pode ser vazio.")
-	@Size(min=14, max=18, message = "O documento precisa ter no mínimo 11 e no máximo 14")
-	@Column(name= "document", unique=true, nullable = false, columnDefinition = "VARCHAR(14)")
-	String document = "";  // CPF - XXX00000000000 | CNPJ - 00000000000000
-	
-	@NotNull(message = "O campo de apelido nome não pode ser vazio.")
-	@NotBlank(message = "O campo de apelido nome não pode ser vazio.")
-	@Size(min=2, max=30, message="O apelido deve conter no mínimo 2 e no máximo 30 caracteres.")
-	@Column(name="nickname", unique = true, nullable = false, columnDefinition = "VARCHAR(30)")
-	String nickname = ""; // apelido
 	
 	@NotNull(message = "O campo estado civil não pode ser vazio.")
 	@Column(name="marital", columnDefinition = "VARCHAR(30)")
@@ -115,15 +102,6 @@ public class AccountModel {
 	
 	public Response valid() {
 
-		Response validDocument = this.validDocument();
-		if(validDocument != null) {
-			return validDocument;
-		}
-
-		Response validNickname = this.validNickname();
-		if(validNickname != null) {
-			return validNickname;
-		}
 
 		Response validRG = this.validRG();
 		if(validRG != null) {
@@ -158,67 +136,6 @@ public class AccountModel {
 		return null;
 	}
 	
-	public Response validDocument() {
-
-		if(this.document.length() == 0) {
-			this.logger.error("O documento não pode ser vazio");
-			return Response.error(400, "ACM000", "O documento não pode ser vazio.");
-		}
-		
-		if(this.document.length() < 11) {
-			String message = String.format("O documento deve conter no mínimo que 11 caracteres. %s", this.document);
-			this.logger.error(message);
-			return Response.error(400, "ACM001", "O documento deve conter no mínimo 11 caracteres.");
-		}
-
-		if(this.document.length() > 18) {
-			String message = String.format("O documento deve conter no máximo que 18 caracteres. %s", this.document);
-			this.logger.error(message);
-			return Response.error(400, "ACM002", "O documento deve conter no máximo que 18 caracteres.");
-		}
-
-		if(RegexCompile.HasCharSpecialForDocument.matcher(this.document).find()) {
-			String message = String.format("O documento não pode conter caracteres especiais. %s", this.document);
-			this.logger.error(message);
-			return Response.error(400, "ACM003", "O documento não pode conter caracteres especiais.");
-		}
-
-		if(!RegexCompile.OnlyNumberForDocument.matcher(this.document).find()) {
-			String message = String.format("O documento deve conter somente numeros. %s", this.document);
-			this.logger.error(message);
-			return Response.error(400, "ACM004", "O documento deve conter somente numeros.");
-		}
-
-		return null;
-	}
-
-	public Response validNickname() {
-
-		if(this.nickname.length() == 0) {
-			this.logger.error("O apelido não pode ser vazio.");
-			return Response.error(400, "ACM005", "O apelido não pode ser vazio.");
-		}
-
-		if(this.nickname.length() < 2) {
-			String message = String.format("O apelido não pode ser menor que 2 caracteres. %s", this.nickname);
-			this.logger.error(message);
-			return Response.error(400, "ACM006", "O apelido não pode ser menor que 2 caracteres.");
-		}
-
-		if(this.nickname.length() > 10) {
-			String message = String.format("O apelido não pode ser maior que 10 caracteres. %s", this.nickname);
-			this.logger.error(message);
-			return Response.error(400, "ACM007", "O apelido não pode ser maior que 10 caracteres.");
-		}
-		
-		if(!RegexCompile.OnlyLetterForNickName.matcher(this.nickname).find()) {
-			String message = String.format("O apelido não pode conter caracteres especiais. %s", this.nickname);
-			this.logger.error(message);
-			return Response.error(400, "ACM008", "O apelido não pode conter caracteres especiais.");
-		}
-
-		return null;
-	}
 
 	public Response validRG() {
 		
@@ -294,7 +211,7 @@ public class AccountModel {
 
 	@Override
 	public String toString() {
-		return String.format("Account[id=%d, uuid=%s, document=%s, nickname=%s, rg=%s]", this.id, this.uuid, this.document, this.nickname, this.rg);
+		return String.format("Account[id=%d, uuid=%s, rg=%s]", this.id, this.uuid, this.rg);
 	}
 }
 
