@@ -12,6 +12,7 @@ import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.EnterpriseModel;
 import com.onboarding.user.onboardinguser.repository.EnterpriseRepository;
+import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
 
 
@@ -26,7 +27,22 @@ public class EnterpriseService extends ExceptionHandleService  {
 
 	public Response save(EnterpriseModel enterprise){
 		try {
-						
+
+			EnterpriseModel enterpriseData = this.getByCnpj(enterprise.getCnpj());
+
+			if(enterpriseData != null && enterpriseData.getStatus() == Status.DISABLED) {
+				this.logger.error("Empresa desabilitada por tempo inderterminado.");
+				return Response.error(423, "EPS007", "Empresa desabilitada por tempo inderterminado.");
+			}
+
+			if(enterpriseData != null) {
+				this.logger.error("Esse CNPJ ja existe no banco de dados.");
+				return Response.error(409, "EPS008", "Esse CNPJ ja existe no banco de dados.");
+			}
+
+		
+			enterprise.newUuid();
+			enterprise.setCnpj(Document.clear(enterprise.getCnpj()));
 			this.repository.save(enterprise);
 			return null;
 		} catch(Exception e) {
@@ -69,6 +85,10 @@ public class EnterpriseService extends ExceptionHandleService  {
 			return null;
 		}
 		
+	}
+
+	public EnterpriseModel getByCnpj(String cnpj){
+		return this.repository.getByCnpj(Document.clear(cnpj));
 	}
 
 	public List<EnterpriseModel> getAll(){
@@ -141,7 +161,7 @@ public class EnterpriseService extends ExceptionHandleService  {
 
 	public EnterpriseModel getByUuid(String uuid){
 		return this.repository.getByUuid(uuid);
-		}
+	}
 	
 
 }

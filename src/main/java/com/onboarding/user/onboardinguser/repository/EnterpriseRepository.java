@@ -23,4 +23,8 @@ public interface EnterpriseRepository extends CrudRepository<EnterpriseModel,Lon
 	@Query("SELECT e FROM EnterpriseModel e WHERE e.uuid = :uuid")
 	public EnterpriseModel getByUuid(@Param("uuid") String uuid);
 
+	@Nullable
+	@Query("SELECT e FROM EnterpriseModel e WHERE e.cnpj = :cnpj")
+	public EnterpriseModel getByCnpj(@Param("cnpj") String cnpj);
+
 }
