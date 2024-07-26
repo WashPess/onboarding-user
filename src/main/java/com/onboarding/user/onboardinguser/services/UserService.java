@@ -19,14 +19,19 @@ import com.onboarding.user.onboardinguser.utils.Str;
 @Service
 @Transactional
 @SuppressWarnings("squid:S1192")
+
+// Classe de serviço para manipulação de usuários
 public class UserService extends ExceptionHandleService {
 	
+	// Repositório de usuários
  	private final UserRepository repository;
 
+	// Construtor da classe
 	UserService(UserRepository repository){
 		this.repository = repository;
 	}
 
+	// Método para salvar um usuário
 	public Response save(UserModel user){
 		try {
 
@@ -80,6 +85,7 @@ public class UserService extends ExceptionHandleService {
 			user.passwordHash();
 			user.newUuid();
 			
+			// Salva o usuário
 			this.repository.save(user);
 			return null;
 		} catch(Exception e) {
@@ -88,16 +94,20 @@ public class UserService extends ExceptionHandleService {
 		}
 	}
 
+	// Método para atualizar um usuário
 	public Response update(UserModel user){
 		try {
 
+			// Busca o usuário com base no uuid
 			UserModel userData = this.getByUuid(user.getUuid());
 			
+			// Caso o usuário não exista, retornar erro 404
 			if(userData == null) {
 				this.logger.error("O usuário não foi encontrado");
 				return Response.error(404, "USS006", "O usuário não foi encontrado.");
 			}
 
+			// Atualiza os dados do usuário
 			userData.setFirstName(user.getFirstName());
 			userData.setLastName(user.getLastName());
 			userData.setEmail(user.getEmail());
@@ -110,6 +120,7 @@ public class UserService extends ExceptionHandleService {
 		}
 	}
 	
+	// Método para deletar um usuário
 	public boolean delete(Long id) {
 		try {
 			Optional<UserModel> user = this.repository.findById(id);
@@ -125,14 +136,17 @@ public class UserService extends ExceptionHandleService {
 		}
 	}
 	
+	// Método para deletar um usuário com base no uuid
 	public Response deleteByUuid(String uuid) {
 		try {
 			
+			// Busca o usuário com base no uuid
 			UserModel user = this.getByUuid(uuid);
 			if(user == null) {
 				return Response.error(404, "USS010", "Usuário não encontrado.");
 			}
 
+			// Desabilita o usuário
 			user.setStatus(Status.DISABLED);
 			Date updatedAt = new Date();
 			user.setUpdatedAt(updatedAt);
@@ -144,17 +158,24 @@ public class UserService extends ExceptionHandleService {
 		}
 	}
 
+	// Método para restaurar um usuário com base no uuid
 	public Response restoreByUuid(String uuid) {
 		try {
 			
+			// Busca o usuário com base no uuid
 			UserModel user = this.getByUuid(uuid);
 			if(user == null) {
 				return Response.error(404, "USS012", "Usuário não encontrado.");
 			}
 
+			// Habilita o usuário
 			user.setStatus(Status.ENABLED);
+			
+			// Atualiza a data de atualização
 			Date updatedAt = new Date();
 			user.setUpdatedAt(updatedAt);
+
+			// Salva o usuário
 			this.repository.save(user);
 			return null;
 		} catch(Exception e) {
@@ -163,9 +184,11 @@ public class UserService extends ExceptionHandleService {
 		}
 	}
 
+	// Método para buscar um usuário com base no id
 	public UserModel getById(Long id){
 		Optional<UserModel> user = this.repository.findById(id);
 
+		// Caso o usuário não exista, retornar nulo
 		if(user.isEmpty()) {
 			return null;
 		}
@@ -173,22 +196,27 @@ public class UserService extends ExceptionHandleService {
 		return user.get();
 	}
 
+	// Método para buscar um usuário com base no uuid
 	public UserModel getByUuid(String uuid){
 		return this.repository.getByUuid(uuid);
 	}
 
+	// Método para buscar um usuário com base no email
 	public UserModel getByEmail(String email){
 		return this.repository.getByEmail(email);
 	}
 
+	// Método para buscar um usuário com base no nickname
 	public UserModel getByNickname(String nickname){
 		return this.repository.getByNickname(nickname);
 	}
 
+	// Método para buscar um usuário com base no documento
 	public UserModel getByDocument(String document){
 		return this.repository.getByDocument(Document.pad(Document.clear(document)));
 	}
 
+	// Método para buscar todos os usuários
 	public List<UserModel> getAll(){
 		return this.repository.getAllEnableds();
 	}

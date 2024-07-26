@@ -64,9 +64,9 @@ public class EnterpriseModel {
     
     @NotNull(message = "O campo razão social da empresa não pode ser vazio.")
     @NotBlank(message = "O campo de razão social da empresa não pode ser vazio.")
-    @Size(min=1, max=255, message = "A razão social ter no mínimo 1 e no máximo 255 caracteres.")
+    @Size(min=1, max=255, message = "A razão social deve ter no mínimo 1 e no máximo 255 caracteres.")
     @Column(name="corporateReason", nullable = false, columnDefinition = "VARCHAR(255)")
-    String corporateReason = "";
+    private String corporateReason = "";
 
     @NotNull(message = "O campo nome fantasia da empresa não pode ser vazio.")
     @NotBlank(message = "O campo nome fantasia da empresa não pode ser vazio.")

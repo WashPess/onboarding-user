@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -132,17 +133,66 @@ public class EnterpriseController extends ExceptionHandle {
 		return Response.result(Response.success(200, enterprises));
 	}
 
-	@DeleteMapping("/enterprise/{id}")
-    public ResponseEntity<Response> deleteEnterprise(@PathVariable Long id) {
-        try {
-            boolean isDeleted = service.delete(id);
-            if (!isDeleted) {
-                return Response.result(Response.error(404, "EPC006", "Empresa não encontrada ou não pôde ser excluída."));
-            }
-            return Response.result(Response.success(200));
-        } catch (Exception e) {
-            this.logger.error("Erro ao tentar excluir a empresa.", e);
-            return Response.result(Response.error(500, "EPC007", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
-        }
-    }
+	// deleta a empresa
+	@DeleteMapping("/enterprise/{uuid}")
+	ResponseEntity<Response> delete(@PathVariable Object uuid) {
+		try {
+
+			// cast de variavel 
+			String uuidStr = String.valueOf(uuid);
+
+			// verifica se o uuid é vazio
+			if(Str.Empty(uuidStr)) {
+				return Response.result(Response.error(404, "EPC006", "É necessário informar o uuid."));
+			}
+
+			// deleta a empresa
+			Response result = this.service.deleteByUuid(uuidStr);
+			if(result != null) {
+				return Response.result(result);
+			}
+
+			// retorna status de sucesso
+			return Response.result(Response.success(204));
+		} catch(Exception e) {
+			this.logger.error("Error ao tentar deletar a empresa por uuid.", e);
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				return Response.result(response);
+			}
+			return Response.result(Response.error(500, "EPC007", "Servidor indisponível no momento."));
+		}
+	}
+
+	// restaura a empresa
+	@PatchMapping("/enterprise/{uuid}")
+	ResponseEntity<Response> restore(@PathVariable Object uuid) {
+		try {
+
+			// cast de variavel 
+			String uuidStr = String.valueOf(uuid);
+
+			// verifica se o uuid é vazio
+			if(Str.Empty(uuidStr)) {
+				return Response.result(Response.error(404, "EPC008", "É necessário informar o uuid."));
+			}
+
+			// restaura o usuário
+			Response result = this.service.restoreByUuid(uuidStr);
+			if(result != null) {
+				return Response.result(result);
+			}
+
+			// retorna status de sucesso
+			return Response.result(Response.success(204));
+		} catch(Exception e) {
+			this.logger.error("Error ao tentar restaurar a empresa por uuid.", e);
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				return Response.result(response);
+			}
+			return Response.result(Response.error(500, "EPC009", "Servidor indisponível no momento."));
+		}
+	}
+
 }

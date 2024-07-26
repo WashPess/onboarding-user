@@ -1,12 +1,15 @@
 package com.onboarding.user.onboardinguser.services;
 
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
+import com.onboarding.user.onboardinguser.models.UserModel;
 import com.onboarding.user.onboardinguser.repository.PartnerRepository;
 import com.onboarding.user.onboardinguser.utils.Response;
 
@@ -109,5 +112,54 @@ public class PartnerService extends ExceptionHandleService {
 			return false;
 		}
 	}
+
+		// Método para deletar um usuário com base no uuid
+	public Response deleteByUuid(String uuid) {
+		try {
+			
+			// Busca o usuário com base no uuid
+			PartnerModel partner = this.getByUuid(uuid);
+			if(partner == null) {
+				return Response.error(404, "USS010", "Usuário não encontrado.");
+			}
+
+			// Desabilita o usuário
+			partner.setStatus(Status.DISABLED);
+			Date updatedAt = new Date();
+			partner.setUpdatedAt(updatedAt);
+			this.repository.save(partner);
+			return null;
+		} catch(Exception e) {
+			this.logger.error("Erro ao deletar usuário: ", e);
+			return Response.error(422, "USS011", "Servidor indisponível no momento.");
+		}
+	}
+
+	// Método para restaurar um usuário com base no uuid
+	public Response restoreByUuid(String uuid) {
+		try {
+			
+			// Busca o usuário com base no uuid
+			PartnerModel partner = this.getByUuid(uuid);
+			if(partner == null) {
+				return Response.error(404, "USS012", "Usuário não encontrado.");
+			}
+
+			// Habilita o usuário
+			partner.setStatus(Status.ENABLED);
+			
+			// Atualiza a data de atualização
+			Date updatedAt = new Date();
+			partner.setUpdatedAt(updatedAt);
+
+			// Salva o usuário
+			this.repository.save(partner);
+			return null;
+		} catch(Exception e) {
+			this.logger.error("Erro ao deletar usuário: ", e);
+			return Response.error(422, "USS013", "Servidor indisponível no momento.");
+		}
+	}
+
 
 }

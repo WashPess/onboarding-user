@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -167,31 +168,64 @@ public class PartnerController extends ExceptionHandle {
 		}
 	}
 
-	@DeleteMapping("/partner/{id}")
-    ResponseEntity<Response> delete(@PathVariable Object id) {
-        try {
+	@DeleteMapping("/partner/{uuid}")
+	ResponseEntity<Response> delete(@PathVariable Object uuid) {
+		try {
 
-			String idStr = String.valueOf(id);
-			if(Str.Empty(idStr)) {
-				this.logger.error("É necessário informar o id");
-				return Response.result(Response.error(400, "PTM020", "É necessário informar o id."));
+			// cast de variavel 
+			String uuidStr = String.valueOf(uuid);
+
+			// verifica se o uuid é vazio
+			if(Str.Empty(uuidStr)) {
+				return Response.result(Response.error(404, "PTC018", "É necessário informar o uuid."));
 			}
 
-			Long uid = Long.parseLong(idStr);
-			if(uid == 0) {
-                this.logger.error("É necessário envia um id válido");
-				return Response.result(Response.error(400, "PTM021", "É necessário enviar um id."));
+			// deleta o usuário
+			Response result = this.service.deleteByUuid(uuidStr);
+			if(result != null) {
+				return Response.result(result);
 			}
 
-            boolean isDeleted = service.delete(uid);
-            if (!isDeleted) {
-                return Response.result(Response.error(404, "PTM022", "Sócio já está desativado."));
-            }
-			
-            return Response.result(Response.success(204));
-        } catch (Exception e) {
-            this.logger.error("Erro ao tentar excluir a conta.", e);
-            return Response.result(Response.error(500, "PTM023", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
-        }
-    }
+			// retorna status de sucesso
+			return Response.result(Response.success(204));
+		} catch(Exception e) {
+			this.logger.error("Error ao tentar deletar o usuário por uuid.", e);
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				return Response.result(response);
+			}
+			return Response.result(Response.error(500, "PTC019", "Servidor indisponível no momento."));
+		}
+	}
+
+	@PatchMapping("/partner/{uuid}")
+	ResponseEntity<Response> restore(@PathVariable Object uuid) {
+		try {
+
+			// cast de variavel 
+			String uuidStr = String.valueOf(uuid);
+
+			// verifica se o uuid é vazio
+			if(Str.Empty(uuidStr)) {
+				return Response.result(Response.error(404, "PTC020", "É necessário informar o uuid."));
+			}
+
+			// restaura o usuário
+			Response result = this.service.restoreByUuid(uuidStr);
+			if(result != null) {
+				return Response.result(result);
+			}
+
+			// retorna status de sucesso
+			return Response.result(Response.success(204));
+		} catch(Exception e) {
+			this.logger.error("Error ao tentar restaurar o usuário por uuid.", e);
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				return Response.result(response);
+			}
+			return Response.result(Response.error(500, "PTC021", "Servidor indisponível no momento."));
+		}
+	}
+
 }

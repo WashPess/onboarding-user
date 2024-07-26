@@ -1,12 +1,14 @@
 package com.onboarding.user.onboardinguser.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.EnterpriseModel;
 import com.onboarding.user.onboardinguser.repository.EnterpriseRepository;
@@ -18,22 +20,13 @@ public class EnterpriseService extends ExceptionHandleService  {
 
 	private final EnterpriseRepository repository;
 
-	EnterpriseService(EnterpriseRepository repository) {
+	public EnterpriseService(EnterpriseRepository repository) {
 		this.repository = repository;
 	}
 
 	public Response save(EnterpriseModel enterprise){
 		try {
-
-			// para criar uma empresa é preciso no mínimo uma conta
-			// se o documento do sócio for uma conta bloqueada, não adicionar 
-			// os sócios que são donos da empresa não precisam ser usuários do sistema	
-
-			// TODO: fazer crud de sócios da empresa
-			// levantar as propriedades da model
-			// fazer o JSON
-			// fazer sql do bnco de dados
-			
+						
 			this.repository.save(enterprise);
 			return null;
 		} catch(Exception e) {
@@ -99,4 +92,56 @@ public class EnterpriseService extends ExceptionHandleService  {
 			return false;
 		}
 	}
+
+	public Response deleteByUuid(String uuid) {
+		try {
+			
+			// Busca a empresa com base no uuid
+			EnterpriseModel enterprise = this.getByUuid(uuid);
+			if(enterprise == null) {
+				return Response.error(404, "EPS003", "Empresa não encontrada.");
+			}
+
+			// Desabilita a empresa
+			enterprise.setStatus(Status.DISABLED);
+			Date updatedAt = new Date();
+			enterprise.setUpdatedAt(updatedAt);
+			this.repository.save(enterprise);
+			return null;
+		} catch(Exception e) {
+			this.logger.error("Erro ao deletar a empresa ", e);
+			return Response.error(422, "EPS004", "Servidor indisponível no momento.");
+		}
+	}
+
+	public Response restoreByUuid(String uuid) {
+		try {
+			
+			// Busca o usuário com base no uuid
+			EnterpriseModel enterprise = this.getByUuid(uuid);
+			if(enterprise == null) {
+				return Response.error(404, "EPS005", "Empresa não encontrada.");
+			}
+
+			// Habilita o usuário
+			enterprise.setStatus(Status.ENABLED);
+			
+			// Atualiza a data de atualização
+			Date updatedAt = new Date();
+			enterprise.setUpdatedAt(updatedAt);
+
+			// Salva o usuário
+			this.repository.save(enterprise);
+			return null;
+		} catch(Exception e) {
+			this.logger.error("Erro ao deletar a empresa ", e);
+			return Response.error(422, "EPS006", "Servidor indisponível no momento.");
+		}
+	}
+
+	public EnterpriseModel getByUuid(String uuid){
+		return this.repository.getByUuid(uuid);
+		}
+	
+
 }

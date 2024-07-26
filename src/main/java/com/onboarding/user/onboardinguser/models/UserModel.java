@@ -33,12 +33,15 @@ import jakarta.validation.constraints.Size;
 @Entity
 @DynamicUpdate
 @Table(name = "users")
+
+// Classe UserModel
 public class UserModel {
 
 	@JsonIgnore
 	@Transient 
 	Logger logger = LoggerFactory.getLogger(UserModel.class);
 
+	// Atributos da classe UserModel
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="id", columnDefinition = "BIGSERIAL PRIMARY KEY")
@@ -106,6 +109,7 @@ public class UserModel {
 	protected UserModel() {
 	}
 
+	// Construtor da classe UserModel
 	public UserModel(String email, String document, String firsName, String lastName, String nickname, String password, String confirmPassword) {
 
 		this.email = email;
@@ -122,11 +126,13 @@ public class UserModel {
 
 	}
 
+	// Métodos da classe UserModel
 	public String newUuid() {
 		this.uuid = UUID.randomUUID().toString();
 		return this.uuid;
 	}
 
+	// Método para gerar o hash da senha
 	public String passwordHash(){
 
 		PasswordHasher hasher = new PasswordHasher();

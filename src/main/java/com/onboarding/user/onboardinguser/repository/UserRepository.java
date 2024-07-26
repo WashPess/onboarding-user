@@ -11,26 +11,34 @@ import com.onboarding.user.onboardinguser.models.UserModel;
 import jakarta.annotation.Nullable;
 
 @Repository
+
+// Interface de repositório para manipulação de usuários
 public interface UserRepository extends CrudRepository<UserModel,Long> {
 	
+	// Método para buscar todos os usuários
 	@SuppressWarnings("null")
 	public List<UserModel> findAll();
 	
+	// Método para buscar um usuário pelo id
 	@Nullable
 	public UserModel findById(long id);
 	
+	// Método para buscar um usuário pelo uuid
 	@Nullable
 	@Query("SELECT u FROM UserModel u WHERE u.uuid = :uuid")
 	public UserModel getByUuid(@Param("uuid") String uuid);
 
+	// Método para buscar um usuário pelo email
 	@Nullable
 	@Query("SELECT u FROM UserModel u WHERE u.email = :email")
 	public UserModel getByEmail(@Param("email") String email);
 
+	// Método para buscar um usuário pelo documento
 	@Nullable
 	@Query("SELECT u FROM UserModel u WHERE u.document = :doc")
 	public UserModel getByDocument(@Param("doc") String document);
 
+	// Método para buscar um usuário pelo nickname
 	@Nullable
 	@Query("SELECT u FROM UserModel u WHERE u.nickname = :nick")
 	public UserModel getByNickname(@Param("nick") String nickname);

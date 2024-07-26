@@ -2,7 +2,9 @@ package com.onboarding.user.onboardinguser.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.onboarding.user.onboardinguser.models.EnterpriseModel;
 
@@ -15,4 +17,10 @@ public interface EnterpriseRepository extends CrudRepository<EnterpriseModel,Lon
 
 	@Nullable	
 	public EnterpriseModel findById(long id);
+
+	// Método para buscar um usuário pelo uuid
+	@Nullable
+	@Query("SELECT e FROM EnterpriseModel e WHERE e.uuid = :uuid")
+	public EnterpriseModel getByUuid(@Param("uuid") String uuid);
+
 }
