@@ -148,7 +148,7 @@ public class PartnerController extends ExceptionHandle {
 				return Response.result(Response.error(404, "PTM017", "É necessário informar o uuid."));
 			}
 
-			PartnerModel partner = this.service.getByUuid(uuidStr);
+			PartnerModel partner = this.service.getByUuidEnabled(uuidStr);
 			if(partner == null) {
 				this.logger.error("Erro ao tentar busca uma conta.");
 				return Response.result(Response.error(404, "PTM018", "O Sócio não foi encontrado."));

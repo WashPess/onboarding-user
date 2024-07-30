@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
-import com.onboarding.user.onboardinguser.models.UserModel;
 import com.onboarding.user.onboardinguser.repository.PartnerRepository;
+import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
 
 import jakarta.transaction.Transactional;
@@ -29,6 +29,21 @@ public class PartnerService extends ExceptionHandleService {
 	public Response save(PartnerModel partner){
 		try {
 
+			// se o email já existir, retornar uma error (409) de dado duplicado
+			PartnerModel partnerData = this.repository.getByEmail(partner.getEmail());
+			if(partnerData != null) {
+				this.logger.error("O email do sócio ja existe na base de dados");
+				return Response.error(409, "PTS000", "O email do sócio ja existe na base de dados.");
+			}
+
+			// se o documento já existir, retornar uma error (409) de dado duplicado
+			partner.setDocument(Document.pad(Document.clear(partner.getDocument())));
+			PartnerModel partnerDataWithDocument = this.repository.getByDocument(partner.getDocument());
+			if(partnerDataWithDocument != null) {
+				this.logger.error("O documento do sócio ja existe na base de dados");
+				return Response.error(409, "PTS001", "O documento do sócio ja existe na base de dados.");
+			}
+
 			partner.newUuid();
 			partner.setFullName(partner.getFirstName() + " " + partner.getLastName());
 
@@ -39,11 +54,11 @@ public class PartnerService extends ExceptionHandleService {
 			Response resp = ExceptionHandleService.duplicateValue(e);
 			if(resp != null) {
 				this.logger.error("Erro de dados duplicados no sócio", e);
-				return Response.error(409, "PTS000", "Erro de valores duplicados do sócio na base da dados."); 
+				return Response.error(409, "PTS002", "Erro de valores duplicados do sócio na base da dados."); 
 			}
 
 			this.logger.error("Erro na base de dados ao tentar salvar o sócio.", e);
-			return Response.error(422, "PTS001", "Base de dados indisponivel no momento.");
+			return Response.error(422, "PTS003", "Base de dados indisponivel no momento.");
 		}
     }
 
@@ -54,7 +69,7 @@ public class PartnerService extends ExceptionHandleService {
 			PartnerModel partnerData = this.repository.getByUuid(partner.getUuid());
 			if(partnerData == null) {
 				this.logger.error("O sócio não existe na base de dados");
-				return Response.error(404, "PTS002", "O sócio não existe na base de dados.");
+				return Response.error(404, "PTS004", "O sócio não existe na base de dados.");
 			}
 
 			partnerData.setFirstName(partner.getFirstName());
@@ -68,7 +83,7 @@ public class PartnerService extends ExceptionHandleService {
 			return Response.success(200, partnerUpdate);
 		} catch(Exception e) {
 			this.logger.error("Erro na base de dados.", e);
-			return Response.error(422, "PTS003", "Base de dados indisponivel no momento.");
+			return Response.error(422, "PTS005", "Base de dados indisponivel no momento.");
 		}
 	}
 
@@ -97,6 +112,19 @@ public class PartnerService extends ExceptionHandleService {
 		}
 	}
 
+	public PartnerModel getByEmail(String email){
+		try {
+			return this.repository.getByEmail(email);
+		} catch(Exception e) {
+			this.logger.error("Erro na base de dados.", e);
+			return null;
+		}
+	}
+
+	public PartnerModel getByUuidEnabled(String uuid){
+		return this.repository.getByUuidEnabled(uuid);
+	}
+
 	public boolean delete(Long id){
 		try {
 			Optional<PartnerModel> enterprise = this.repository.findById(id);
@@ -113,14 +141,18 @@ public class PartnerService extends ExceptionHandleService {
 		}
 	}
 
-		// Método para deletar um usuário com base no uuid
+	// Método para deletar um usuário com base no uuid
 	public Response deleteByUuid(String uuid) {
 		try {
 			
 			// Busca o usuário com base no uuid
 			PartnerModel partner = this.getByUuid(uuid);
 			if(partner == null) {
-				return Response.error(404, "USS010", "Usuário não encontrado.");
+				return Response.error(404, "PTS006", "O sócio não encontrado.");
+			}
+
+			if(partner.getStatus() == Status.DISABLED) {
+				return Response.error(400, "PTS007", "O sócio está desabilitado por tempo indeterminado.");
 			}
 
 			// Desabilita o usuário
@@ -130,8 +162,8 @@ public class PartnerService extends ExceptionHandleService {
 			this.repository.save(partner);
 			return null;
 		} catch(Exception e) {
-			this.logger.error("Erro ao deletar usuário: ", e);
-			return Response.error(422, "USS011", "Servidor indisponível no momento.");
+			this.logger.error("Erro ao deletar o sócio: ", e);
+			return Response.error(422, "PTS008", "Servidor indisponível no momento.");
 		}
 	}
 
@@ -142,7 +174,11 @@ public class PartnerService extends ExceptionHandleService {
 			// Busca o usuário com base no uuid
 			PartnerModel partner = this.getByUuid(uuid);
 			if(partner == null) {
-				return Response.error(404, "USS012", "Usuário não encontrado.");
+				return Response.error(404, "PTS009", "Sócio não encontrado.");
+			}
+
+			if(partner.getStatus() == Status.ENABLED) {
+				return Response.error(400, "PTS010", "Este Sócio já está ativo no sistema.");
 			}
 
 			// Habilita o usuário
@@ -156,8 +192,8 @@ public class PartnerService extends ExceptionHandleService {
 			this.repository.save(partner);
 			return null;
 		} catch(Exception e) {
-			this.logger.error("Erro ao deletar usuário: ", e);
-			return Response.error(422, "USS013", "Servidor indisponível no momento.");
+			this.logger.error("Erro ao deletar o Sócio: ", e);
+			return Response.error(422, "PTS011", "Servidor indisponível no momento.");
 		}
 	}
 

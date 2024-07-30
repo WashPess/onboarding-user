@@ -2,6 +2,7 @@ package com.onboarding.user.onboardinguser.utils;
 
 import java.util.regex.Pattern;
 
+@SuppressWarnings({"squid:S6353", "squid:S5869"}) // Constantes de regex
 public class RegexCompile {
 	
 	private RegexCompile() {}

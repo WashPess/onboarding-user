@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onboarding.user.onboardinguser.enums.Status;
+import com.onboarding.user.onboardinguser.utils.CPFChecker;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.PasswordHasher;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
@@ -364,6 +365,14 @@ public class UserModel {
 			String message = String.format("O documento deve conter somente numeros. %s", this.document);
 			this.logger.error(message);
 			return Response.error(400, "USE011", "O documento deve conter somente numeros.");
+		}
+
+
+		String cpfAux = CPFChecker.unmask(this.document);
+		if(cpfAux.length() <= 11 && !CPFChecker.isValid(cpfAux)) {
+			String message = String.format("O documento deve ser um cpf válido. %s", this.document);
+			this.logger.error(message);
+			return Response.error(400, "USE034", "O documento deve ser um cpf válido.");
 		}
 
 		return null;

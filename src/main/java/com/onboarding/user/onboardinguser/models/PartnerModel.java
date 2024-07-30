@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onboarding.user.onboardinguser.enums.Marital;
 import com.onboarding.user.onboardinguser.enums.Status;
+import com.onboarding.user.onboardinguser.utils.CPFChecker;
 import com.onboarding.user.onboardinguser.utils.RegexCompile;
 import com.onboarding.user.onboardinguser.utils.Response;
 
@@ -160,7 +161,7 @@ public class PartnerModel {
 
 		if(this.document.length() == 0) {
 			this.logger.error("O documento não pode ser vazio");
-			return Response.error(400, "PAM000", "O documento não pode ser vazio.");
+			return Response.error(400, "PTM000", "O documento não pode ser vazio.");
 		}
 		
 		if(this.document.length() < 11) {
@@ -186,7 +187,14 @@ public class PartnerModel {
 			this.logger.error(message);
 			return Response.error(400, "PTM004", "O documento deve conter somente numeros.");
 		}
-        
+
+		String cpfAux = CPFChecker.unmask(this.document);
+		if(cpfAux.length() <= 11 && !CPFChecker.isValid(cpfAux)) {
+			String message = String.format("O documento deve ser um cpf válido. %s", this.document);
+			this.logger.error(message);
+			return Response.error(400, "PTM022", "O documento deve ser um cpf válido.");
+		}
+
         return null;
 	}
 
@@ -303,7 +311,7 @@ public class PartnerModel {
 		if(this.address.length() > 60) {
 			String message = String.format("O endereço deve conter no máximo 60 caracteres. %s", this.email);
 			this.logger.error(message);
-			return Response.error(400, "PTM020", "O endereço deve conter no máximo 60 caracteres.");
+			return Response.error(400, "PTM021", "O endereço deve conter no máximo 60 caracteres.");
 		}
 
 		return null;

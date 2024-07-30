@@ -24,9 +24,17 @@ public interface PartnerRepository extends PagingAndSortingRepository<PartnerMod
 	@Nullable
 	@Query("SELECT p FROM PartnerModel p WHERE p.uuid = :uuid")
 	public PartnerModel getByUuid(@Param("uuid") String uuid);
+
+	@Nullable
+	@Query("SELECT p FROM PartnerModel p WHERE p.uuid = :uuid AND status = 'enabled'")
+	public PartnerModel getByUuidEnabled(@Param("uuid") String uuid);
 	
 	@Nullable
 	@Query("SELECT p FROM PartnerModel p WHERE p.document = :doc")
 	public PartnerModel getByDocument(@Param("doc") String document);
+
+	@Nullable
+	@Query("SELECT p FROM PartnerModel p WHERE p.email = :email")
+	public PartnerModel getByEmail(@Param("email") String email);
     
 }

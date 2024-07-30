@@ -1,19 +1,24 @@
 package com.onboarding.user.onboardinguser.utils;
 
-
+@SuppressWarnings("squid:S6353")
 public class Document {
+
+	private Document() {
+	}
 
 	public static String pad(String document) {
 		return String.format("%1$" + 14 + "s", document).replace(' ', 'X');
 	}
 
 	public static String clear(String document) {
-		return document.replaceAll("[-+.^:,/]","");
+		String doc = document.replaceAll("[-+.^:,/]","");
+		doc = doc.replaceAll("[^0-9]", "");
+		return doc;
 	}
 
 	public static String mask(String document) {
 		boolean isCpf = document.contains("X");
-		document = document.replaceAll("[^0-9]", "");
+		document = Document.clear(document);
 		if(isCpf) {
       		return document.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
 		}

@@ -2,10 +2,14 @@ package com.onboarding.user.onboardinguser.utils;
 
 import java.util.InputMismatchException;
 
-public class CPF {
+public class CPFChecker {
+	
+	private CPFChecker() {}
 
-	public static boolean isCPF(String cpf) {
+	public static boolean isValid(String cpf) {
 		try {
+
+			cpf = Document.clear(cpf);
 			
 			if (
 				cpf.equals("00000000000")
@@ -23,54 +27,59 @@ public class CPF {
 				return false;
 			}
 
-			char dig10, dig11;
-        	int sm, i, r, peso;
+			char dig10;
+			char dig11;
+			int sm;
+			int i;
+			int r;
+			int weight;
 	
 			// Calculo do 1o. Digito Verificador
-			sm = 0;
-			peso = 10;
+			sm = 0; // vriavel auxiliar - acumulador
+			weight = 10;
 			
 			// converte o i-esimo caractere do cpf em um numero:
 			// por exemplo, transforma o caractere "0" no inteiro 0
 			// (48 eh a posicao de "0" na tabela ASCII)
 			for (i=0; i<9; i++) {
-				sm = sm + ((cpf.charAt(i) - 48) * peso);
-				peso = peso - 1;
+				sm = sm + ((cpf.charAt(i) - 48) * weight);
+				weight = weight - 1;
 			}
 
 			r = 11 - (sm % 11);
 			dig10 = '0';
-			if (!((r == 10) || (r == 11))) {
+			if (r != 10 && r != 11) {
 				dig10 = (char)(r + 48); 
 			}
 
 			// Calculo do 2o. Digito Verificador
 			sm = 0;
-			peso = 11;
+			weight = 11;
 			for(i=0; i<10; i++) {
-				sm = sm + ((cpf.charAt(i) - 48) * peso);
-				peso = peso - 1;
+				sm = sm + ((cpf.charAt(i) - 48) * weight);
+				weight = weight - 1;
 			}
 
 			r = 11 - (sm % 11);
 			dig11 = '0';
-			if (!((r == 10) || (r == 11))) {
+			if (r != 10 && r != 11) {
 				dig11 = (char)(r + 48);
 			}
 
-			if ((dig10 == cpf.charAt(9)) && (dig11 == cpf.charAt(10))){
-				return true;
-			}
-				
-			return false;
+			return (dig10 == cpf.charAt(9)) && (dig11 == cpf.charAt(10));
 		} catch (InputMismatchException erro) {
 			return false;
 		}
 	}
 
-	public static String imprimeCPF(String cpf) {
-		return(cpf.substring(0, 3) + "." + cpf.substring(3, 6) + "." +
-		cpf.substring(6, 9) + "-" + cpf.substring(9, 11));
+	public static String mask(String cpf) {
+		return(cpf.substring(0, 3) + "." + cpf.substring(3, 6) + "." + cpf.substring(6, 9) + "-" + cpf.substring(9, 11));
 	}
+
+	public static String unmask(String cpf) {
+		return Document.clear(cpf);
+	}
+
+	
     
 }
