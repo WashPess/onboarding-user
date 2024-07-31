@@ -59,7 +59,7 @@ public class PartnerService extends ExceptionHandleService {
 
 			this.logger.error("Erro na base de dados ao tentar salvar o sócio.", e);
 			return Response.error(422, "PTS003", "Base de dados indisponivel no momento.");
-		}
+		} 
     }
 
 	public Response update(PartnerModel partner){
@@ -152,7 +152,7 @@ public class PartnerService extends ExceptionHandleService {
 			}
 
 			if(partner.getStatus() == Status.DISABLED) {
-				return Response.error(400, "PTS007", "O sócio está desabilitado por tempo indeterminado.");
+				return Response.error(423, "PTS007", "O sócio está desabilitado por tempo indeterminado.");
 			}
 
 			// Desabilita o usuário
@@ -196,6 +196,5 @@ public class PartnerService extends ExceptionHandleService {
 			return Response.error(422, "PTS011", "Servidor indisponível no momento.");
 		}
 	}
-
 
 }

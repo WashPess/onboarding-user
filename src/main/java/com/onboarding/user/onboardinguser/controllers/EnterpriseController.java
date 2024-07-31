@@ -21,8 +21,8 @@ import com.onboarding.user.onboardinguser.utils.Str;
 
 import jakarta.validation.Valid;
 
-@SuppressWarnings("squid:S1192")
 @RestController
+@SuppressWarnings("squid:S1192")
 public class EnterpriseController extends ExceptionHandle {
 
     private final EnterpriseService service;
@@ -133,7 +133,7 @@ public class EnterpriseController extends ExceptionHandle {
 		return Response.result(Response.success(200, enterprises));
 	}
 
-	// deleta a empresa
+	// deleta a empresa por uuid
 	@DeleteMapping("/enterprise/{uuid}")
 	ResponseEntity<Response> delete(@PathVariable Object uuid) {
 		try {
@@ -164,7 +164,7 @@ public class EnterpriseController extends ExceptionHandle {
 		}
 	}
 
-	// restaura a empresa
+	// restaura a empresa por uuid
 	@PatchMapping("/enterprise/{uuid}")
 	ResponseEntity<Response> restore(@PathVariable Object uuid) {
 		try {

@@ -122,6 +122,10 @@ public class EnterpriseService extends ExceptionHandleService  {
 				return Response.error(404, "EPS003", "Empresa não encontrada.");
 			}
 
+			if(enterprise.getStatus() == Status.DISABLED) {
+				return Response.error(423, "EPS009", "A empresa está desabilitado por tempo indeterminado.");
+			}
+
 			// Desabilita a empresa
 			enterprise.setStatus(Status.DISABLED);
 			Date updatedAt = new Date();
@@ -141,6 +145,10 @@ public class EnterpriseService extends ExceptionHandleService  {
 			EnterpriseModel enterprise = this.getByUuid(uuid);
 			if(enterprise == null) {
 				return Response.error(404, "EPS005", "Empresa não encontrada.");
+			}
+
+			if(enterprise.getStatus() == Status.ENABLED) {
+				return Response.error(400, "EPS010", "Esta empresa já está ativa no sistema.");
 			}
 
 			// Habilita o usuário
