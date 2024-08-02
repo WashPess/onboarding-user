@@ -81,7 +81,7 @@ public class UserService extends ExceptionHandleService {
 			}
 
 			// Prepara o usuário para salvar
-			user.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
+			user.setFullName("%s %s".formatted(user.getFirstName(), user.getLastName()));
 			user.passwordHash();
 			user.newUuid();
 			

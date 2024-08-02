@@ -109,7 +109,7 @@ public class PartnerModel {
         this.document = document;
         this.lastName = lastName;
         this.firstName = firstName;
-		this.fullName = String.format("%s %s", this.firstName, this.lastName);
+		this.fullName = "%s %s".formatted(this.firstName, this.lastName);
     }
 
     public String newUuid() {
@@ -165,32 +165,32 @@ public class PartnerModel {
 		}
 		
 		if(this.document.length() < 11) {
-			String message = String.format("O documento deve conter no mínimo que 11 caracteres. %s", this.document);
+			String message = "O documento deve conter no mínimo que 11 caracteres. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "PTM001", "O documento deve conter no mínimo 11 caracteres.");
 		}
 
 		if(this.document.length() > 18) {
-			String message = String.format("O documento deve conter no máximo que 18 caracteres. %s", this.document);
+			String message = "O documento deve conter no máximo que 18 caracteres. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "PTM002", "O documento deve conter no máximo que 18 caracteres.");
 		}
 
 		if(RegexCompile.HasCharSpecialForDocument.matcher(this.document).find()) {
-			String message = String.format("O documento não pode conter caracteres especiais. %s", this.document);
+			String message = "O documento não pode conter caracteres especiais. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "PTM003", "O documento não pode conter caracteres especiais.");
 		}
 
 		if(!RegexCompile.OnlyNumberForDocument.matcher(this.document).find()) {
-			String message = String.format("O documento deve conter somente numeros. %s", this.document);
+			String message = "O documento deve conter somente numeros. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "PTM004", "O documento deve conter somente numeros.");
 		}
 
 		String cpfAux = CPFChecker.unmask(this.document);
 		if(cpfAux.length() <= 11 && !CPFChecker.isValid(cpfAux)) {
-			String message = String.format("O documento deve ser um cpf válido. %s", this.document);
+			String message = "O documento deve ser um cpf válido. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "PTM022", "O documento deve ser um cpf válido.");
 		}
@@ -206,31 +206,31 @@ public class PartnerModel {
 		}
 
 		if(this.email.length() < 8) {
-			String message = String.format("O email deve conter no mínimo 8 caracteres. %s", this.email);
+			String message = "O email deve conter no mínimo 8 caracteres. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "PTM006", "O email deve conter no mínimo 8 caracteres.");
 		}
 
 		if(this.email.length() > 40) {
-			String message = String.format("O email deve conter no máximo 40 caracteres. %s", this.email);
+			String message = "O email deve conter no máximo 40 caracteres. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "PTM007", "O email deve conter no máximo 40 caracteres.");
 		}
 
 		if(!this.email.contains("@")) {
-			String message = String.format("O email deve conter o caracter '@'. %s", this.email);
+			String message = "O email deve conter o caracter '@'. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "PTM008", "O email deve conter o caracter '@'");
 		}
 
 		if(!this.email.contains(".")) {
-			String message = String.format("O email deve conter um domínio válido. %s", this.email);
+			String message = "O email deve conter um domínio válido. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "PTM009", "O email deve conter um domínio válido");
 		}
 		
 		if(RegexCompile.HasCharSpecialForEmail.matcher(this.email).find()) {
-			String message = String.format("O email não pode ter caracter especial. %s", this.email);
+			String message = "O email não pode ter caracter especial. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "PTM010", "O email não pode ter caracter especial.");
 		}
@@ -246,20 +246,20 @@ public class PartnerModel {
 		}
 
 		if(this.firstName.length() < 2) {
-			String message = String.format("O primeiro nome não pode ser menor que 2 caracteres. %s", this.firstName);
+			String message = "O primeiro nome não pode ser menor que 2 caracteres. %s".formatted(this.firstName);
 			this.logger.error(message);
 			return Response.error(400, "PTM012", "O primeiro nome não pode ser menor que 2 caracteres.");
 
 		}
 
 		if(this.firstName.length() > 40) {
-			String message = String.format("O primeiro nome não pode ser maior que 40 caracteres. %s", this.firstName);
+			String message = "O primeiro nome não pode ser maior que 40 caracteres. %s".formatted(this.firstName);
 			this.logger.error(message);
 			return Response.error(400, "PTM013", "O primeiro nome não pode ser maior que 40 caracteres.");
 		}
 		
 		if(!RegexCompile.OnlyLetter.matcher(this.firstName).find()) {
-			String message = String.format("O primeiro nome deve conter somente letras. %s", this.firstName);
+			String message = "O primeiro nome deve conter somente letras. %s".formatted(this.firstName);
 			this.logger.error(message);
 			return Response.error(400, "PTM014", "O primeiro nome deve conter somente letras.");
 		}
@@ -275,19 +275,19 @@ public class PartnerModel {
 		}
 
 		if(this.lastName.length() < 2) {
-			String message = String.format("O último nome não pode ser menor que 2 caracteres. %s", this.lastName);
+			String message = "O último nome não pode ser menor que 2 caracteres. %s".formatted(this.lastName);
 			this.logger.error(message);
 			return Response.error(400, "PTM016", "O último nome não pode ser menor que 2 caracteres.");
 		}
 
 		if(this.lastName.length() > 40) {
-			String message = String.format("O último nome não pode ser maior que 40 caracteres. %s", this.lastName);
+			String message = "O último nome não pode ser maior que 40 caracteres. %s".formatted(this.lastName);
 			this.logger.error(message);
 			return Response.error(400, "PTM017", "O último nome não pode ser maior que 40 caracteres.");
 		}
 		
 		if(!RegexCompile.OnlyLetter.matcher(this.lastName).find()) {
-			String message = String.format("O último nome deve conter somente letras. %s", this.lastName);
+			String message = "O último nome deve conter somente letras. %s".formatted(this.lastName);
 			this.logger.error(message);
 			return Response.error(400, "PTM018", "O último nome deve conter somente letras.");
 		}
@@ -303,13 +303,13 @@ public class PartnerModel {
 		}
 
 		if(this.address.length() < 8) {
-			String message = String.format("O endereço deve conter no mínimo 2 caracteres. %s", this.email);
+			String message = "O endereço deve conter no mínimo 2 caracteres. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "PTM020", "O endereço deve conter no mínimo 8 caracteres");
 		}
 
 		if(this.address.length() > 60) {
-			String message = String.format("O endereço deve conter no máximo 60 caracteres. %s", this.email);
+			String message = "O endereço deve conter no máximo 60 caracteres. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "PTM021", "O endereço deve conter no máximo 60 caracteres.");
 		}
@@ -325,19 +325,19 @@ public class PartnerModel {
 		}
 
 		if(this.phone.length() < 8) {
-			String message = String.format("O telefone deve conter no mínimo 8 caracteres. %s", this.phone);
+			String message = "O telefone deve conter no mínimo 8 caracteres. %s".formatted(this.phone);
 			this.logger.error(message);
 			return Response.error(400, "PTM022", "O telefone deve conter no mínimo 8 caracteres.");
 		}
 
 		if(this.phone.length() > 20) {
-			String message = String.format("O telefone deve conter no máximo 20 caracteres. %s", this.phone);
+			String message = "O telefone deve conter no máximo 20 caracteres. %s".formatted(this.phone);
 			this.logger.error(message);
 			return Response.error(400, "PTM023", "O telefone deve conter no máximo 20 caracteres.");
 		}
 
 		if(!RegexCompile.OnlyNumberForPhone.matcher(this.phone).find()) {
-			String message = String.format("O telefone deve conter somente números. %s", this.phone);
+			String message = "O telefone deve conter somente números. %s".formatted(this.phone);
 			this.logger.error(message);
 			return Response.error(400, "PTM024", "O telefone deve conter somente números.");
 		}
@@ -357,7 +357,7 @@ public class PartnerModel {
 
 	@Override
     public String toString() {
-        return String.format("PartnerModel[id=%d, email='%s', document='%s', firstName='%s', lastName='%s', fullName=%s, address=%s, phone=%s]", id, email, document, firstName, lastName, fullName, address, phone);
+        return "PartnerModel[id=%d, email='%s', document='%s', firstName='%s', lastName='%s', fullName=%s, address=%s, phone=%s]".formatted(id, email, document, firstName, lastName, fullName, address, phone);
     }
 
 }

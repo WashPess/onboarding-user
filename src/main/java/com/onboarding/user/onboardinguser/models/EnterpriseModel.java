@@ -95,6 +95,6 @@ public class EnterpriseModel {
 
     @Override
     public String toString() {
-        return String.format("Enterprise[id=%d, company=%s, timezone=%s, address=%s, cnpj=%s, corporateReason=%s]", this.id, this.company, this.timezone, this.address, this.cnpj, this.corporateReason);
+        return "Enterprise[id=%d, company=%s, timezone=%s, address=%s, cnpj=%s, corporateReason=%s]".formatted(this.id, this.company, this.timezone, this.address, this.cnpj, this.corporateReason);
     }
 }

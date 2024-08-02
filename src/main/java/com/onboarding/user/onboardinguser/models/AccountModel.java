@@ -145,13 +145,13 @@ public class AccountModel {
 		}
 		
 		if(this.rg.length() < 12) {
-			String message = String.format("O rg deve conter no mínimo que 12 caracteres. %s", this.rg);
+			String message = "O rg deve conter no mínimo que 12 caracteres. %s".formatted(this.rg);
 			this.logger.error(message);
 			return Response.error(400, "ACM010", "O rg deve conter no mínimo 12 caracteres.");
 		}
 
 		if(this.rg.length() > 12) {
-			String message = String.format("O rg deve conter no mínimo que 12 caracteres. %s", this.rg);
+			String message = "O rg deve conter no mínimo que 12 caracteres. %s".formatted(this.rg);
 			this.logger.error(message);
 			return Response.error(400, "ACM011", "O rg deve conter no mínimo que 12 caracteres.");
 		}
@@ -211,7 +211,7 @@ public class AccountModel {
 
 	@Override
 	public String toString() {
-		return String.format("Account[id=%d, uuid=%s, rg=%s]", this.id, this.uuid, this.rg);
+		return "Account[id=%d, uuid=%s, rg=%s]".formatted(this.id, this.uuid, this.rg);
 	}
 }
 

@@ -117,7 +117,7 @@ public class UserModel {
 		this.document = Document.pad(Document.clear(document));
 		this.firstName = firsName;
 		this.lastName = lastName;
-		this.fullName = String.format("%s %s", this.firstName, this.lastName);
+		this.fullName = "%s %s".formatted(this.firstName, this.lastName);
 		this.nickname = nickname;
 		this.password = password;
 		this.confirmPassword = confirmPassword;
@@ -303,31 +303,31 @@ public class UserModel {
 		}
 
 		if(this.email.length() < 8) {
-			String message = String.format("O email deve conter no mínimo 8 caracteres. %s", this.email);
+			String message = "O email deve conter no mínimo 8 caracteres. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "USE002", "O email deve conter no mínimo 8 caracteres");
 		}
 
 		if(this.email.length() > 40) {
-			String message = String.format("O email deve conter no máximo 40 caracteres. %s", this.email);
+			String message = "O email deve conter no máximo 40 caracteres. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "USE003", "O email deve conter no máximo 40 caracteres.");
 		}
 
 		if(!this.email.contains("@")) {
-			String message = String.format("O email deve conter o caracter '@'. %s", this.email);
+			String message = "O email deve conter o caracter '@'. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "USE004", "O email deve conter o caracter '@'");
 		}
 
 		if(!this.email.contains(".")) {
-			String message = String.format("O email deve conter um domínio válido. %s", this.email);
+			String message = "O email deve conter um domínio válido. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "USE005", "O email deve conter um domínio válido");
 		}
 		
 		if(RegexCompile.HasCharSpecialForEmail.matcher(this.email).find()) {
-			String message = String.format("O email não pode ter caracter especial. %s", this.email);
+			String message = "O email não pode ter caracter especial. %s".formatted(this.email);
 			this.logger.error(message);
 			return Response.error(400, "USE006", "O email não pode ter caracter especial.");
 		}
@@ -344,25 +344,25 @@ public class UserModel {
 		}
 		
 		if(this.document.length() < 14) {
-			String message = String.format("O documento deve conter no mínimo que 11 caracteres. %s", this.document);
+			String message = "O documento deve conter no mínimo que 11 caracteres. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "USE008", "O documento deve conter no mínimo 11 caracteres.");
 		}
 
 		if(this.document.length() > 19) {
-			String message = String.format("O documento deve conter no mínimo que 11 caracteres. %s", this.document);
+			String message = "O documento deve conter no mínimo que 11 caracteres. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "USE009", "O documento deve conter no mínimo que 11 caracteres.");
 		}
 
 		if(RegexCompile.HasCharSpecialForDocument.matcher(this.document).find()) {
-			String message = String.format("O documento não pode conter caracteres especiais. %s", this.document);
+			String message = "O documento não pode conter caracteres especiais. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "USE010", "O documento não pode conter caracteres especiais.");
 		}
 
 		if(!RegexCompile.OnlyNumberForDocument.matcher(this.document).find()) {
-			String message = String.format("O documento deve conter somente numeros. %s", this.document);
+			String message = "O documento deve conter somente numeros. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "USE011", "O documento deve conter somente numeros.");
 		}
@@ -370,7 +370,7 @@ public class UserModel {
 
 		String cpfAux = CPFChecker.unmask(this.document);
 		if(cpfAux.length() <= 11 && !CPFChecker.isValid(cpfAux)) {
-			String message = String.format("O documento deve ser um cpf válido. %s", this.document);
+			String message = "O documento deve ser um cpf válido. %s".formatted(this.document);
 			this.logger.error(message);
 			return Response.error(400, "USE034", "O documento deve ser um cpf válido.");
 		}
@@ -386,20 +386,20 @@ public class UserModel {
 		}
 
 		if(this.firstName.length() < 2) {
-			String message = String.format("O primeiro nome não pode ser menor que 2 caracteres. %s", this.firstName);
+			String message = "O primeiro nome não pode ser menor que 2 caracteres. %s".formatted(this.firstName);
 			this.logger.error(message);
 			return Response.error(400, "USE013", "O primeiro nome não pode ser menor que 2 caracteres.");
 
 		}
 
 		if(this.firstName.length() > 40) {
-			String message = String.format("O primeiro nome não pode ser maior que 40 caracteres. %s", this.firstName);
+			String message = "O primeiro nome não pode ser maior que 40 caracteres. %s".formatted(this.firstName);
 			this.logger.error(message);
 			return Response.error(400, "USE014", "O primeiro nome não pode ser maior que 40 caracteres.");
 		}
 		
 		if(!RegexCompile.OnlyLetter.matcher(this.firstName).find()) {
-			String message = String.format("O primeiro nome deve conter somente letras. %s", this.firstName);
+			String message = "O primeiro nome deve conter somente letras. %s".formatted(this.firstName);
 			this.logger.error(message);
 			return Response.error(400, "USE015", "O primeiro nome deve conter somente letras.");
 		}
@@ -415,19 +415,19 @@ public class UserModel {
 		}
 
 		if(this.lastName.length() < 2) {
-			String message = String.format("O último nome não pode ser menor que 2 caracteres. %s", this.lastName);
+			String message = "O último nome não pode ser menor que 2 caracteres. %s".formatted(this.lastName);
 			this.logger.error(message);
 			return Response.error(400, "USE017", "O último nome não pode ser menor que 2 caracteres.");
 		}
 
 		if(this.lastName.length() > 40) {
-			String message = String.format("O último nome não pode ser maior que 40 caracteres. %s", this.lastName);
+			String message = "O último nome não pode ser maior que 40 caracteres. %s".formatted(this.lastName);
 			this.logger.error(message);
 			return Response.error(400, "USE018", "O último nome não pode ser maior que 40 caracteres.");
 		}
 		
 		if(!RegexCompile.OnlyLetter.matcher(this.lastName).find()) {
-			String message = String.format("O último nome deve conter somente letras. %s", this.lastName);
+			String message = "O último nome deve conter somente letras. %s".formatted(this.lastName);
 			this.logger.error(message);
 			return Response.error(400, "USE019", "O último nome deve conter somente letras.");
 		}
@@ -443,19 +443,19 @@ public class UserModel {
 		}
 
 		if(this.nickname.length() < 2) {
-			String message = String.format("O apelido não pode ser menor que 2 caracteres. %s", this.nickname);
+			String message = "O apelido não pode ser menor que 2 caracteres. %s".formatted(this.nickname);
 			this.logger.error(message);
 			return Response.error(400, "USE021", "O apelido não pode ser menor que 2 caracteres.");
 		}
 
 		if(this.nickname.length() > 10) {
-			String message = String.format("O apelido não pode ser maior que 10 caracteres. %s", this.nickname);
+			String message = "O apelido não pode ser maior que 10 caracteres. %s".formatted(this.nickname);
 			this.logger.error(message);
 			return Response.error(400, "USE022", "O apelido não pode ser maior que 10 caracteres.");
 		}
 		
 		if(!RegexCompile.OnlyLetterForNickName.matcher(this.nickname).find()) {
-			String message = String.format("O apelido não pode conter caracteres especiais. %s", this.nickname);
+			String message = "O apelido não pode conter caracteres especiais. %s".formatted(this.nickname);
 			this.logger.error(message);
 			return Response.error(400, "USE023", "O apelido não pode conter caracteres especiais.");
 		}
@@ -542,7 +542,7 @@ public class UserModel {
 
 	@Override
 	public String toString() {
-		return String.format("User[id=%d, uuid=%s, email=%s, document=%s, firstName='%s', lastName='%s', fullName=%s, nickname=%s, password=%s, status=%s]", this.id, this.uuid, this.email, this.document, this.firstName, this.lastName, this.fullName, this.nickname, this.password, this.status);
+		return "User[id=%d, uuid=%s, email=%s, document=%s, firstName='%s', lastName='%s', fullName=%s, nickname=%s, password=%s, status=%s]".formatted(this.id, this.uuid, this.email, this.document, this.firstName, this.lastName, this.fullName, this.nickname, this.password, this.status);
 	}
 }
 

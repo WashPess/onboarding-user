@@ -37,7 +37,7 @@ public class EnterpriseController extends ExceptionHandle {
 
 			if (bindingResult.hasErrors()) {
 				String message = bindingResult.getAllErrors().get(0).getDefaultMessage();
-				String log = String.format("Erro de validação no spring validation. %s", message);
+				String log = "Erro de validação no spring validation. %s".formatted(message);
 				this.logger.error(log);
 				return Response.result(Response.error(400, "EPC000", message));
 			}

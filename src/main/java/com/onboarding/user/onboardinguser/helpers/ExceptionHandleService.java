@@ -19,7 +19,7 @@ public class ExceptionHandleService {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Response>  handleError(HttpServletRequest req, Exception ex) {
-		String cause = String.format("Error: %s | raised : %s", req.getRequestURL(), ex);
+		String cause = "Error: %s | raised : %s".formatted(req.getRequestURL(), ex);
 		this.logger.error(cause);
 		return Response.result(Response.error(500, "EXS000", "Servidor indisponível no momento. Volte mais tarde."));
 	}

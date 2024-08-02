@@ -125,7 +125,7 @@ public class Response {
 
 	@Override
 	public String toString() {
-		return String.format("Erro! Código: %s , Mensagem: %s", this.code, this.message);
+		return "Erro! Código: %s , Mensagem: %s".formatted(this.code, this.message);
 	}
 
 }

@@ -7,7 +7,7 @@ public class Document {
 	}
 
 	public static String pad(String document) {
-		return String.format("%1$" + 14 + "s", document).replace(' ', 'X');
+		return ("%1$" + 14 + "s").formatted(document).replace(' ', 'X');
 	}
 
 	public static String clear(String document) {

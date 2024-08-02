@@ -38,7 +38,7 @@ public class PasswordHasher {
 
         if (factory != null) {
             try {
-                KeySpec spec = new PBEKeySpec(password.toCharArray(), this.salt, this.ITERATION_COUNT, this.KEY_LENGTH);
+                KeySpec spec = new PBEKeySpec(password.toCharArray(), this.salt, PasswordHasher.ITERATION_COUNT, PasswordHasher.KEY_LENGTH);
                 byte[] hash = factory.generateSecret(spec).getEncoded();
 				Base64.Encoder enc = Base64.getEncoder();
 				return enc.encodeToString(hash);
@@ -61,7 +61,7 @@ public class PasswordHasher {
     private SecretKeyFactory getFactory() {
         if (mFactory == null) {
             try {
-                mFactory = SecretKeyFactory.getInstance(this.ALGO);
+                mFactory = SecretKeyFactory.getInstance(PasswordHasher.ALGO);
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }

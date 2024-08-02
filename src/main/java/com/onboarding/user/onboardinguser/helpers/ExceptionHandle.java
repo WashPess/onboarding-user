@@ -18,7 +18,7 @@ public class ExceptionHandle {
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Response>  handleError(HttpServletRequest req, Exception ex) {
 		
-		String cause = String.format("Error: %s | raised : %s", req.getRequestURL(), ex);
+		String cause = "Error: %s | raised : %s".formatted(req.getRequestURL(), ex);
 		this.logger.error(cause);
 
 		Response errorEnumMarital = ExceptionHandle.errorEnumMarital(ex);
