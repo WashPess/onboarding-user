@@ -221,4 +221,9 @@ public class UserService extends ExceptionHandleService {
 		return this.repository.getAllEnableds();
 	}
 
+	// Método para buscar um lista de usuário filtrando por uma termo
+	public List<UserModel> getByATerm(String term){
+		return this.repository.getByATerm(term);
+	}
+
 } 

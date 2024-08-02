@@ -47,4 +47,16 @@ public interface UserRepository extends CrudRepository<UserModel,Long> {
 	@Query("SELECT u FROM UserModel u WHERE u.status = 'enabled'")
 	public List<UserModel> getAllEnableds();
 
+	@Nullable
+	@Query(
+		"SELECT u "  
+		+ "FROM UserModel u "
+		+ "WHERE u.fullName ILIKE %:term% " 
+		+ "OR u.document ILIKE %:term% "
+		+ "OR u.nickname ILIKE %:term% "
+		+ "OR u.email ILIKE %:term% "
+		+ "ORDER BY u.fullName ASC"
+	)
+	public List<UserModel> getByATerm(@Param("term") String term);
+
 }

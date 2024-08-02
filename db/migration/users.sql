@@ -13,3 +13,6 @@ CREATE TABLE users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Busca por: nome(full_name), documento(document), email(email), apelido(nickname)
+-- SELECT id, uuid, full_name, optin, last_name, first_name, email, nickname, status, document, created_at FROM users WHERE full_name ILIKE '%term%' OR document ILIKE '%term%' OR email ILIKE '%term%' OR nickname ILIKE '%term%' ORDER BY full_name ASC;

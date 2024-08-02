@@ -27,7 +27,6 @@ import com.onboarding.user.onboardinguser.utils.Str;
 import jakarta.validation.Valid;
 
 // silence report
-
 @RestController //controllar o comportamento de classe
 @SuppressWarnings("squid:S1192")
 
@@ -325,6 +324,31 @@ public class UserController extends ExceptionHandle {
 				return Response.result(response);
 			}
 			return Response.result(Response.error(500, "USC018", "Servidor indisponível no momento."));
+		}
+	}
+
+	// busca um usuário por um  termo
+	@GetMapping("/users/search")
+    ResponseEntity<Response> listByATerm(@RequestParam(required = true) Object term) {
+		try {
+			String termSentence = String.valueOf(term);
+
+			if(Str.Empty(termSentence)) {
+				return Response.result(Response.error(400, "USC019", "É necessário informar termo de busca."));
+			}
+
+			
+			
+			List<UserModel> users = this.service.getByATerm(termSentence);
+			return Response.result(Response.success(200, users));
+
+		} catch(Exception e) {
+			this.logger.error("Error ao tentar buscar usuário por um termo.", e);
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				return  Response.result(response);
+			}
+			return Response.result(Response.error(500, "USC020", "Servidor indisponível no momento."));
 		}
 	}
 
