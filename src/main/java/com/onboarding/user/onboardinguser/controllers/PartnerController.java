@@ -95,7 +95,7 @@ public class PartnerController extends ExceptionHandle {
 			}
 
 			this.logger.error("Erro ao tentar atualizar o sócio da conta por uuid. ", e);
-			return Response.result(Response.error(500, "PTM012", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+			return Response.result(Response.error(500, "PT012", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
 

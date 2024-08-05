@@ -1,6 +1,5 @@
 package com.onboarding.user.onboardinguser.services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -92,10 +91,7 @@ public class EnterpriseService extends ExceptionHandleService  {
 	}
 
 	public List<EnterpriseModel> getAll(){
-		Iterable<EnterpriseModel> enterprisesIter = this.repository.findAll();
-		List<EnterpriseModel> enterprises = new ArrayList<>(0);
-		enterprisesIter.forEach(enterprises::add);
-		return enterprises;
+		return this.repository.getAllEnableds();	
 	}
 
 	public boolean delete(Long id){
@@ -171,5 +167,4 @@ public class EnterpriseService extends ExceptionHandleService  {
 		return this.repository.getByUuid(uuid);
 	}
 	
-
 }

@@ -351,5 +351,4 @@ public class UserController extends ExceptionHandle {
 			return Response.result(Response.error(500, "USC020", "Servidor indisponível no momento."));
 		}
 	}
-
 } 	

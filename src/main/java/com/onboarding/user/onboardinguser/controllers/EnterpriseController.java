@@ -129,8 +129,13 @@ public class EnterpriseController extends ExceptionHandle {
 	
 	@GetMapping("/enterprises")
     ResponseEntity<Response> list() {
-		List<EnterpriseModel> enterprises = this.service.getAll();
-		return Response.result(Response.success(200, enterprises));
+		try {
+			List<EnterpriseModel> enterprises = this.service.getAll();
+			return Response.result(Response.success(200, enterprises));
+		} catch(Exception e) {
+			this.logger.error("Error ao tentar listar as empresas", e);
+			return Response.result(Response.error(500, "EPC010", "Servidor indisponível no momento."));
+		}
 	}
 
 	// deleta a empresa por uuid

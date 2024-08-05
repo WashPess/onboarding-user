@@ -104,6 +104,10 @@ public class PartnerModel {
 	@Column(name="updated_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
 	Date updatedAt = new Date();
 
+	@Transient
+	@NotBlank(message = "O campo de uuid da empresa não pode ser vazio.")
+	String enterpriseUuid = "";
+
     public PartnerModel(String email, String document, String firstName, String lastName) {
         this.email = email;
         this.document = document;
@@ -154,6 +158,11 @@ public class PartnerModel {
 			return validMarital;
 		}
 
+		Response validEnterpriseUuid = this.validEnterpriseUuid();
+		if(validEnterpriseUuid != null) {
+			return validEnterpriseUuid;
+		}
+
 		return null;
 	}
 	
@@ -192,7 +201,7 @@ public class PartnerModel {
 		if(cpfAux.length() <= 11 && !CPFChecker.isValid(cpfAux)) {
 			String message = "O documento deve ser um cpf válido. %s".formatted(this.document);
 			this.logger.error(message);
-			return Response.error(400, "PTM022", "O documento deve ser um cpf válido.");
+			return Response.error(400, "PTM025", "O documento deve ser um cpf válido.");
 		}
 
         return null;
@@ -311,7 +320,7 @@ public class PartnerModel {
 		if(this.address.length() > 60) {
 			String message = "O endereço deve conter no máximo 60 caracteres. %s".formatted(this.email);
 			this.logger.error(message);
-			return Response.error(400, "PTM021", "O endereço deve conter no máximo 60 caracteres.");
+			return Response.error(400, "1", "O endereço deve conter no máximo 60 caracteres.");
 		}
 
 		return null;
@@ -349,7 +358,17 @@ public class PartnerModel {
 		
 		if(this.marital == Marital.VOID) {
 			this.logger.error("O estado civil do Sócio não pode ser vazio.");
-			return Response.error(400, "PTM021", "O estado civil do Sócio não pode ser vazio.");
+			return Response.error(400, "PTM026", "O estado civil do Sócio não pode ser vazio.");
+		}
+
+		return null;
+	}
+
+	public Response validEnterpriseUuid() {
+
+		if(this.enterpriseUuid.length() == 0) {
+			this.logger.error("O uuid da empresa não pode ser vazio.");
+			return Response.error(400, "PTM027", "O uuid da empresa não pode ser vazio.");
 		}
 
 		return null;

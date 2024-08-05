@@ -10,12 +10,12 @@ import com.onboarding.user.onboardinguser.models.EnterpriseModel;
 
 import jakarta.annotation.Nullable;
 
-public interface EnterpriseRepository extends CrudRepository<EnterpriseModel,Long> {
-    
-    @SuppressWarnings("null")
+public interface EnterpriseRepository extends CrudRepository<EnterpriseModel, Long> {
+
+	@SuppressWarnings("null")
 	public List<EnterpriseModel> findAll();
 
-	@Nullable	
+	@Nullable
 	public EnterpriseModel findById(long id);
 
 	// Método para buscar um usuário pelo uuid
@@ -27,4 +27,7 @@ public interface EnterpriseRepository extends CrudRepository<EnterpriseModel,Lon
 	@Query("SELECT e FROM EnterpriseModel e WHERE e.cnpj = :cnpj")
 	public EnterpriseModel getByCnpj(@Param("cnpj") String cnpj);
 
+	@Nullable
+	@Query("SELECT e FROM EnterpriseModel e WHERE e.status = 'enabled'")
+	public List<EnterpriseModel> getAllEnableds();
 }
