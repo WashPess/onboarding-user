@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
-import com.onboarding.user.onboardinguser.models.EnterprisePartnerModel;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
-import com.onboarding.user.onboardinguser.repository.EnterprisePartnerRepository;
 import com.onboarding.user.onboardinguser.repository.PartnerRepository;
 import com.onboarding.user.onboardinguser.utils.Document;
 import com.onboarding.user.onboardinguser.utils.Response;
@@ -23,11 +21,9 @@ import jakarta.transaction.Transactional;
 public class PartnerService extends ExceptionHandleService {
 	
 	private final PartnerRepository repository;
-	private final EnterprisePartnerRepository enterprisePartnerRepository;
 
-	PartnerService(PartnerRepository repository, EnterprisePartnerRepository enterprisePartnerRepository) {
+	PartnerService(PartnerRepository repository) {
 		this.repository = repository;
-		this.enterprisePartnerRepository = enterprisePartnerRepository;
 	}
 
 	public Response save(PartnerModel partner){
@@ -53,13 +49,6 @@ public class PartnerService extends ExceptionHandleService {
 			partner.setFullName(partner.getFirstName() + " " + partner.getLastName());
 
 			this.repository.save(partner);
-
-			EnterprisePartnerModel enterprisePartnerAssociation = new EnterprisePartnerModel();
-
-			enterprisePartnerAssociation.setEnterpriseUuid(partner.getEnterpriseUuid());
-			enterprisePartnerAssociation.setPartnerUuid(partner.getUuid());
-			
-			enterprisePartnerRepository.save(enterprisePartnerAssociation);
 
 			return null;
 		} catch(Exception e) {

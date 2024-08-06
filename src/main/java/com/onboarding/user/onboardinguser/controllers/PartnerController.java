@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
+import com.onboarding.user.onboardinguser.models.EnterpriseModel;
+import com.onboarding.user.onboardinguser.models.EnterprisePartnerModel;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
+import com.onboarding.user.onboardinguser.services.EnterprisePartnerService;
+import com.onboarding.user.onboardinguser.services.EnterpriseService;
 import com.onboarding.user.onboardinguser.services.PartnerService;
 import com.onboarding.user.onboardinguser.utils.Response;
 import com.onboarding.user.onboardinguser.utils.Str;
@@ -22,9 +26,13 @@ import com.onboarding.user.onboardinguser.utils.Str;
 public class PartnerController extends ExceptionHandle {
     
 	public final PartnerService service;
+	private final EnterpriseService enterpriseService;
+	private final EnterprisePartnerService enterprisePartnerService;
 
-	PartnerController(PartnerService service) {
+	PartnerController(PartnerService service, EnterpriseService enterpriseService, EnterprisePartnerService enterprisePartnerService) {
 		this.service = service;
+		this.enterpriseService = enterpriseService;
+		this.enterprisePartnerService = enterprisePartnerService;
 	}
 
 	@PostMapping("/partner")
@@ -43,10 +51,28 @@ public class PartnerController extends ExceptionHandle {
                 return Response.result(Response.error(400, "PAT000", message));
             }
 
+			EnterpriseModel enterprise = this.enterpriseService.getByUuid(partner.getEnterpriseUuid());
+			if(enterprise == null) {
+				this.logger.error("A empresa informada não existe na nossa base de dados.");
+                return Response.result(Response.error(400, "PAT00X", "A empresa informada não existe na nossa base de dados."));
+			}
+
+			// FLUXO 1 -> Criar Partner
 			Response resultSaved = this.service.save(partner);
 			if(resultSaved != null) {
 				this.logger.error("Erro ao tentar salvar o sócio na base de dados.", new Exception(resultSaved.toString()));
 				return Response.result(resultSaved);
+			}
+
+			// FLUXO 2 -> Criar Relacionamento
+			EnterprisePartnerModel enterprisePartnerAssociation = new EnterprisePartnerModel();
+			enterprisePartnerAssociation.setEnterpriseUuid(partner.getEnterpriseUuid());
+			enterprisePartnerAssociation.setPartnerUuid(partner.getUuid());
+			
+			Response resultAssoc = this.enterprisePartnerService.save(enterprisePartnerAssociation);
+			if(resultAssoc != null) {
+				this.logger.error("Erro ao tentar relacionar o sócio com uma empresa.", new Exception(resultAssoc.toString()));
+				return Response.result(resultAssoc);
 			}
 
 			return Response.result(Response.success(201));
