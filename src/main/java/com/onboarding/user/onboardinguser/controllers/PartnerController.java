@@ -1,5 +1,7 @@
 package com.onboarding.user.onboardinguser.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,12 +13,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
-import com.onboarding.user.onboardinguser.models.EnterpriseModel;
 import com.onboarding.user.onboardinguser.models.EnterprisePartnerModel;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
 import com.onboarding.user.onboardinguser.services.EnterprisePartnerService;
-import com.onboarding.user.onboardinguser.services.EnterpriseService;
 import com.onboarding.user.onboardinguser.services.PartnerService;
 import com.onboarding.user.onboardinguser.utils.Response;
 import com.onboarding.user.onboardinguser.utils.Str;
@@ -26,12 +27,10 @@ import com.onboarding.user.onboardinguser.utils.Str;
 public class PartnerController extends ExceptionHandle {
     
 	public final PartnerService service;
-	private final EnterpriseService enterpriseService;
 	private final EnterprisePartnerService enterprisePartnerService;
 
-	PartnerController(PartnerService service, EnterpriseService enterpriseService, EnterprisePartnerService enterprisePartnerService) {
+	PartnerController(PartnerService service, EnterprisePartnerService enterprisePartnerService) {
 		this.service = service;
-		this.enterpriseService = enterpriseService;
 		this.enterprisePartnerService = enterprisePartnerService;
 	}
 
@@ -39,32 +38,35 @@ public class PartnerController extends ExceptionHandle {
 	ResponseEntity<Response> create(@RequestBody PartnerModel partner, BindingResult bindingResult) {
 		try {
 
+			// 1 - valida os campos de sócio
 			Response validPartner = partner.valid();
             if(validPartner != null) {
                 this.logger.error("Erro de validação na criaçao de conta.", new Exception(validPartner.toString()));
                 return Response.result(validPartner);
             }
- 
+	
+	 		// 2 - valida os campos de sócio usando o srpng validation
             if(bindingResult.hasErrors()) {
                 String message = bindingResult.getAllErrors().get(0).getDefaultMessage();
                 this.logger.error("Erro de validaçao na criaçâo de conta usando spring validation.", new Exception(message));
-                return Response.result(Response.error(400, "PAT000", message));
+                return Response.result(Response.error(400, "PTC000", message));
             }
 
-			EnterpriseModel enterprise = this.enterpriseService.getByUuid(partner.getEnterpriseUuid());
+			// 3 - verifica se a empresa passada existe na base de dados
+			Object enterprise = this.enterprisePartnerService.getEnterpriseByUuid(partner.getEnterpriseUuid());
 			if(enterprise == null) {
 				this.logger.error("A empresa informada não existe na nossa base de dados.");
-                return Response.result(Response.error(400, "PAT00X", "A empresa informada não existe na nossa base de dados."));
+                return Response.result(Response.error(400, "PTC001", "A empresa informada não existe na nossa base de dados."));
 			}
 
-			// FLUXO 1 -> Criar Partner
+			// 4 - cria um sócio na base de dados
 			Response resultSaved = this.service.save(partner);
 			if(resultSaved != null) {
 				this.logger.error("Erro ao tentar salvar o sócio na base de dados.", new Exception(resultSaved.toString()));
 				return Response.result(resultSaved);
 			}
 
-			// FLUXO 2 -> Criar Relacionamento
+			// 5 - Cria Relacionamento entre o sócio e a empresa
 			EnterprisePartnerModel enterprisePartnerAssociation = new EnterprisePartnerModel();
 			enterprisePartnerAssociation.setEnterpriseUuid(partner.getEnterpriseUuid());
 			enterprisePartnerAssociation.setPartnerUuid(partner.getUuid());
@@ -78,7 +80,7 @@ public class PartnerController extends ExceptionHandle {
 			return Response.result(Response.success(201));
 		} catch(Exception e) {
 			this.logger.error("Erro ao tentar salvar o sócio.", e);
-			return Response.result(Response.error(500, "PAC001", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+			return Response.result(Response.error(500, "PTC002", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
 
@@ -91,7 +93,7 @@ public class PartnerController extends ExceptionHandle {
 
 			if(Str.Empty(uuidStr)) {
 				this.logger.error("É necessário informar o uuid");
-				return Response.result(Response.error(404, "PAC011", "É necessário informar o uuid."));
+				return Response.result(Response.error(404, "PTC003", "É necessário informar o uuid."));
 			}
 
 			Response validDocument= partner.validDocument();
@@ -121,76 +123,7 @@ public class PartnerController extends ExceptionHandle {
 			}
 
 			this.logger.error("Erro ao tentar atualizar o sócio da conta por uuid. ", e);
-			return Response.result(Response.error(500, "PT012", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
-		}
-	}
-
-	@GetMapping("/partner/find/{id}")
-    ResponseEntity<Response> showById(@PathVariable Object id) {
-		try {
-
-			String idStr = String.valueOf(id);
-			if(Str.Empty(idStr)) {
-				this.logger.error("É necessário informar o id");
-				return Response.result(Response.error(400, "PTM013", "É necessário informar o id."));
-			}
-
-			// cast de variavel 
-			Long uid = Long.parseLong(idStr);
-			if(uid == 0) {
-                this.logger.error("É necesário envia um id válido");
-				return Response.result(Response.error(400, "PTM014", "É necessário enviar um id."));
-			}
-
-			PartnerModel partner = this.service.getById(uid);
-			if(partner == null) {
-				this.logger.error("Erro ao tentar busca um sócio.");
-				return Response.result(Response.error(404, "PTM015", "O sócio não foi encontrado."));
-			}
-
-			return Response.result(Response.success(200, partner));
-		} catch(Exception e) {
-			Response response = ExceptionHandle.errorInput(e);
-			if(response != null) {
-				String message = response.toString();
-				this.logger.error("Erro ao tentar buscar um sócio. {}", message, e);
-				return  Response.result(response);
-			}
-            
-            this.logger.error("Erro ao tentar buscar um sócio por id. ", e);
-			return Response.result(Response.error(500, "PTM016", "Servidor indisponível no momento."));
-		}
-	}
-	
-	@GetMapping("/partner/{uuid}")
-	ResponseEntity<Response> showByUuid(@PathVariable Object uuid) {
-		try {
-
-			// cast de variavel 
-			String uuidStr = String.valueOf(uuid);
-
-			if(Str.Empty(uuidStr)) {
-				this.logger.error("É necessário informar o uuid");
-				return Response.result(Response.error(404, "PTM017", "É necessário informar o uuid."));
-			}
-
-			PartnerModel partner = this.service.getByUuidEnabled(uuidStr);
-			if(partner == null) {
-				this.logger.error("Erro ao tentar busca uma conta.");
-				return Response.result(Response.error(404, "PTM018", "O Sócio não foi encontrado."));
-			}
-
-			return Response.result(Response.success(200, partner));
-		} catch(Exception e) {
-			Response response = ExceptionHandle.errorInput(e);
-			if(response != null) {
-				String message = response.toString();
-				this.logger.error("Erro ao tentar buscar um sócio. {}", message, e);
-				return  Response.result(response);
-			}
-			
-			this.logger.error("Erro ao tentar buscar um sócio por uuid. ", e);
-			return Response.result(Response.error(500, "PTC019", "Servidor indisponível no momento."));
+			return Response.result(Response.error(500, "PTC004", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
 
@@ -203,7 +136,7 @@ public class PartnerController extends ExceptionHandle {
 
 			// verifica se o uuid é vazio
 			if(Str.Empty(uuidStr)) {
-				return Response.result(Response.error(404, "PTC018", "É necessário informar o uuid."));
+				return Response.result(Response.error(404, "PTC013", "É necessário informar o uuid."));
 			}
 
 			// deleta o usuário
@@ -220,7 +153,7 @@ public class PartnerController extends ExceptionHandle {
 			if(response != null) {
 				return Response.result(response);
 			}
-			return Response.result(Response.error(500, "PTC019", "Servidor indisponível no momento."));
+			return Response.result(Response.error(500, "PTC014", "Servidor indisponível no momento."));
 		}
 	}
 
@@ -233,7 +166,7 @@ public class PartnerController extends ExceptionHandle {
 
 			// verifica se o uuid é vazio
 			if(Str.Empty(uuidStr)) {
-				return Response.result(Response.error(404, "PTC020", "É necessário informar o uuid."));
+				return Response.result(Response.error(404, "PTC015", "É necessário informar o uuid."));
 			}
 
 			// restaura o usuário
@@ -250,7 +183,92 @@ public class PartnerController extends ExceptionHandle {
 			if(response != null) {
 				return Response.result(response);
 			}
-			return Response.result(Response.error(500, "PTC021", "Servidor indisponível no momento."));
+			return Response.result(Response.error(500, "PTC016", "Servidor indisponível no momento."));
+		}
+	}
+
+	@GetMapping("/partner/find/{id}")
+    ResponseEntity<Response> showById(@PathVariable Object id) {
+		try {
+
+			String idStr = String.valueOf(id);
+			if(Str.Empty(idStr)) {
+				this.logger.error("É necessário informar o id");
+				return Response.result(Response.error(400, "PTC005", "É necessário informar o id."));
+			}
+
+			// cast de variavel 
+			Long uid = Long.parseLong(idStr);
+			if(uid == 0) {
+                this.logger.error("É necesário envia um id válido");
+				return Response.result(Response.error(400, "PTC006", "É necessário enviar um id."));
+			}
+
+			PartnerModel partner = this.service.getById(uid);
+			if(partner == null) {
+				this.logger.error("Erro ao tentar busca um sócio.");
+				return Response.result(Response.error(404, "PTC007", "O sócio não foi encontrado."));
+			}
+
+			return Response.result(Response.success(200, partner));
+		} catch(Exception e) {
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				String message = response.toString();
+				this.logger.error("Erro ao tentar buscar um sócio. {}", message, e);
+				return  Response.result(response);
+			}
+            
+            this.logger.error("Erro ao tentar buscar um sócio por id. ", e);
+			return Response.result(Response.error(500, "PTC008", "Servidor indisponível no momento."));
+		}
+	}
+	
+	@GetMapping("/partner/{uuid}")
+	ResponseEntity<Response> showByUuid(@PathVariable Object uuid) {
+		try {
+
+			// cast de variavel 
+			String uuidStr = String.valueOf(uuid);
+
+			if(Str.Empty(uuidStr)) {
+				this.logger.error("É necessário informar o uuid");
+				return Response.result(Response.error(404, "PTC009", "É necessário informar o uuid."));
+			}
+
+			PartnerModel partner = this.service.getByUuidEnabled(uuidStr);
+			if(partner == null) {
+				this.logger.error("Erro ao tentar busca uma conta.");
+				return Response.result(Response.error(404, "PTC010", "O Sócio não foi encontrado."));
+			}
+
+			if(partner.getStatus() == Status.DISABLED) {
+				this.logger.error("O usuário está desabilitado por tempo determinado.");
+				return Response.result(Response.error(423, "PTC013", "O usuário está desabilitado por tempo determinado."));
+			}
+
+			return Response.result(Response.success(200, partner));
+		} catch(Exception e) {
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				String message = response.toString();
+				this.logger.error("Erro ao tentar buscar um sócio. {}", message, e);
+				return  Response.result(response);
+			}
+			
+			this.logger.error("Erro ao tentar buscar um sócio por uuid. ", e);
+			return Response.result(Response.error(500, "PTC011", "Servidor indisponível no momento."));
+		}
+	}
+
+	@GetMapping("/partners")
+    ResponseEntity<Response> list() {
+		try {
+			List<PartnerModel> partners = this.service.getAll();
+			return Response.result(Response.success(200, partners));
+		} catch(Exception e) {
+			this.logger.error("Error ao tentar listar os sócios", e);
+			return Response.result(Response.error(500, "PTC012", "Servidor indisponível no momento."));
 		}
 	}
 

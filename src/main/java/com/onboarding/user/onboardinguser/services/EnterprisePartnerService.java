@@ -57,17 +57,8 @@ public class EnterprisePartnerService extends ExceptionHandleService  {
 			return Response.error(422, "EPS002", "Base de dados indisponivel no momento.");
 		}
 	}
-	
-	public EnterprisePartnerModel getRelationshipByUuids(String partnerUuid, String enterpriseUuid){
-		try {
-			return this.repository.getRelationshipByUuids(partnerUuid, enterpriseUuid);
-		} catch(Exception e) {
-			this.logger.error("Erro de processamento na base de dados", e);
-			return null;
-		}
-		
-	}
 
+	@Modifying
 	public Response deleteByUuid(String uuid) {
 		try {
 			
@@ -83,4 +74,20 @@ public class EnterprisePartnerService extends ExceptionHandleService  {
 			return Response.error(422, "EPS004", "Servidor indisponível no momento.");
 		}
 	}
+	
+	public EnterprisePartnerModel getRelationshipByUuids(String partnerUuid, String enterpriseUuid){
+		try {
+			return this.repository.getRelationshipByUuids(partnerUuid, enterpriseUuid);
+		} catch(Exception e) {
+			this.logger.error("Erro de processamento na base de dados", e);
+			return null;
+		}
+		
+	}
+
+	public EnterpriseModel getEnterpriseByUuid(String uuid) {
+		return this.enterpriseService.getByUuid(uuid);
+	}
+
+
 }

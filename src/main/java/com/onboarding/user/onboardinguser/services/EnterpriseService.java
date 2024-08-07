@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
@@ -16,6 +17,8 @@ import com.onboarding.user.onboardinguser.utils.Response;
 
 
 @Service
+@Transactional
+@SuppressWarnings("squid:S1192") // Ignorar a regra de não repetir literais
 public class EnterpriseService extends ExceptionHandleService  {
 
 	private final EnterpriseRepository repository;
@@ -69,31 +72,8 @@ public class EnterpriseService extends ExceptionHandleService  {
 			return Response.error(422, "EPS002", "Base de dados indisponivel no momento.");
 		}
 	}
-	
-	public EnterpriseModel getById(Long id){
-		try {
-			Optional<EnterpriseModel> enterprise = this.repository.findById(id);
 
-			if(enterprise.isEmpty()) {
-				return null;
-			}
-
-			return enterprise.get();
-		} catch(Exception e) {
-			this.logger.error("Erro de processamento na base de dados", e);
-			return null;
-		}
-		
-	}
-
-	public EnterpriseModel getByCnpj(String cnpj){
-		return this.repository.getByCnpj(Document.clear(cnpj));
-	}
-
-	public List<EnterpriseModel> getAll(){
-		return this.repository.getAllEnableds();	
-	}
-
+	@Modifying
 	public boolean delete(Long id){
 		try {
 			Optional<EnterpriseModel> enterprise = this.repository.findById(id);
@@ -109,6 +89,7 @@ public class EnterpriseService extends ExceptionHandleService  {
 		}
 	}
 
+	@Modifying
 	public Response deleteByUuid(String uuid) {
 		try {
 			
@@ -134,6 +115,7 @@ public class EnterpriseService extends ExceptionHandleService  {
 		}
 	}
 
+	@Modifying
 	public Response restoreByUuid(String uuid) {
 		try {
 			
@@ -162,9 +144,33 @@ public class EnterpriseService extends ExceptionHandleService  {
 			return Response.error(422, "EPS006", "Servidor indisponível no momento.");
 		}
 	}
+	
+	public EnterpriseModel getById(Long id){
+		try {
+			Optional<EnterpriseModel> enterprise = this.repository.findById(id);
+
+			if(enterprise.isEmpty()) {
+				return null;
+			}
+
+			return enterprise.get();
+		} catch(Exception e) {
+			this.logger.error("Erro de processamento na base de dados", e);
+			return null;
+		}
+		
+	}
 
 	public EnterpriseModel getByUuid(String uuid){
 		return this.repository.getByUuid(uuid);
+	}
+
+	public EnterpriseModel getByCnpj(String cnpj){
+		return this.repository.getByCnpj(Document.clear(cnpj));
+	}
+
+	public List<EnterpriseModel> getAll(){
+		return this.repository.getAllEnableds();	
 	}
 	
 }

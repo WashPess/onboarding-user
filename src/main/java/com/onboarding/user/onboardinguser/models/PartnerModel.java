@@ -1,6 +1,8 @@
 package com.onboarding.user.onboardinguser.models;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -106,7 +108,10 @@ public class PartnerModel {
 
 	@Transient
 	@NotBlank(message = "O campo de uuid da empresa não pode ser vazio.")
+	@JsonProperty(value = "enterprise_uuid", access = JsonProperty.Access.WRITE_ONLY)
 	String enterpriseUuid = "";
+
+	List<String> enterprises = new ArrayList<String>();
 
     public PartnerModel(String email, String document, String firstName, String lastName) {
         this.email = email;
