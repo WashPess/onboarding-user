@@ -111,7 +111,7 @@ public class PartnerModel {
 	@JsonProperty(value = "enterprise_uuid", access = JsonProperty.Access.WRITE_ONLY)
 	String enterpriseUuid = "";
 
-	List<String> enterprises = new ArrayList<String>();
+	List<String> enterprises = new ArrayList<>();
 
     public PartnerModel(String email, String document, String firstName, String lastName) {
         this.email = email;

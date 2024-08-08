@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.onboarding.user.onboardinguser.dto.PartnerUuidWithEnterpriseUuidDTO;
 import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandle;
 import com.onboarding.user.onboardinguser.models.EnterprisePartnerModel;
@@ -269,6 +270,29 @@ public class PartnerController extends ExceptionHandle {
 		} catch(Exception e) {
 			this.logger.error("Error ao tentar listar os sócios", e);
 			return Response.result(Response.error(500, "PTC012", "Servidor indisponível no momento."));
+		}
+	}
+
+	//adicionar para uma empresa nova ou ja existente
+	@PostMapping("/partner/enterprise")
+    ResponseEntity<Response> addToAEnterpriseByUuid(@RequestBody PartnerUuidWithEnterpriseUuidDTO partnerWithEnterprise) {
+		try{
+
+			if(partnerWithEnterprise.isValid()) {
+				this.logger.error("É necessário informar o uuid do sócio e da empresa.");
+				return Response.result(Response.error(404, "PTC017", "É necessário informar o uuid do sócio e da empresa."));
+			}
+
+			Response resultSaved = this.service.save(partnerWithEnterprise);
+			if(resultSaved.isError()) {
+				return Response.result(resultSaved);
+			}
+
+			return Response.result(Response.success(204));
+		} catch(Exception e) {
+
+			this.logger.error("Erro ao tentar atualizar o sócio da conta por uuid. ", e);
+			return Response.result(Response.error(500, "PTC004", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
 

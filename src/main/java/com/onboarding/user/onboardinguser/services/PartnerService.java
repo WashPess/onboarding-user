@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.repository.query.parser.Part;
 import org.springframework.stereotype.Service;
 
+import com.onboarding.user.onboardinguser.dto.PartnerUuidWithEnterpriseUuidDTO;
 import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
@@ -18,21 +20,27 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
+// uma classe tem propriedades e métodos
+// um método (função) : expressa uma ação - tem assinatura, argumentos e corpo
+
 @Service
 @Transactional
 @SuppressWarnings("squid:S1192") // Ignorar a regra de não repetir literais
 public class PartnerService extends ExceptionHandleService {
 
 	private final PartnerRepository repository;
+	final EnterprisePartnerService enterprisePartnerService;
 
 	@PersistenceContext // or even @Autowired
 	private EntityManager entityManager;
 
-	PartnerService(PartnerRepository repository) {
+	PartnerService(PartnerRepository repository, EnterprisePartnerService enterprisePartnerService) {
 		this.repository = repository;
+		this.enterprisePartnerService = enterprisePartnerService;
+
 	}
 
-	public Response save(PartnerModel partner) {
+	public Response save(PartnerModel partner, PartnerUuidWithEnterpriseUuidDTO partnerWithEnterprise) {
 		try {
 
 			// se o email já existir, retornar uma error (409) de dado duplicado
@@ -211,13 +219,7 @@ public class PartnerService extends ExceptionHandleService {
 			return null;
 		}
 
-	/** REGION: não mexa aqui */
-		List<String> enterprises = entityManager.createQuery(
-			"SELECT ep.enterpriseUuid FROM PartnerModel p INNER JOIN EnterprisePartnerModel ep ON p.uuid = ep.partnerUuid WHERE p.uuid = :uuid",
-			String.class)
-			.setParameter("uuid", uuid)
-			.getResultList();
-	/** END REGION */
+		List<String> enterprises = this.enterprisePartnerService.getListEnterprisesUuidsByPartnerUuid(uuid);
 
 		partner.setEnterprises(enterprises);
 		return partner;

@@ -1,5 +1,7 @@
 package com.onboarding.user.onboardinguser.services;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
@@ -9,19 +11,27 @@ import com.onboarding.user.onboardinguser.models.EnterprisePartnerModel;
 import com.onboarding.user.onboardinguser.repository.EnterprisePartnerRepository;
 import com.onboarding.user.onboardinguser.utils.Response;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+
 
 @Service
 public class EnterprisePartnerService extends ExceptionHandleService  {
 
 	private final EnterprisePartnerRepository repository;
 	private final EnterpriseService enterpriseService;
+	
+	@PersistenceContext
+	private EntityManager entityManager;
+
 
 	public EnterprisePartnerService(EnterprisePartnerRepository repository, EnterpriseService enterpriseService) {
 		this.repository = repository;
 		this.enterpriseService = enterpriseService;
 	}
 
-	public Response save(EnterprisePartnerModel enterprisePartner){
+	public Response save(EnterprisePartnerModel enterprisePartner) {
 		try {
 
 			String partnerUuid = enterprisePartner.getPartnerUuid();
@@ -49,7 +59,7 @@ public class EnterprisePartnerService extends ExceptionHandleService  {
     }
 
 	@Modifying
-	public Response update(EnterprisePartnerModel enterprisePartner){
+	public Response update(EnterprisePartnerModel enterprisePartner) {
 		try {
 			return null;
 		} catch(Exception e) {
@@ -75,7 +85,7 @@ public class EnterprisePartnerService extends ExceptionHandleService  {
 		}
 	}
 	
-	public EnterprisePartnerModel getRelationshipByUuids(String partnerUuid, String enterpriseUuid){
+	public EnterprisePartnerModel getRelationshipByUuids(String partnerUuid, String enterpriseUuid) {
 		try {
 			return this.repository.getRelationshipByUuids(partnerUuid, enterpriseUuid);
 		} catch(Exception e) {
@@ -88,6 +98,15 @@ public class EnterprisePartnerService extends ExceptionHandleService  {
 	public EnterpriseModel getEnterpriseByUuid(String uuid) {
 		return this.enterpriseService.getByUuid(uuid);
 	}
+
+	public List<String> getListEnterprisesUuidsByPartnerUuid(String uuid) {
+		return entityManager.createQuery(
+			"SELECT ep.enterpriseUuid FROM PartnerModel p INNER JOIN EnterprisePartnerModel ep ON p.uuid = ep.partnerUuid WHERE p.uuid = :uuid",
+			String.class)
+			.setParameter("uuid", uuid)
+			.getResultList();
+	}
+
 
 
 }
