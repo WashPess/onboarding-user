@@ -3,19 +3,19 @@ package com.onboarding.user.onboardinguser.dto;
 
 // PartnerUuidWithEnterpriseUuidDTO
 public class PartnerUuidWithEnterpriseUuidDTO {
-    String uuid;
+
+    String partnerUuid;
     String enterpriseUuid; 
     
-public boolean isValid() {
-        return this.uuid != null && this.enterpriseUuid != null;
+    public boolean isValid() {
+        return this.partnerUuid != null && this.enterpriseUuid != null;
     }
 
-    public String getUuid() {
-        return this.uuid;
+    public String getPartnerUuid() {
+        return this.partnerUuid;
     }
 
     public String getEnterpriseUuid() {
         return this.enterpriseUuid;
     }
-
 }

@@ -1,6 +1,8 @@
 package com.onboarding.user.onboardinguser.models;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -87,6 +89,12 @@ public class EnterpriseModel {
 
     @Column(name="updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     Date updatedAt = new Date();
+
+    @Transient
+	@JsonProperty(value = "partner_uuid", access = JsonProperty.Access.WRITE_ONLY)
+	String partnerUuid = "";
+
+	List<String> partners = new ArrayList<>();
 
     public String newUuid() {
 		this.uuid = UUID.randomUUID().toString();

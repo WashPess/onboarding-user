@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import com.onboarding.user.onboardinguser.dto.PartnerUuidWithEnterpriseUuidDTO;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.EnterpriseModel;
 import com.onboarding.user.onboardinguser.models.EnterprisePartnerModel;
@@ -58,6 +59,13 @@ public class EnterprisePartnerService extends ExceptionHandleService  {
 		}
     }
 
+	public Response saveRelationshipPartnerAndEnterprise(PartnerUuidWithEnterpriseUuidDTO partnerAndEnterprise) {
+		EnterprisePartnerModel enterpriseAndPartnerModel = new EnterprisePartnerModel();
+		enterpriseAndPartnerModel.setPartnerUuid(partnerAndEnterprise.getPartnerUuid());
+		enterpriseAndPartnerModel.setEnterpriseUuid(partnerAndEnterprise.getEnterpriseUuid());
+		return this.save(enterpriseAndPartnerModel);
+	}
+
 	@Modifying
 	public Response update(EnterprisePartnerModel enterprisePartner) {
 		try {
@@ -102,6 +110,14 @@ public class EnterprisePartnerService extends ExceptionHandleService  {
 	public List<String> getListEnterprisesUuidsByPartnerUuid(String uuid) {
 		return entityManager.createQuery(
 			"SELECT ep.enterpriseUuid FROM PartnerModel p INNER JOIN EnterprisePartnerModel ep ON p.uuid = ep.partnerUuid WHERE p.uuid = :uuid",
+			String.class)
+			.setParameter("uuid", uuid)
+			.getResultList();
+	}
+
+	public List<String> getListPartnersUuidsByEnterpriseUuid(String uuid) {
+		return entityManager.createQuery(
+			"SELECT ep.partnerUuid FROM EnterpriseModel e INNER JOIN EnterprisePartnerModel ep ON e.uuid = ep.enterpriseUuid WHERE e.uuid = :uuid",
 			String.class)
 			.setParameter("uuid", uuid)
 			.getResultList();

@@ -88,7 +88,7 @@ public class EnterpriseController extends ExceptionHandle {
 		}
 	}
 
-	@GetMapping("/enterprise/{id}")
+	@GetMapping("/enterprise/find/{id}")
     ResponseEntity<Response> showById(@PathVariable Object id) {
 		try {
 
@@ -124,6 +124,38 @@ public class EnterpriseController extends ExceptionHandle {
             
             this.logger.error("Erro na busca da conta por id.", e);
 			return Response.result(Response.error(500, "EPC005", "Servidor indisponível no momento."));
+		}
+	}
+
+	@GetMapping("/enterprise/{uuid}")
+    ResponseEntity<Response> showByUuid(@PathVariable Object uuid) {
+		try {
+
+			String uuidStr = String.valueOf(uuid);
+			if(Str.Empty(uuidStr)) {
+				this.logger.error("É necessário informar o uuid");
+				return Response.result(Response.error(400, "EPC0XX", "É necessário informar o uuid."));
+			}
+
+			EnterpriseModel enterprise = this.service.getByUuid(uuidStr);
+			if(enterprise == null) {
+				this.logger.error("Erro ao tentar busca a empresa.");
+				return Response.result(Response.error(404, "EPC0XX", "A empresa não foi encontrada."));
+
+			}
+
+			return Response.result(Response.success(200, enterprise));
+
+		} catch(Exception e) {
+			Response response = ExceptionHandle.errorInput(e);
+			if(response != null) {
+				String message = response.toString();
+				this.logger.error("Erro ao tentar buscar uma conta. {}", message, e);
+				return  Response.result(response);
+			}
+            
+            this.logger.error("Erro na busca da conta por id.", e);
+			return Response.result(Response.error(500, "EPC0XX", "Servidor indisponível no momento."));
 		}
 	}
 	

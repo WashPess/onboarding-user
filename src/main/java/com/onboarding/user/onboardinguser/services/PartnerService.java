@@ -5,10 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.repository.query.parser.Part;
 import org.springframework.stereotype.Service;
 
-import com.onboarding.user.onboardinguser.dto.PartnerUuidWithEnterpriseUuidDTO;
 import com.onboarding.user.onboardinguser.enums.Status;
 import com.onboarding.user.onboardinguser.helpers.ExceptionHandleService;
 import com.onboarding.user.onboardinguser.models.PartnerModel;
@@ -40,7 +38,7 @@ public class PartnerService extends ExceptionHandleService {
 
 	}
 
-	public Response save(PartnerModel partner, PartnerUuidWithEnterpriseUuidDTO partnerWithEnterprise) {
+	public Response save(PartnerModel partner) {
 		try {
 
 			// se o email já existir, retornar uma error (409) de dado duplicado
@@ -228,5 +226,4 @@ public class PartnerService extends ExceptionHandleService {
 	public List<PartnerModel> getAll() {
 		return this.repository.getAllEnableds();
 	}
-
 }

@@ -278,22 +278,22 @@ public class PartnerController extends ExceptionHandle {
     ResponseEntity<Response> addToAEnterpriseByUuid(@RequestBody PartnerUuidWithEnterpriseUuidDTO partnerWithEnterprise) {
 		try{
 
-			if(partnerWithEnterprise.isValid()) {
+			if(partnerWithEnterprise == null || !partnerWithEnterprise.isValid()) {
 				this.logger.error("É necessário informar o uuid do sócio e da empresa.");
 				return Response.result(Response.error(404, "PTC017", "É necessário informar o uuid do sócio e da empresa."));
 			}
 
-			Response resultSaved = this.service.save(partnerWithEnterprise);
-			if(resultSaved.isError()) {
+			Response resultSaved = this.enterprisePartnerService.saveRelationshipPartnerAndEnterprise(partnerWithEnterprise);
+
+			if(resultSaved != null) {
 				return Response.result(resultSaved);
 			}
 
-			return Response.result(Response.success(204));
+			return Response.result(Response.success(201));
 		} catch(Exception e) {
 
 			this.logger.error("Erro ao tentar atualizar o sócio da conta por uuid. ", e);
 			return Response.result(Response.error(500, "PTC004", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
-
 }

@@ -22,9 +22,11 @@ import com.onboarding.user.onboardinguser.utils.Response;
 public class EnterpriseService extends ExceptionHandleService  {
 
 	private final EnterpriseRepository repository;
+	final EnterprisePartnerService enterprisePartnerService;
 
-	public EnterpriseService(EnterpriseRepository repository) {
+	public EnterpriseService(EnterpriseRepository repository, EnterprisePartnerService enterprisePartnerService) {
 		this.repository = repository;
+		this.enterprisePartnerService = enterprisePartnerService;
 	}
 
 	public Response save(EnterpriseModel enterprise){
@@ -167,6 +169,19 @@ public class EnterpriseService extends ExceptionHandleService  {
 
 	public EnterpriseModel getByCnpj(String cnpj){
 		return this.repository.getByCnpj(Document.clear(cnpj));
+	}
+
+	public EnterpriseModel getByUuidEnabled(String uuid) {
+		EnterpriseModel enterprise = this.repository.getByUuidEnabled(uuid);
+
+		if (enterprise == null) {
+			return null;
+		}
+
+		List<String> partners = this.enterprisePartnerService.getListPartnersUuidsByEnterpriseUuid(uuid);
+
+		enterprise.setPartners(partners);
+		return enterprise;
 	}
 
 	public List<EnterpriseModel> getAll(){
