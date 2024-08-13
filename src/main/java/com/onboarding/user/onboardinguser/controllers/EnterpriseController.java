@@ -62,14 +62,14 @@ public class EnterpriseController extends ExceptionHandle {
 			String idStr = String.valueOf(id);
 			if(Str.Empty(idStr)) {
 				this.logger.error("É necessário informar o id");
-				return Response.result(Response.error(400, "EPCXXX", "É necessário informar o id."));
+				return Response.result(Response.error(400, "EPC014", "É necessário informar o id."));
 			}
 
 			// cast de variavel 
 			Long uid = Long.parseLong(idStr);
 			if(uid == 0) {
                 this.logger.error("É necesário enviar um id válido");
-				return Response.result(Response.error(400, "EPCXXX", "É necessário enviar um id."));
+				return Response.result(Response.error(400, "EPC015", "É necessário enviar um id."));
 			}
 			
 			Response resultSaved = this.service.update(enterprise);
@@ -84,7 +84,7 @@ public class EnterpriseController extends ExceptionHandle {
 			if(response != null) {
 				return  Response.result(response);
 			}
-			return Response.result(Response.error(500, "EPCXXX", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+			return Response.result(Response.error(500, "EPC016", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
 
@@ -134,14 +134,13 @@ public class EnterpriseController extends ExceptionHandle {
 			String uuidStr = String.valueOf(uuid);
 			if(Str.Empty(uuidStr)) {
 				this.logger.error("É necessário informar o uuid");
-				return Response.result(Response.error(400, "EPC0XX", "É necessário informar o uuid."));
+				return Response.result(Response.error(400, "EPC011", "É necessário informar o uuid."));
 			}
 
 			EnterpriseModel enterprise = this.service.getByUuid(uuidStr);
 			if(enterprise == null) {
 				this.logger.error("Erro ao tentar busca a empresa.");
-				return Response.result(Response.error(404, "EPC0XX", "A empresa não foi encontrada."));
-
+				return Response.result(Response.error(404, "EPC012", "A empresa não foi encontrada."));
 			}
 
 			return Response.result(Response.success(200, enterprise));
@@ -155,7 +154,7 @@ public class EnterpriseController extends ExceptionHandle {
 			}
             
             this.logger.error("Erro na busca da conta por id.", e);
-			return Response.result(Response.error(500, "EPC0XX", "Servidor indisponível no momento."));
+			return Response.result(Response.error(500, "EPC013", "Servidor indisponível no momento."));
 		}
 	}
 	

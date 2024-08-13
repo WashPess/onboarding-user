@@ -140,7 +140,7 @@ public class PartnerService extends ExceptionHandleService {
 			this.repository.save(partner);
 			return null;
 		} catch (Exception e) {
-			this.logger.error("Erro ao deletar o sócio: ", e);
+			this.logger.error("Erro ao deletar o sócio", e);
 			return Response.error(422, "PTS008", "Servidor indisponível no momento.");
 		}
 	}

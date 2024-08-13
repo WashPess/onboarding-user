@@ -283,7 +283,7 @@ public class PartnerController extends ExceptionHandle {
 				return Response.result(Response.error(404, "PTC017", "É necessário informar o uuid do sócio e da empresa."));
 			}
 
-			Response resultSaved = this.enterprisePartnerService.saveRelationshipPartnerAndEnterprise(partnerWithEnterprise);
+			Response resultSaved = this.enterprisePartnerService.saveRelationshipEnterpriseAndPartner(partnerWithEnterprise);
 
 			if(resultSaved != null) {
 				return Response.result(resultSaved);
@@ -294,6 +294,28 @@ public class PartnerController extends ExceptionHandle {
 
 			this.logger.error("Erro ao tentar atualizar o sócio da conta por uuid. ", e);
 			return Response.result(Response.error(500, "PTC004", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
+		}
+	}
+
+	//adicionar para uma empresa nova ou ja existente
+	@DeleteMapping("/partner/enterprise")
+    ResponseEntity<Response> deleteAEnterpriseByUuid(@RequestBody PartnerUuidWithEnterpriseUuidDTO partnerWithEnterprise) {
+		try{
+
+			if(partnerWithEnterprise == null || !partnerWithEnterprise.isValid()) {
+				this.logger.error("É necessário informar o uuid do sócio e o uuid da empresa.");
+				return Response.result(Response.error(404, "PTC018", "É necessário informar o uuid do sócio e o uuid da empresa."));
+			}
+
+			Response resultSaved = this.enterprisePartnerService.deleteRelationshipEnterpriseAndPartner(partnerWithEnterprise);
+			if(resultSaved != null) {
+				return Response.result(resultSaved);
+			}
+
+			return Response.result(Response.success(204));
+		} catch(Exception e) {
+			this.logger.error("Erro ao tentar deletar a relaçao entre sócio e empresa.", e);
+			return Response.result(Response.error(500, "PTC019", "Servidor indisponível no momento. Favor tentar novamente mais tarde."));
 		}
 	}
 }
