@@ -90,16 +90,18 @@ public class AccountModel {
 	@Column(name="updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
 	Date updatedAt = new Date();
 	
-
+	// Construtor
 	public String newUuid() {
 		this.uuid = UUID.randomUUID().toString();
 		return this.uuid;
 	}
 
+	
 	public boolean getOptin() {
         return this.optin;
     }
 	
+	// Validação
 	public Response valid() {
 
 
@@ -136,7 +138,7 @@ public class AccountModel {
 		return null;
 	}
 	
-
+	// Validação do RG
 	public Response validRG() {
 		
 		if(this.rg.length() == 0) {
@@ -159,6 +161,7 @@ public class AccountModel {
 		return null;
 	}
 
+	// Validação do estado civil
 	public Response validMarital() {
 		
 		if(this.marital == Marital.VOID) {
@@ -169,6 +172,7 @@ public class AccountModel {
 		return null;
 	}
 
+	// Validação do gênero
 	public Response validGender() {
 		
 		if(this.gender == Gender.VOID) {
@@ -179,6 +183,7 @@ public class AccountModel {
 		return null;
 	}
 
+	// Validação do idioma
 	public Response validLanguage() {
 		
 		if(this.language == Language.VOID) {
@@ -189,6 +194,7 @@ public class AccountModel {
 		return null;
 	}
 
+	// Validação da nacionalidade
 	public Response validNationality() {
 		
 		if(this.nationality == Nationality.VOID) {
@@ -199,6 +205,7 @@ public class AccountModel {
 		return null;
 	}
 
+	// Validação da moeda
 	public Response validCurrency() {
 		
 		if(this.currency == Currency.VOID) {
@@ -209,6 +216,7 @@ public class AccountModel {
 		return null;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "Account[id=%d, uuid=%s, rg=%s]".formatted(this.id, this.uuid, this.rg);

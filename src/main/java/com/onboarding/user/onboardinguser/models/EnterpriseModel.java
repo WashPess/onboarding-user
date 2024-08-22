@@ -94,8 +94,10 @@ public class EnterpriseModel {
 	@JsonProperty(value = "partner_uuid", access = JsonProperty.Access.WRITE_ONLY)
 	String partnerUuid = "";
 
+    // Lista de Socios
 	List<String> partners = new ArrayList<>();
 
+    // Construtor
     public String newUuid() {
 		this.uuid = UUID.randomUUID().toString();
 		return this.uuid;

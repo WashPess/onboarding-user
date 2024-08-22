@@ -22,12 +22,15 @@ import jakarta.validation.Valid;
 @SuppressWarnings("squid:S1192") // Desativa a regra java:S1192
 public class AccountController extends ExceptionHandle {
 
+	// Injeção de dependência
 	private final AccountService service;
 
+	// Construtor da classe
 	AccountController(AccountService service) {
 		this.service = service;
 	}
 
+	// Criação de uma nova conta
 	@PostMapping("/account")
 	ResponseEntity<Response> create(@Valid @RequestBody AccountModel account, BindingResult bindingResult) {
 		try {
@@ -61,6 +64,7 @@ public class AccountController extends ExceptionHandle {
 		}
 	}
 
+	// Atualização de uma conta
 	@PutMapping("/account/{uuid}")
 	ResponseEntity<Response> update(@RequestBody AccountModel account, @PathVariable Object uuid) {
 		try {
@@ -98,6 +102,7 @@ public class AccountController extends ExceptionHandle {
 		}
 	}
 
+	// Busca de uma conta por id
 	@GetMapping("/account/find/{id}")
 	ResponseEntity<Response> showById(@PathVariable Object id) {
 		try {
@@ -135,6 +140,7 @@ public class AccountController extends ExceptionHandle {
 		}
 	}
 
+	// Busca de uma conta por uuid
 	@GetMapping("/account/{uuid}")
 	ResponseEntity<Response> showByUuid(@PathVariable Object uuid) {
 		try {
@@ -163,6 +169,7 @@ public class AccountController extends ExceptionHandle {
 		}
 	}
 
+	// Deleta uma conta
 	@DeleteMapping("/account/{id}")
 	ResponseEntity<Response> deleteEnterprise(@PathVariable Long id) {
 		try {

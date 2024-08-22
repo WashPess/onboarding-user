@@ -26,15 +26,18 @@ import com.onboarding.user.onboardinguser.utils.Str;
 @RestController
 @SuppressWarnings("squid:S1192") // Desativa a regra java:S1192
 public class PartnerController extends ExceptionHandle {
-    
+
+	// Service de sócio e de empresa
 	public final PartnerService service;
 	private final EnterprisePartnerService enterprisePartnerService;
 
+	// Construtor da classe
 	PartnerController(PartnerService service, EnterprisePartnerService enterprisePartnerService) {
 		this.service = service;
 		this.enterprisePartnerService = enterprisePartnerService;
 	}
 
+	// Cria um novo sócio
 	@PostMapping("/partner")
 	ResponseEntity<Response> create(@RequestBody PartnerModel partner, BindingResult bindingResult) {
 		try {
@@ -85,6 +88,7 @@ public class PartnerController extends ExceptionHandle {
 		}
 	}
 
+	// Atualiza um sócio
 	@PutMapping("/partner/{uuid}")
     ResponseEntity<Response> update(@RequestBody PartnerModel partner, @PathVariable Object uuid) {
 		try{
@@ -128,6 +132,7 @@ public class PartnerController extends ExceptionHandle {
 		}
 	}
 
+	// Deleta um sócio
 	@DeleteMapping("/partner/{uuid}")
 	ResponseEntity<Response> delete(@PathVariable Object uuid) {
 		try {
@@ -158,6 +163,7 @@ public class PartnerController extends ExceptionHandle {
 		}
 	}
 
+	// Restaura um sócio
 	@PatchMapping("/partner/{uuid}")
 	ResponseEntity<Response> restore(@PathVariable Object uuid) {
 		try {
@@ -188,6 +194,7 @@ public class PartnerController extends ExceptionHandle {
 		}
 	}
 
+	// Busca um sócio por id
 	@GetMapping("/partner/find/{id}")
     ResponseEntity<Response> showById(@PathVariable Object id) {
 		try {
@@ -225,6 +232,7 @@ public class PartnerController extends ExceptionHandle {
 		}
 	}
 	
+	// Busca um sócio por uuid
 	@GetMapping("/partner/{uuid}")
 	ResponseEntity<Response> showByUuid(@PathVariable Object uuid) {
 		try {
@@ -262,6 +270,7 @@ public class PartnerController extends ExceptionHandle {
 		}
 	}
 
+	// Lista todos os sócios
 	@GetMapping("/partners")
     ResponseEntity<Response> list() {
 		try {
@@ -278,9 +287,14 @@ public class PartnerController extends ExceptionHandle {
     ResponseEntity<Response> addToAEnterpriseByUuid(@RequestBody PartnerUuidWithEnterpriseUuidDTO partnerWithEnterprise) {
 		try{
 
-			if(partnerWithEnterprise == null || !partnerWithEnterprise.isValid()) {
+			if(partnerWithEnterprise == null) {
 				this.logger.error("É necessário informar o uuid do sócio e da empresa.");
 				return Response.result(Response.error(404, "PTC017", "É necessário informar o uuid do sócio e da empresa."));
+			}
+
+			if(!partnerWithEnterprise.isValid()) {
+				this.logger.error("É necessário informar um uuid valido do sócio e da empresa.");
+				return Response.result(Response.error(404, "PTC020", "É necessário informar um uuid valido do sócio e da empresa."));
 			}
 
 			Response resultSaved = this.enterprisePartnerService.saveRelationshipEnterpriseAndPartner(partnerWithEnterprise);

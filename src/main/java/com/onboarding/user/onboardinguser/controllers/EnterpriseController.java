@@ -25,12 +25,15 @@ import jakarta.validation.Valid;
 @SuppressWarnings("squid:S1192")
 public class EnterpriseController extends ExceptionHandle {
 
+	// Injeção de dependência
     private final EnterpriseService service;
 
+	// Construtor da classe
 	EnterpriseController(EnterpriseService service) {
 		this.service = service;
 	}
 
+	// Criação de uma empresa
     @PostMapping("/enterprise")
     ResponseEntity<Response> create(@Valid @RequestBody EnterpriseModel enterprise, BindingResult bindingResult) {
         try{
@@ -55,6 +58,7 @@ public class EnterpriseController extends ExceptionHandle {
         }   
     }
 
+	// Atualiza o empresa
 	@PutMapping("/enterprise/{id}")
     ResponseEntity<Response> update(@RequestBody EnterpriseModel enterprise, @PathVariable Object id) {
 		try{
@@ -88,6 +92,7 @@ public class EnterpriseController extends ExceptionHandle {
 		}
 	}
 
+	// busca a empresa por id
 	@GetMapping("/enterprise/find/{id}")
     ResponseEntity<Response> showById(@PathVariable Object id) {
 		try {
@@ -127,6 +132,7 @@ public class EnterpriseController extends ExceptionHandle {
 		}
 	}
 
+	// busca a empresa por uuid
 	@GetMapping("/enterprise/{uuid}")
     ResponseEntity<Response> showByUuid(@PathVariable Object uuid) {
 		try {
@@ -158,6 +164,7 @@ public class EnterpriseController extends ExceptionHandle {
 		}
 	}
 	
+	// lista todas as empresas
 	@GetMapping("/enterprises")
     ResponseEntity<Response> list() {
 		try {

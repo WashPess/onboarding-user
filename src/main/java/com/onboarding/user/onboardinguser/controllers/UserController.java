@@ -63,6 +63,38 @@ public class UserController extends ExceptionHandle {
 				return Response.result(Response.error(400, "USC000", message));
 			}
 
+			// pegar o cpf + a data de nascimento + O nome da mãe e consultar na receita federal
+			// -- CPF regular ou irregular
+			// -- certidão de óbito
+			// -- antecedentes criminais
+
+			// pegar endereço + cep e consultar no via cep
+			// -- endereço
+			// -- dado GIS
+
+			// pegar o email e consulta no https://haveibeenpwned.com/
+			// -- ultima utilização da caixa de email
+			// -- se o email foi vazado
+			// -- data de criaçao do email
+
+			// pegar o nome + cpf + dados bancários e consultar no OFAC - (BS2)
+			// -- se o nome está na lista de terroristas
+
+			// pegar nome completo e CPF e passar num beaoru - https://idwall.co/pt-BR/
+			// -- nome 
+			// -- endereço 
+			// -- emprestimos
+
+			// KYC - know your custumer - conheça seu cliente
+			// -- sites que frenquenta
+			// -- principais contas digitais
+			// -- dados do analytics
+			// 	 -- tempo médio de uso de internet
+			// 	 -- principais gostos
+			// 	 -- principais comportamentos (viagens, negócios, serviços de terceiros como drogarias, mercados, roupas)
+
+
+
 			// delega a regra de salva para a service
 			Response resultUserSaved = this.service.save(user);
 			if(resultUserSaved != null) {

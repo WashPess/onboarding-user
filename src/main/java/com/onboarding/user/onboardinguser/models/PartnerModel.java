@@ -113,6 +113,7 @@ public class PartnerModel {
 
 	List<String> enterprises = new ArrayList<>();
 
+	// Construtor
     public PartnerModel(String email, String document, String firstName, String lastName) {
         this.email = email;
         this.document = document;
